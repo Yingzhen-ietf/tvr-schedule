@@ -159,8 +159,8 @@
 
     <section title="Design of the model">
       <section title="Schedule Definition">
-        <t>The "schedule-value" container defines an attribute that changes its
-          value based on a predefined schedule. The "schedules" list
+        <t>The "schedule-value" container defines a list of attributes that change
+          values based on a predefined schedule. The "schedules" list
           contains elements that specify a time interval, consisting of a
           start-time and end-time, along with the corresponding value for
           that interval. The "value" leaf is defined as a union, allowing
@@ -207,7 +207,7 @@
             +--rw schedules* [start-time]
               +--rw start-time    yang:timeticks
               +--rw end-time?     yang:timeticks
-              +--rw value?        union
+              +--rw value*        union
 
           </artwork>
         </figure>
@@ -248,7 +248,7 @@ module: ietf-tvr-schedule
                 +--rw schedules* [start-time]
                    +--rw start-time    yang:timeticks
                    +--rw end-time?     yang:timeticks
-                   +--rw value?        union
+                   +--rw value*        union
   augment /lne:logical-network-elements/lne:logical-network-element:
     +--rw scheduled-attribute
        +--rw schedule
@@ -260,16 +260,19 @@ module: ietf-tvr-schedule
              +--rw schedules* [start-time]
                 +--rw start-time    yang:timeticks
                 +--rw end-time?     yang:timeticks
-                +--rw value?        union
+                +--rw value*        union
 
       </artwork>
   </section>
 
 
   <section title="TVR Schedule YANG Module">
+    <t>The following RFCs are referenced in the "ietf-tvr-schedule" YANG
+      module: <xref target="RFC6991"/>, <xref target="RFC8343"/> and
+      <xref target="RFC8530"/>.</t>
 
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-schedule@2023-06-11.yang"
+<CODE BEGINS> file "ietf-tvr-schedule@2023-06-29.yang"
 module ietf-tvr-schedule {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
@@ -331,9 +334,9 @@ module ietf-tvr-schedule {
      described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
      they appear in all capitals, as shown here.";
   reference
-    "RFC XXXX: YANG Data Model for Time-Variant Routing";
+    "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-06-11 {
+  revision 2023-06-29 {
     description
       "Initial Version";
     reference
@@ -371,7 +374,7 @@ module ietf-tvr-schedule {
             "End time of the scheduled change. The calculation of the
             end-time is the same as the start-time.";
         }
-        leaf value {
+        leaf-list value {
           type union {
             type boolean;
             type string;
@@ -441,6 +444,7 @@ module ietf-tvr-schedule {
     }    
   }
 }
+
 <CODE ENDS>
       ]]></artwork>
 
@@ -552,6 +556,49 @@ module ietf-tvr-schedule {
       &RFC8340;
       &I-D.ietf-tvr-use-cases;
     </references>
+    
+    <section>
+      <name>Example: Add a scheduled cost to OSPF interface</name>
+      <t>In OSPF (Open Shortest Path First), the interface cost is a
+        metric used to determine the preference or desirability of a
+        particular link or interface. By default, the OSPF interface
+        cost is calculated based on the bandwidth of the interface,
+        and it is also configurable.</t>
+      <t>This example demonstrates how an OSPF interface can be extended
+        with a cost that changes with a schedule.</t>
+      <artwork><![CDATA[
+module ietf-tvr-ospf-schedule {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-ospf-schedule";
+  prefix ospf-schedule;
 
+  import ietf-routing {
+    prefix "rt";
+    reference
+      "RFC 8349: A YANG Data Model for Routing
+       Management (NMDA Version)";
+  }
+  import ietf-ospf {
+    prefix "ospf";
+    reference
+      "RFC 9129: A YANG Data Model for OSPF Protocol";
+  }
+
+  import ietf-tvr-schedule {
+    prefix "tvr-schedule";
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/"
+    + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
+    + "ospf:interfaces/ospf:interface" {
+    container scheduled-cost {
+      description
+        "Augment OSPF interface with a scheduled interface cost.";
+      uses tvr-schedule:schedule;
+    }
+  }
+}
+      ]]></artwork>
+    </section>
   </back>
 </rfc>

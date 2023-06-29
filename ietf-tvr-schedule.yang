@@ -59,9 +59,9 @@ module ietf-tvr-schedule {
      described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
      they appear in all capitals, as shown here.";
   reference
-    "RFC XXXX: YANG Data Model for Time-Variant Routing";
+    "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-06-11 {
+  revision 2023-06-29 {
     description
       "Initial Version";
     reference
@@ -99,7 +99,7 @@ module ietf-tvr-schedule {
             "End time of the scheduled change. The calculation of the
             end-time is the same as the start-time.";
         }
-        leaf value {
+        leaf-list value {
           type union {
             type boolean;
             type string;
