@@ -1,0 +1,32 @@
+module ietf-tvr-ospf-schedule {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-ospf-schedule";
+  prefix ospf-schedule;
+
+  import ietf-routing {
+    prefix "rt";
+    reference
+      "RFC 8349: A YANG Data Model for Routing
+       Management (NMDA Version)";
+  }
+  import ietf-ospf {
+    prefix "ospf";
+    reference
+      "RFC 9129: A YANG Data Model for OSPF Protocol";
+  }
+
+  import ietf-tvr-schedule {
+    prefix "tvr-schedule";
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/"
+    + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
+    + "ospf:interfaces/ospf:interface" {
+    container scheduled-cost {
+      description
+        "Augment OSPF interface with a scheduled interface cost.";
+      uses tvr-schedule:schedule;
+    }
+  }
+}
+
