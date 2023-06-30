@@ -33,8 +33,8 @@ module ietf-tvr-schedule {
                <mailto:marc.blanchet@viagenie.ca>";            
 
   description
-    "The YANG module defines some attributes that change with a
-     schedule. It can be used to augment existing models.
+    "The YANG module defines a schedule for changing
+     attributes. It can be used to augment existing models.
 
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
@@ -78,6 +78,59 @@ module ietf-tvr-schedule {
       enum yearly;
     }
     description "Types of recurrence";
+  }
+
+  grouping schedule-lifetime {
+    description
+      "Schedule lifetime specification.";
+    choice lifetime {
+      default "always";
+      description
+        "Options for specifying schedule lifetimes";
+      case always {
+        leaf always {
+          type empty;
+          description
+            "Indicates schedule is always valid.";
+        }
+      }
+      case start-end-time {
+        leaf start-date-time {
+          type yang:date-and-time;
+          description
+            "Start time.";
+        }
+        choice end-time {
+          default "infinite";
+          description
+            "End-time setting.";
+          case infinite {
+            leaf no-end-time {
+              type empty;
+              description
+                "Indicates schedule lifetime end-time is infinite.";
+            }
+          }
+          case duration {
+            leaf duration {
+              type uint32 {
+                range "1..2147483646";
+              }
+              units "seconds";
+              description
+                "Schedule lifetime duration, in seconds";
+            }
+          }
+          case end-date-time {
+            leaf end-date-time {
+              type yang:date-and-time;
+              description
+                "End time.";
+            }
+          }
+        }
+      }
+    }
   }
 
   grouping schedule-value {
@@ -158,7 +211,8 @@ module ietf-tvr-schedule {
     }
   }
 
-  augment "/lne:logical-network-elements/lne:logical-network-element" {
+  augment "/lne:logical-network-elements/
+            lne:logical-network-element" {
     description
       "Augments logical network elements with scheduled power
        shutdown.";

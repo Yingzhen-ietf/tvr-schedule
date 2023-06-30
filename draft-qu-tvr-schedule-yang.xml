@@ -120,29 +120,38 @@
          keywords will be used for the search engine. -->
 
     <abstract>
-      <t>The YANG model in this document defines attributes that change
-        values with a recurring schedule, which can be used to augment existing
-        data models.</t>
+      <t>
+        The YANG model in this document specifies a recurring schedule for
+        changing the attributes of resources that are defined in other
+        YANG data models. An example use case augmentation is also included, i.e.,
+        using the schedule to change the OSPF interface metric.
+      </t>
     </abstract>
   </front>
 
   <middle>
     <section title="Overview">
-      <t>YANG <xref target="RFC7950"></xref> is a data definition language
-      used to define the contents of a conceptual data store
-      that allows networked devices to be managed using NETCONF
-      <xref target="RFC6241"/>.  YANG is proving relevant beyond its
-      initial confines, as bindings to other interfaces (e.g., ReST) and
-      encodings other than XML (e.g., JSON) are being defined.  Furthermore,
-      YANG data models can be used as the basis for implementation of other
-      interfaces, such as CLI and programmatic APIs.</t>
+      <t>
+        YANG <xref target="RFC7950"></xref> is a data definition language
+        used to define the contents of a conceptual data store
+        that allows networked devices to be managed using NETCONF
+        <xref target="RFC6241"/>.  YANG is proving relevant beyond its
+        initial confines, as bindings to other interfaces (e.g., ReST) and
+        encodings other than XML (e.g., JSON) are being defined.  Furthermore,
+        YANG data models can be used as the basis for implementation of other
+        interfaces, such as CLI and programmatic APIs.
+      </t>
 
-      <t>The YANG model in this document defines attributes that change
-        values with a schedule, which can be used to augment existing
-        data models. </t>
+      <t>
+        The YANG model in this document specifies a recuring schedule for
+        changing the attributes of resources that are defined in other YANG
+        YANG data models.
+      </t>
 
-      <t>The YANG modules in this document conform to the Network Management
-         Datastore Architecture (NMDA) <xref target="RFC8342"/>.</t>
+      <t>
+        The YANG modules in this document conform to the Network Management
+        Datastore Architecture (NMDA) <xref target="RFC8342"/>.
+      </t>
 
       <section title="Requirements Language">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -153,13 +162,16 @@
     </section>
 
     <section title="Tree Diagrams">
-      <t> This document uses the graphical representation of data models
-          defined in <xref target="RFC8340"/>. </t>
+      <t>
+        This document uses the graphical representation of data models
+        defined in <xref target="RFC8340"/>.
+      </t>
     </section>
 
     <section title="Design of the model">
       <section title="Schedule Definition">
-        <t>The "schedule-value" container defines a list of attributes that change
+        <t>
+          The "schedule-value" container defines a list of attributes that change
           values based on a predefined schedule. The "schedules" list
           contains elements that specify a time interval, consisting of a
           start-time and end-time, along with the corresponding value for
@@ -169,32 +181,45 @@
           the string can represent a value that dynamically changes over
           time using a function such as "2*t+10". The "schedule-value" grouping
           is defined to be used by models or to augment existing models
-          with attributes that follow a time schedule.</t>
-        <t>The "schedule" container uses the "schedule-value" grouping,
-         which includes a leaf called "recurrence" that specifies the repetition
-         pattern of the "schedule-value". Additionally the duration of
-         this schedule is determined by the starting time "start" and the
-         ending time "stop" defined within the container. The "value-default"
-         leaf defines the attribute's value when it's not covered by the 
-         "schedule-value" in the duration. The "schedule" grouping is
-         defined as well.</t>
+          with attributes that follow a time-schedule.
+        </t>
+        <t>
+          The "schedule" container uses the "schedule-value" grouping,
+          which includes a leaf called "recurrence" that specifies the repetition
+          pattern of the "schedule-value". Additionally the duration of
+          this schedule is determined by the starting time "start" and the
+          ending time "stop" defined within the container. The "value-default"
+          leaf defines the attribute's value when it's not covered by the
+          "schedule-value" in the duration. The "schedule" grouping is
+          defined as well.
+        </t>
 
-        <t>The following figure provides an illustration of two attributes and
-        their scheduled value changes.</t>
+        <t>
+          The following figure provides an illustration of two attributes and
+          their scheduled value changes. The attributes A1 and A2 take on different
+          values at different times. The attribute A1 will take on the value v1 from
+          the time t0 until t1, the value v2 from t1 until t2, and v3 from t2 until t3.
+          The attribute A2 will take on the value vv1 from time t0 until t1 and vv2 from v1
+          until v3.
+        </t>
         <figure>
           <name>Time Varying Properties</name>
           <artwork>
-          ---------------------------------------
+Attributes
+          +-------------------+----------+------+
       A1  |       v1          |   v2     |  v3  |
-          ---------------------------------------
+          +-------------------+----------+------+
       A2  |      vv1          |      vv2        |
-          ---------------------------------------
-          t0                  t1        t2      t3
+          +-------------------+-----------------+
+         t0                  t1        t2      t3
+                         Time
           </artwork>
         </figure>
 
-        <t>The following is the tree diagram of the grouping
-          "schedule".</t>
+        <t>
+          The following is the tree diagram of the grouping
+          "schedule".
+        </t>
         <figure>
           <name>Tree diagram of the schedule</name>
           <artwork>
@@ -213,15 +238,23 @@
         </figure>
       </section>
       <section title="Model Augmentations">
-        <t>Grouping "schedule" can be used to augment various models
-          with an attribute that changes values based on a predefined schedule.</t>
-        <t>In this document, the IETF logical network element model
+        <t>
+          Grouping "schedule" can be used to augment other YANG data  models
+          with an attribute that changes its value based on a predefined schedule.
+        </t>
+        <t>
+          In this document, the IETF logical network element model
           <xref target="RFC8530"/> is augmented with a scheduled power
-          shutdown using the grouping "schedule". </t>
-        <t>The interfaces defined in the ietf-interface
+          shutdown using the grouping "schedule".
+        </t>
+        <t>
+          The interfaces defined in the ietf-interface
           model <xref target="RFC8343"/> is augmented with a list of
-          scheduled attributes using grouping "schedule-value". </t>
-        <t> More use cases can be found in <xref target="I-D.ietf-tvr-use-cases"/>.</t>
+          scheduled attributes using grouping "schedule-value".
+        </t>
+        <t>
+          More use cases can be found in <xref target="I-D.ietf-tvr-use-cases"/>.
+        </t>
 
       </section>
 
@@ -229,8 +262,10 @@
 
   <section title="TVR Schedule YANG Trees">
 
-    <t>The following figure shows the tree diagram of the interface 
-      augmentation and LNE augmentation.</t>
+    <t>
+      The following figure shows the tree diagram of the interface
+      augmentation and LNE augmentation.
+    </t>
 
       <artwork>
 module: ietf-tvr-schedule
@@ -305,7 +340,7 @@ module ietf-tvr-schedule {
      Author:   Acee Lindem
                <mailto:acee.ietf@gmail.com>
      Author:   Marc Blanchet
-               <mailto:marc.blanchet@viagenie.ca>";            
+               <mailto:marc.blanchet@viagenie.ca>";
 
   description
     "The YANG module defines some attributes that change with a
@@ -361,7 +396,7 @@ module ietf-tvr-schedule {
         key "start-time";
         leaf start-time {
           type yang:timeticks;
-          description 
+          description
             "Start time of the scheduled change. The calculation of
             the real start time is to use the base starting time plus
             the timeticks. For example, if a schedule starts at 8:00
@@ -370,7 +405,7 @@ module ietf-tvr-schedule {
         }
         leaf end-time {
           type yang:timeticks;
-          description 
+          description
             "End time of the scheduled change. The calculation of the
             end-time is the same as the start-time.";
         }
@@ -379,7 +414,7 @@ module ietf-tvr-schedule {
             type boolean;
             type string;
           }
-          description 
+          description
             "Value for the scheduled attribute during the
              specified time period.
              This can be a simple value, or a string representing
@@ -411,7 +446,7 @@ module ietf-tvr-schedule {
           "Attribute default value.";
       }
       uses schedule-value;
-    }    
+    }
   }
 
   augment "/if:interfaces/if:interface" {
@@ -433,7 +468,8 @@ module ietf-tvr-schedule {
     }
   }
 
-  augment "/lne:logical-network-elements/lne:logical-network-element" {
+  augment "/lne:logical-network-elements/
+            lne:logical-network-element" {
     description
       "Augments logical network elements with scheduled power
        shutdown.";
@@ -441,10 +477,9 @@ module ietf-tvr-schedule {
       description
         "Scheduled power up and down.";
       uses schedule;
-    }    
+    }
   }
 }
-
 <CODE ENDS>
       ]]></artwork>
 
@@ -453,18 +488,22 @@ module ietf-tvr-schedule {
     <!-- Possibly a 'Contributors' section ... -->
 
     <section anchor="Security" title="Security Considerations">
-    <t>The YANG modules specified in this document define a schema for
-       data that is designed to be accessed via network
-       management protocols such as NETCONF <xref target="RFC6241"/> or
-       RESTCONF <xref target="RFC8040"/>. The lowest NETCONF layer is the secure transport
-       layer, and the mandatory-to-implement secure transport is Secure Shell (SSH)
-       <xref target="RFC6242"/>. The lowest RESTCONF layer is HTTPS, and the
-       mandatory-to-implement secure transport is TLS <xref target="RFC8446"/>.</t>
+      <t>
+        The YANG modules specified in this document define a schema for
+        data that is designed to be accessed via network
+        management protocols such as NETCONF <xref target="RFC6241"/> or
+        RESTCONF <xref target="RFC8040"/>. The lowest NETCONF layer is the secure transport
+        layer, and the mandatory-to-implement secure transport is Secure Shell (SSH)
+        <xref target="RFC6242"/>. The lowest RESTCONF layer is HTTPS, and the
+        mandatory-to-implement secure transport is TLS <xref target="RFC8446"/>.
+      </t>
 
-   <t>The NETCONF access control model <xref target="RFC8341"/> provides the
-      means to restrict access for particular NETCONF or RESTCONF users to a
-      pre-configured subset of all available NETCONF or RESTCONF protocol
-      operations and content.</t>
+      <t>
+        The NETCONF access control model <xref target="RFC8341"/> provides the
+        means to restrict access for particular NETCONF or RESTCONF users to a
+        pre-configured subset of all available NETCONF or RESTCONF protocol
+        operations and content.
+      </t>
 
       <t>
         There are a number of data nodes defined in ietf-tvr-schedule.yang module
@@ -472,7 +511,7 @@ module ietf-tvr-schedule {
         These data nodes may be considered sensitive or vulnerable in some network
         environments. Write operations (e.g., edit-config) to these data nodes without
         proper protection can have a negative effect on network operations. There are
-        the subtrees and data nodes and their sensitivity/vlunerability:
+        the subtrees and data nodes and their sensitivity/vulnerability:
       </t>
       <ul spacing="compact" empty="true">
         <li>/if:interfaces/if:interface/scheduled-attributes</li>
@@ -481,10 +520,12 @@ module ietf-tvr-schedule {
         denial of service.</li>
       </ul>
 
-   <t>Some of the readable data nodes in the ietf-tvr-schedule.yang module
-      may be considered sensitive or vulnerable in some network environments. It is thus
-      important to control read access (e.g., via get, get-config, or notification)
-      to these data nodes.</t>
+      <t>
+        Some of the readable data nodes in the ietf-tvr-schedule.yang module
+        may be considered sensitive or vulnerable in some network environments. It is thus
+        important to control read access (e.g., via get, get-config, or notification)
+        to these data nodes.
+      </t>
 
    </section>
 <section title="IANA Considerations">
@@ -556,7 +597,7 @@ module ietf-tvr-schedule {
       &RFC8340;
       &I-D.ietf-tvr-use-cases;
     </references>
-    
+
     <section>
       <name>Example: Add a scheduled cost to OSPF interface</name>
       <t>In OSPF (Open Shortest Path First), the interface cost is a
