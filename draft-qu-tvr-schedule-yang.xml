@@ -641,5 +641,66 @@ module ietf-tvr-ospf-schedule {
 }
       ]]></artwork>
     </section>
+    <section>
+      <name>Example: LNE scheduled power configuration</name>
+      <t>In this configuration example, LNE power is scheduled between
+        2023/8/12 0:00 UTC to the end of 2023/08/13 with a daily
+        schedule. In each day, the router is scheduled to be off between
+        1:00 to 5:00 and 20:00 to 23:00. The two intervals and the
+        corresponding value are defined, the "value-default" is to define
+        the value that's not covered by the intervals.</t>
+      <t>THe following figure shows the intended power schedule.</t>
+
+<artwork><![CDATA[
+
+   1   0          1        0   1    0          1        0  1
+  +-|----|---------------|---|-+-|----|---------------|---|-+
+  0 1    5               20 23 0 1    5              20  23 24 
+  |        2023/08/12          |        2023/08/13          |
+   
+]]></artwork>
+
+       <t>The following XML demonstrate the configuration.</t>
+<artwork><![CDATA[
+<?xml version='1.0' encoding='UTF-8'?>
+  <logical-network-elements xmlns="urn:ietf:params:xml:ns:yang:ietf-logical-network-element">
+    <logical-network-element>
+      <name>"Router ABC"</name>
+      <scheduled-power xmlns="urn:ietf:params:xml:ns:yang:ietf-tvr-schedule">
+        <start-date-time>2023-08-12T00:00:00.00Z</start-date-time>
+        <end-date-time>2023-08-13T24:00:00.00Z</end-date-time>
+        <recurrence>daily</recurrence>
+        <value-default>1</value-default>
+        <base-schedule>
+          <sequence>0</sequence>
+          <intervals>
+            <start-time>360000</start-time>
+            <end-time>1800000</end-time>
+            <value>0</value>
+          </intervals>
+          <intervals>
+            <start-time>7200000</start-time>
+            <end-time>8280000</end-time>
+            <value>0</value>
+          </intervals>
+        </base-schedule>
+        <base-schedule>
+          <sequence>1</sequence>
+          <intervals>
+            <start-time>360000</start-time>
+            <end-time>1800000</end-time>
+            <value>0</value>
+          </intervals>
+          <intervals>
+            <start-time>7200000</start-time>
+            <end-time>8280000</end-time>
+            <value>0</value>
+          </intervals>
+        </base-schedule>
+      </scheduled-power>
+    </logical-network-element>
+  </logical-network-elements>
+]]></artwork>
+    </section>
   </back>
 </rfc>

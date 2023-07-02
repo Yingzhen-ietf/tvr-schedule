@@ -5,18 +5,21 @@ module ietf-tvr-schedule {
 
   import ietf-yang-types {
     prefix "yang";
-    reference "RFC 6991: Common YANG Data Types";
+    reference 
+      "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-interfaces {
     prefix "if";
-    reference "RFC 8343: A YANG Data Model for Interface
+    reference 
+      "RFC 8343: A YANG Data Model for Interface
                Management (NMDA Version)";
   }
 
   import ietf-logical-network-element {
     prefix "lne";
-    reference "RFC 8530: YANG Model for Logical Network Elements";
+    reference 
+      "RFC 8530: YANG Model for Logical Network Elements";
   }
 
   organization
@@ -77,7 +80,8 @@ module ietf-tvr-schedule {
       enum monthly;
       enum yearly;
     }
-    description "Types of recurrence";
+    description 
+      "Types of recurrence";
   }
 
   grouping schedule-lifetime {
@@ -138,7 +142,8 @@ module ietf-tvr-schedule {
     uses schedule-lifetime;
     leaf recurrence {
       type recurrence-type;
-      description "Type of recurrence";
+      description 
+        "Type of recurrence";
     }
 
     leaf value-default {
@@ -169,7 +174,7 @@ module ietf-tvr-schedule {
           type yang:timeticks;
           description 
             "End time of the scheduled change. The calculation of the
-            end-time is the same as the start-time.";
+             end-time is the same as the start-time.";
         }
         leaf value {
           type union {
