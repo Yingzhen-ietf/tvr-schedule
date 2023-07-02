@@ -83,7 +83,7 @@ module ietf-tvr-schedule {
   grouping schedule-lifetime {
     description
       "Schedule lifetime specification.";
-    choice lifetime {
+    choice schedule-lifetime {
       default "always";
       description
         "Options for specifying schedule lifetimes";
@@ -133,18 +133,37 @@ module ietf-tvr-schedule {
     }
   }
 
-  grouping schedule-value {
-    container schedule-value {
-      list schedules {
+
+  grouping schedule {
+    uses schedule-lifetime;
+    leaf recurrence {
+      type recurrence-type;
+      description "Type of recurrence";
+    }
+
+    leaf value-default {
+      type string;
+      description
+        "Attribute default value.";
+    }
+
+    list base-schedule {
+      key "sequence";
+      leaf sequence {
+        type uint32;
+      }
+      list intervals {
         key "start-time";
         leaf start-time {
           type yang:timeticks;
           description 
-            "Start time of the scheduled change. The calculation of
-            the real start time is to use the base starting time plus
-            the timeticks. For example, if a schedule starts at 8:00
-            with an hourly recurrence, the start-time will be 8:00
-            plus the timeticks.";
+            "Start time of the scheduled value within one recurrence.
+             The calculation of the real start time is to use the
+             basestarting time defined by schedule-lifetime, the
+             sequence of this schedule, plus the timeticks. For example,
+             if a schedule starts at 2001/1/1 8:00AM with an hourly
+             recurrence, and the sequence is 2, the start-time will
+             2001/1/1 10:00AM plus the timeticks.";
         }
         leaf end-time {
           type yang:timeticks;
@@ -152,7 +171,7 @@ module ietf-tvr-schedule {
             "End time of the scheduled change. The calculation of the
             end-time is the same as the start-time.";
         }
-        leaf-list value {
+        leaf value {
           type union {
             type boolean;
             type string;
@@ -162,33 +181,8 @@ module ietf-tvr-schedule {
              specified time period.
              This can be a simple value, or a string representing
              a value function.";
-        }
+        }        
       }
-    }
-  }
-
-  grouping schedule {
-    container schedule {
-      leaf recurrence {
-        type recurrence-type;
-        description "Type of recurrence";
-      }
-      leaf start {
-        type yang:date-and-time;
-        description
-          "Start of this schedule.";
-      }
-      leaf stop {
-        type yang:date-and-time;
-        description
-          "Stop of this schedule.";
-      }
-      leaf value-default {
-        type string;
-        description
-          "Attribute default value.";
-      }
-      uses schedule-value;
     }    
   }
 
@@ -200,8 +194,8 @@ module ietf-tvr-schedule {
         "Scheduled attributes list, such as scheduled power up
          and down, or bandwidth that changes with time.";
       list scheduled-attribute {
-        key "id";
-        leaf id {
+        key "name";
+        leaf name {
           type string;
           description
             "ID or name of the scheduled-attribute.";
@@ -211,12 +205,12 @@ module ietf-tvr-schedule {
     }
   }
 
-  augment "/lne:logical-network-elements/
-            lne:logical-network-element" {
+  augment "/lne:logical-network-elements"
+        + "/lne:logical-network-element" {
     description
       "Augments logical network elements with scheduled power
        shutdown.";
-    container scheduled-shutdown {
+    container scheduled-power {
       description
         "Scheduled power up and down.";
       uses schedule;
