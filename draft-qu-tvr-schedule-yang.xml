@@ -315,18 +315,21 @@ module ietf-tvr-schedule {
 
   import ietf-yang-types {
     prefix "yang";
-    reference "RFC 6991: Common YANG Data Types";
+    reference 
+      "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-interfaces {
     prefix "if";
-    reference "RFC 8343: A YANG Data Model for Interface
+    reference 
+      "RFC 8343: A YANG Data Model for Interface
                Management (NMDA Version)";
   }
 
   import ietf-logical-network-element {
     prefix "lne";
-    reference "RFC 8530: YANG Model for Logical Network Elements";
+    reference 
+      "RFC 8530: YANG Model for Logical Network Elements";
   }
 
   organization
@@ -340,11 +343,11 @@ module ietf-tvr-schedule {
      Author:   Acee Lindem
                <mailto:acee.ietf@gmail.com>
      Author:   Marc Blanchet
-               <mailto:marc.blanchet@viagenie.ca>";
+               <mailto:marc.blanchet@viagenie.ca>";            
 
   description
-    "The YANG module defines some attributes that change with a
-     schedule. It can be used to augment existing models.
+    "The YANG module defines a schedule for changing
+     attributes. It can be used to augment existing models.
 
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
@@ -387,66 +390,115 @@ module ietf-tvr-schedule {
       enum monthly;
       enum yearly;
     }
-    description "Types of recurrence";
+    description 
+      "Types of recurrence";
   }
 
-  grouping schedule-value {
-    container schedule-value {
-      list schedules {
+  grouping schedule-lifetime {
+    description
+      "Schedule lifetime specification.";
+    choice schedule-lifetime {
+      default "always";
+      description
+        "Options for specifying schedule lifetimes";
+      case always {
+        leaf always {
+          type empty;
+          description
+            "Indicates schedule is always valid.";
+        }
+      }
+      case start-end-time {
+        leaf start-date-time {
+          type yang:date-and-time;
+          description
+            "Start time.";
+        }
+        choice end-time {
+          default "infinite";
+          description
+            "End-time setting.";
+          case infinite {
+            leaf no-end-time {
+              type empty;
+              description
+                "Indicates schedule lifetime end-time is infinite.";
+            }
+          }
+          case duration {
+            leaf duration {
+              type uint32 {
+                range "1..2147483646";
+              }
+              units "seconds";
+              description
+                "Schedule lifetime duration, in seconds";
+            }
+          }
+          case end-date-time {
+            leaf end-date-time {
+              type yang:date-and-time;
+              description
+                "End time.";
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  grouping schedule {
+    uses schedule-lifetime;
+    leaf recurrence {
+      type recurrence-type;
+      description 
+        "Type of recurrence";
+    }
+
+    leaf value-default {
+      type string;
+      description
+        "Attribute default value.";
+    }
+
+    list base-schedule {
+      key "sequence";
+      leaf sequence {
+        type uint32;
+      }
+      list intervals {
         key "start-time";
         leaf start-time {
           type yang:timeticks;
-          description
-            "Start time of the scheduled change. The calculation of
-            the real start time is to use the base starting time plus
-            the timeticks. For example, if a schedule starts at 8:00
-            with an hourly recurrence, the start-time will be 8:00
-            plus the timeticks.";
+          description 
+            "Start time of the scheduled value within one recurrence.
+             The calculation of the real start time is to use the
+             basestarting time defined by schedule-lifetime, the
+             sequence of this schedule, plus the timeticks. For example,
+             if a schedule starts at 2001/1/1 8:00AM with an hourly
+             recurrence, and the sequence is 2, the start-time will
+             2001/1/1 10:00AM plus the timeticks.";
         }
         leaf end-time {
           type yang:timeticks;
-          description
+          description 
             "End time of the scheduled change. The calculation of the
-            end-time is the same as the start-time.";
+             end-time is the same as the start-time.";
         }
-        leaf-list value {
+        leaf value {
           type union {
             type boolean;
             type string;
           }
-          description
+          description 
             "Value for the scheduled attribute during the
              specified time period.
              This can be a simple value, or a string representing
              a value function.";
-        }
+        }        
       }
-    }
-  }
-
-  grouping schedule {
-    container schedule {
-      leaf recurrence {
-        type recurrence-type;
-        description "Type of recurrence";
-      }
-      leaf start {
-        type yang:date-and-time;
-        description
-          "Start of this schedule.";
-      }
-      leaf stop {
-        type yang:date-and-time;
-        description
-          "Stop of this schedule.";
-      }
-      leaf value-default {
-        type string;
-        description
-          "Attribute default value.";
-      }
-      uses schedule-value;
-    }
+    }    
   }
 
   augment "/if:interfaces/if:interface" {
@@ -457,8 +509,8 @@ module ietf-tvr-schedule {
         "Scheduled attributes list, such as scheduled power up
          and down, or bandwidth that changes with time.";
       list scheduled-attribute {
-        key "id";
-        leaf id {
+        key "name";
+        leaf name {
           type string;
           description
             "ID or name of the scheduled-attribute.";
@@ -468,16 +520,16 @@ module ietf-tvr-schedule {
     }
   }
 
-  augment "/lne:logical-network-elements/
-            lne:logical-network-element" {
+  augment "/lne:logical-network-elements"
+        + "/lne:logical-network-element" {
     description
       "Augments logical network elements with scheduled power
        shutdown.";
-    container scheduled-shutdown {
+    container scheduled-power {
       description
         "Scheduled power up and down.";
       uses schedule;
-    }
+    }    
   }
 }
 <CODE ENDS>
