@@ -1,0 +1,31 @@
+module ietf-tvr-bundle-schedule {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule";
+  prefix bundle-schedule;
+
+  import ietf-bundle-protocol {
+    prefix bundle;
+  }
+  import ietf-tvr-schedule {
+    prefix tvr-schedule;
+  }
+
+  description
+    "TBD";
+  organization
+    "TBD";
+  contact
+    "TBD";
+
+  revision 2023-07-03;
+
+  augment "/bundle:node/bundle:neighbors/bundle:neighbor" {
+    container contact-schedule {
+      description
+        "Augment Bundle node neighbor with a contact schedule.";
+      uses tvr-schedule:schedule;
+    }
+    description
+      "TBD";
+  }
+}
