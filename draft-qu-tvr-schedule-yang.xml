@@ -383,12 +383,36 @@ module ietf-tvr-schedule {
 
   typedef recurrence-type {
     type enumeration {
-      enum once;
-      enum hourly;
-      enum daily;
-      enum weekly;
-      enum monthly;
-      enum yearly;
+      enum once {
+        description
+           "Repeat the scheduled action or attribute modificaton
+           only once";
+      }
+      enum hourly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+          once per hour.";
+      }
+      enum daily {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per day.";
+      }
+      enum weekly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per week.";
+      }
+      enum monthly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per week.";
+      }
+      enum yearly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per year.";
+      }
     }
     description 
       "Types of recurrence";
@@ -457,7 +481,10 @@ module ietf-tvr-schedule {
     }
 
     leaf value-default {
-      type string;
+      type union {
+        type boolean;
+        type string;
+      }
       description
         "Attribute default value.";
     }
@@ -466,6 +493,8 @@ module ietf-tvr-schedule {
       key "sequence";
       leaf sequence {
         type uint32;
+        description 
+          "Sequence number for base schedule entry.";
       }
       list intervals {
         key "start-time";
@@ -475,10 +504,11 @@ module ietf-tvr-schedule {
             "Start time of the scheduled value within one recurrence.
              The calculation of the real start time is to use the
              basestarting time defined by schedule-lifetime, the
-             sequence of this schedule, plus the timeticks. For example,
-             if a schedule starts at 2001/1/1 8:00AM with an hourly
-             recurrence, and the sequence is 2, the start-time will
-             2001/1/1 10:00AM plus the timeticks.";
+             sequence of this schedule, plus the timeticks. For
+             example, if a schedule starts at 2001/1/1 8:00AM with
+             an hourly recurrence, and the sequence is 2, the
+             start-time will be 2001/1/1 10:00AM plus the
+             timeticks.";
         }
         leaf end-time {
           type yang:timeticks;
@@ -497,8 +527,15 @@ module ietf-tvr-schedule {
              This can be a simple value, or a string representing
              a value function.";
         }        
+        description
+          "List of intervals for action or attribute modification";
       }
-    }    
+      description
+        "List of scheduled occurences of the action or attribute
+         modification";
+    }
+    description
+      "Complete schedule for a action or attribute modification.";
   }
 
   augment "/if:interfaces/if:interface" {
@@ -516,7 +553,10 @@ module ietf-tvr-schedule {
             "ID or name of the scheduled-attribute.";
         }
         uses schedule;
-      }
+        description
+          "List of interface attributes to modify based on
+           schedule.";
+       }
     }
   }
 
@@ -532,6 +572,8 @@ module ietf-tvr-schedule {
     }    
   }
 }
+
+
 <CODE ENDS>
       ]]></artwork>
 
@@ -715,10 +757,12 @@ module ietf-tvr-ospf-schedule {
        <t>The following XML demonstrate the configuration.</t>
 <artwork><![CDATA[
 <?xml version='1.0' encoding='UTF-8'?>
-  <logical-network-elements xmlns="urn:ietf:params:xml:ns:yang:ietf-logical-network-element">
+  <logical-network-elements xmlns="urn:ietf:params:xml:ns:yang:
+                                   ietf-logical-network-element">
     <logical-network-element>
       <name>"Router ABC"</name>
-      <scheduled-power xmlns="urn:ietf:params:xml:ns:yang:ietf-tvr-schedule">
+      <scheduled-power xmlns="urn:ietf:params:xml:ns:yang:
+                              ietf-tvr-schedule">
         <start-date-time>2023-08-12T00:00:00.00Z</start-date-time>
         <end-date-time>2023-08-13T24:00:00.00Z</end-date-time>
         <recurrence>daily</recurrence>
