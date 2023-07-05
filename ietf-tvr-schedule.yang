@@ -64,7 +64,7 @@ module ietf-tvr-schedule {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-06-29 {
+  revision 2023-07-05 {
     description
       "Initial Version";
     reference
@@ -111,51 +111,39 @@ module ietf-tvr-schedule {
   grouping schedule-lifetime {
     description
       "Schedule lifetime specification.";
-    choice schedule-lifetime {
-      default "always";
+
+    leaf schedule-start-time {
+      type yang:date-and-time;
+        description
+          "Schedule start time.";
+    }
+
+    choice schedule-end-time {
+      default "infinite";
       description
-        "Options for specifying schedule lifetimes";
-      case always {
-        leaf always {
+        "Schedule end-time setting.";
+      case infinite {
+        leaf no-end-time {
           type empty;
           description
-            "Indicates schedule is always valid.";
+            "Indicates schedule lifetime end-time is infinite.";
         }
       }
-      case start-end-time {
-        leaf start-date-time {
-          type yang:date-and-time;
+      case duration {
+        leaf duration {
+          type uint32 {
+            range "1..2147483646";
+          }
+          units "seconds";
           description
-            "Start time.";
+            "Schedule lifetime duration, in seconds";
         }
-        choice end-time {
-          default "infinite";
-          description
-            "End-time setting.";
-          case infinite {
-            leaf no-end-time {
-              type empty;
-              description
-                "Indicates schedule lifetime end-time is infinite.";
-            }
-          }
-          case duration {
-            leaf duration {
-              type uint32 {
-                range "1..2147483646";
-              }
-              units "seconds";
-              description
-                "Schedule lifetime duration, in seconds";
-            }
-          }
-          case end-date-time {
-            leaf end-date-time {
-              type yang:date-and-time;
-              description
-                "End time.";
-            }
-          }
+      }
+      case end-date-time {
+        leaf end-date-time {
+          type yang:date-and-time;
+            description
+              "Schedule end time.";
         }
       }
     }
@@ -176,7 +164,9 @@ module ietf-tvr-schedule {
         type string;
       }
       description
-        "Attribute default value.";
+        "Attribute default value. This value is used when the value
+         is not covered by the intervals, as well as when the schedule
+         ends.";
     }
 
     list base-schedule {
@@ -202,6 +192,13 @@ module ietf-tvr-schedule {
         }
         leaf end-time {
           type yang:timeticks;
+          must "../end-time > ../start-time" {
+            error-message "The end-time must be larger than the "
+                        + "start-time.";
+            description
+              "To define an interval, the value of the end-time must be
+               greater than the start-time.";
+          }
           description 
             "End time of the scheduled change. The calculation of the
              end-time is the same as the start-time.";
@@ -214,11 +211,16 @@ module ietf-tvr-schedule {
           description 
             "Value for the scheduled attribute during the
              specified time period.
-             This can be a simple value, or a string representing
-             a value function.";
+             When type string is used, it can be a simple value such
+             as an int, or a string representing a value that changes
+             its value based on a function.";
         }        
         description
-          "List of intervals for action or attribute modification";
+          "List of intervals for action or attribute modification. The
+           intervals should be contained within each recurrence. For
+           example, when the recurrence is set to daily, the list of
+           intervals should be within this daily range, e.g., the last
+           end-time can't be larger than 8640000 (24hours).";
       }
       description
         "List of scheduled occurences of the action or attribute
@@ -230,23 +232,13 @@ module ietf-tvr-schedule {
 
   augment "/if:interfaces/if:interface" {
     description
-      "Augments interface with scheduled attributes.";
-    container scheduled-attributes {
+      "Augments interface with scheduled attribute.";
+    container scheduled-up-down {
       description
-        "Scheduled attributes list, such as scheduled power up
-         and down, or bandwidth that changes with time.";
-      list scheduled-attribute {
-        key "name";
-        leaf name {
-          type string;
-          description
-            "ID or name of the scheduled-attribute.";
-        }
-        uses schedule;
-        description
-          "List of interface attributes to modify based on
-           schedule.";
-       }
+        "Scheduled interface up and down. This is to work with the 
+         leaf 'enabled' for the configured state of the interface.";
+
+      uses schedule;
     }
   }
 

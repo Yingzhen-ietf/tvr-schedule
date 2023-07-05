@@ -30,7 +30,9 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
     <!ENTITY RFC8530 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8530.xml'>
-    <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-00.xml'>
+    <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-01.xml'>
+    <!ENTITY I-D.blanchet-dtn-bp-yang-model PUBLIC ''
+     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-blanchet-dtn-bp-yang-model-00.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -143,7 +145,7 @@
       </t>
 
       <t>
-        The YANG model in this document specifies a recuring schedule for
+        The YANG model in this document specifies a recurring schedule for
         changing the attributes of resources that are defined in other YANG
         YANG data models.
       </t>
@@ -171,27 +173,44 @@
     <section title="Design of the model">
       <section title="Schedule Definition">
         <t>
-          The "schedule-value" container defines a list of attributes that change
-          values based on a predefined schedule. The "schedules" list
-          contains elements that specify a time interval, consisting of a
-          start-time and end-time, along with the corresponding value for
-          that interval. The "value" leaf is defined as a union, allowing
+          The grouping "schedule" is defined in this model, which can be
+          used to augment other models with time variant attributes.
+        </t>
+        <t>
+          The grouping "schedule-lifetime" is to define the life time of
+          the "schedule". It has a "schedule-start-time" using "date-and-time", and the
+          "schedule-end-time" can be an option of endless, duration or
+          date time.
+        </t>
+        <t>
+          The leaf "recurrence" specifies the repetition pattern of the
+          "base-schedule", such as daily or weekly. The "base-schedule",
+          which is the basic unit of this schedule, consists a list of
+          "intervals". These intervals specify the attribute values during
+          the "base-schedule". The "recurrence" defines the duration of
+          each "base-schedule", so the configured "intervals" should be
+          within this duration. For example, if the "recurrence" is configured
+          as daily, the last "end-time" in the list should not be larger
+          than 24 hours, which is 8640000 in timeticks. Also each "end-time"
+          must be greater than the "start-time" in the same interval. The
+          "timeticks" defined in <xref target="RFC6991"/> is used to specify
+          the relative "start-time" and "end-time" in each recurrence. The
+          leaf "sequence" is to identify the instance number of the
+          "base-schedule", so the absolute "start-time" and "end-time"
+          of each value change can be calculated.
+        </t>
+        <t>
+          The "value" leaf is defined as a union, allowing
           it to be a simple boolean value, an integer represented as a
           string, or a value function expressed as a string. For instance,
           the string can represent a value that dynamically changes over
-          time using a function such as "2*t+10". The "schedule-value" grouping
-          is defined to be used by models or to augment existing models
-          with attributes that follow a time-schedule.
+          time using a function such as "2*t+10". The "value-default"
+          leaf defines the attribute's value when it's not covered by
+          the intervals.
         </t>
         <t>
-          The "schedule" container uses the "schedule-value" grouping,
-          which includes a leaf called "recurrence" that specifies the repetition
-          pattern of the "schedule-value". Additionally the duration of
-          this schedule is determined by the starting time "start" and the
-          ending time "stop" defined within the container. The "value-default"
-          leaf defines the attribute's value when it's not covered by the
-          "schedule-value" in the duration. The "schedule" grouping is
-          defined as well.
+          When an attribute's schedule ends, the "value-default" SHOULD
+          be used.
         </t>
 
         <t>
@@ -223,23 +242,29 @@ Attributes
         <figure>
           <name>Tree diagram of the schedule</name>
           <artwork>
-      +--rw schedule
-        +--rw recurrence?       recurrence-type
-        +--rw start?            yang:date-and-time
-        +--rw stop?             yang:date-and-time
-        +--rw value-default?    string
-        +--rw schedule-value
-            +--rw schedules* [start-time]
-              +--rw start-time    yang:timeticks
-              +--rw end-time?     yang:timeticks
-              +--rw value*        union
+  +--rw schedule-start-time?   yang:date-and-time
+  +--rw (schedule-end-time)?
+  |  +--:(infinite)
+  |  |  +--rw no-end-time?     empty
+  |  +--:(duration)
+  |  |  +--rw duration?        uint32
+  |  +--:(end-date-time)
+  |     +--rw end-date-time?   yang:date-and-time
+  +--rw recurrence?            recurrence-type
+  +--rw value-default?         union
+  +--rw base-schedule* [sequence]
+    +--rw sequence     uint32
+    +--rw intervals* [start-time]
+       +--rw start-time    yang:timeticks
+       +--rw end-time?     yang:timeticks
+       +--rw value?        union
 
           </artwork>
         </figure>
       </section>
       <section title="Model Augmentations">
         <t>
-          Grouping "schedule" can be used to augment other YANG data  models
+          Grouping "schedule" can be used to augment other YANG data models
           with an attribute that changes its value based on a predefined schedule.
         </t>
         <t>
@@ -249,8 +274,12 @@ Attributes
         </t>
         <t>
           The interfaces defined in the ietf-interface
-          model <xref target="RFC8343"/> is augmented with a list of
-          scheduled attributes using grouping "schedule-value".
+          model <xref target="RFC8343"/> is augmented with a
+          scheduled interface up and down.
+        </t>
+        <t>
+          This document also specifies an augmentation to the Bundle protocol
+          YANG model <xref target="I-D.blanchet-dtn-bp-yang-model"/>.
         </t>
         <t>
           More use cases can be found in <xref target="I-D.ietf-tvr-use-cases"/>.
@@ -271,31 +300,40 @@ Attributes
 module: ietf-tvr-schedule
 
   augment /if:interfaces/if:interface:
-    +--rw scheduled-attributes
-       +--rw scheduled-attribute* [id]
-          +--rw id          string
-          +--rw schedule
-             +--rw recurrence?       recurrence-type
-             +--rw start?            yang:date-and-time
-             +--rw stop?             yang:date-and-time
-             +--rw value-default?    string
-             +--rw schedule-value
-                +--rw schedules* [start-time]
-                   +--rw start-time    yang:timeticks
-                   +--rw end-time?     yang:timeticks
-                   +--rw value*        union
+    +--rw scheduled-up-down
+       +--rw schedule-start-time?   yang:date-and-time
+       +--rw (schedule-end-time)?
+       |  +--:(infinite)
+       |  |  +--rw no-end-time?     empty
+       |  +--:(duration)
+       |  |  +--rw duration?        uint32
+       |  +--:(end-date-time)
+       |     +--rw end-date-time?   yang:date-and-time
+       +--rw recurrence?            recurrence-type
+       +--rw value-default?         union
+       +--rw base-schedule* [sequence]
+          +--rw sequence     uint32
+          +--rw intervals* [start-time]
+             +--rw start-time    yang:timeticks
+             +--rw end-time?     yang:timeticks
+             +--rw value?        union
   augment /lne:logical-network-elements/lne:logical-network-element:
-    +--rw scheduled-attribute
-       +--rw schedule
-          +--rw recurrence?       recurrence-type
-          +--rw start?            yang:date-and-time
-          +--rw stop?             yang:date-and-time
-          +--rw value-default?    string
-          +--rw schedule-value
-             +--rw schedules* [start-time]
-                +--rw start-time    yang:timeticks
-                +--rw end-time?     yang:timeticks
-                +--rw value*        union
+    +--rw scheduled-power
+       +--rw schedule-start-time?   yang:date-and-time
+       +--rw (schedule-end-time)?
+       |  +--:(infinite)
+       |  |  +--rw no-end-time?     empty
+       |  +--:(duration)
+       |  |  +--rw duration?        uint32
+       |  +--:(end-date-time)
+       |     +--rw end-date-time?   yang:date-and-time
+       +--rw recurrence?            recurrence-type
+       +--rw value-default?         union
+       +--rw base-schedule* [sequence]
+          +--rw sequence     uint32
+          +--rw intervals* [start-time]
+             +--rw start-time    yang:timeticks
+
 
       </artwork>
   </section>
@@ -307,7 +345,7 @@ module: ietf-tvr-schedule
       <xref target="RFC8530"/>.</t>
 
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-schedule@2023-06-29.yang"
+<CODE BEGINS> file "ietf-tvr-schedule@2023-07-05.yang"
 module ietf-tvr-schedule {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
@@ -374,7 +412,7 @@ module ietf-tvr-schedule {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-06-29 {
+  revision 2023-07-05 {
     description
       "Initial Version";
     reference
@@ -421,51 +459,39 @@ module ietf-tvr-schedule {
   grouping schedule-lifetime {
     description
       "Schedule lifetime specification.";
-    choice schedule-lifetime {
-      default "always";
+
+    leaf schedule-start-time {
+      type yang:date-and-time;
+        description
+          "Schedule start time.";
+    }
+
+    choice schedule-end-time {
+      default "infinite";
       description
-        "Options for specifying schedule lifetimes";
-      case always {
-        leaf always {
+        "Schedule end-time setting.";
+      case infinite {
+        leaf no-end-time {
           type empty;
           description
-            "Indicates schedule is always valid.";
+            "Indicates schedule lifetime end-time is infinite.";
         }
       }
-      case start-end-time {
-        leaf start-date-time {
-          type yang:date-and-time;
+      case duration {
+        leaf duration {
+          type uint32 {
+            range "1..2147483646";
+          }
+          units "seconds";
           description
-            "Start time.";
+            "Schedule lifetime duration, in seconds";
         }
-        choice end-time {
-          default "infinite";
-          description
-            "End-time setting.";
-          case infinite {
-            leaf no-end-time {
-              type empty;
-              description
-                "Indicates schedule lifetime end-time is infinite.";
-            }
-          }
-          case duration {
-            leaf duration {
-              type uint32 {
-                range "1..2147483646";
-              }
-              units "seconds";
-              description
-                "Schedule lifetime duration, in seconds";
-            }
-          }
-          case end-date-time {
-            leaf end-date-time {
-              type yang:date-and-time;
-              description
-                "End time.";
-            }
-          }
+      }
+      case end-date-time {
+        leaf end-date-time {
+          type yang:date-and-time;
+            description
+              "Schedule end time.";
         }
       }
     }
@@ -486,7 +512,9 @@ module ietf-tvr-schedule {
         type string;
       }
       description
-        "Attribute default value.";
+        "Attribute default value. This value is used when the value
+         is not covered by the intervals, as well as when the schedule
+         ends.";
     }
 
     list base-schedule {
@@ -512,6 +540,13 @@ module ietf-tvr-schedule {
         }
         leaf end-time {
           type yang:timeticks;
+          must "../end-time > ../start-time" {
+            error-message "The end-time must be larger than the "
+                        + "start-time.";
+            description
+              "To define an interval, the value of the end-time must be
+               greater than the start-time.";
+          }
           description 
             "End time of the scheduled change. The calculation of the
              end-time is the same as the start-time.";
@@ -524,11 +559,16 @@ module ietf-tvr-schedule {
           description 
             "Value for the scheduled attribute during the
              specified time period.
-             This can be a simple value, or a string representing
-             a value function.";
+             When type string is used, it can be a simple value such
+             as an int, or a string representing a value that changes
+             its value based on a function.";
         }        
         description
-          "List of intervals for action or attribute modification";
+          "List of intervals for action or attribute modification. The
+           intervals should be contained within each recurrence. For
+           example, when the recurrence is set to daily, the list of
+           intervals should be within this daily range, e.g., the last
+           end-time can't be larger than 8640000 (24hours).";
       }
       description
         "List of scheduled occurences of the action or attribute
@@ -540,23 +580,13 @@ module ietf-tvr-schedule {
 
   augment "/if:interfaces/if:interface" {
     description
-      "Augments interface with scheduled attributes.";
-    container scheduled-attributes {
+      "Augments interface with scheduled attribute.";
+    container scheduled-up-down {
       description
-        "Scheduled attributes list, such as scheduled power up
-         and down, or bandwidth that changes with time.";
-      list scheduled-attribute {
-        key "name";
-        leaf name {
-          type string;
-          description
-            "ID or name of the scheduled-attribute.";
-        }
-        uses schedule;
-        description
-          "List of interface attributes to modify based on
-           schedule.";
-       }
+        "Scheduled interface up and down. This is to work with the 
+         leaf 'enabled' for the configured state of the interface.";
+
+      uses schedule;
     }
   }
 
@@ -572,11 +602,91 @@ module ietf-tvr-schedule {
     }    
   }
 }
-
-
 <CODE ENDS>
       ]]></artwork>
+  </section>
 
+  <section title="The Bundle Protocol Augmenatation">
+    <t>
+      The following module is an augmentation to the Bundle protocol YANG
+      model defined in <xref target="I-D.blanchet-dtn-bp-yang-model"/>.
+    </t>
+
+    <artwork><![CDATA[
+<CODE BEGINS> file "ietf-tvr-bundle-schedule@2023-07-05.yang"
+module ietf-tvr-bundle-schedule {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule";
+  prefix bundle-schedule;
+
+  import ietf-bundle-protocol {
+    prefix bundle;
+  }
+  import ietf-tvr-schedule {
+    prefix tvr-schedule;
+  }
+
+  organization
+    "IETF TVR - Time Variant Routing Working Group";
+  contact
+    "WG Web:   <http://datatracker.ietf.org/wg/tvr>
+     WG List:  <mailto:tvr@ietf.org>
+
+     Author:    Yingzhen Qu
+               <mailto:yingzhen.ietf@gmail.com>
+     Author:   Acee Lindem
+               <mailto:acee.ietf@gmail.com>
+     Author:   Marc Blanchet
+               <mailto:marc.blanchet@viagenie.ca>";            
+
+  description
+    "The YANG module defines an augmenation to the Bundle
+     protocol YANG mode.
+
+     This YANG model conforms to the Network Management
+     Datastore Architecture (NMDA) as described in RFC 8342.
+
+     Copyright (c) 2023 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Revised BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
+  reference
+    "RFC XXXX: YANG Data Model for Scheduled Attributes";
+
+  revision 2023-07-05 {
+    description
+      "Initial Version";
+    reference
+      "RFC XXXX: YANG Data Model for Scheduled Attributes.";
+  }
+
+  augment "/bundle:node/bundle:neighbors/bundle:neighbor" {
+    container contact-schedule {
+      description
+        "Augment Bundle node neighbor with a contact schedule.";
+      uses tvr-schedule:schedule;
+    }
+    description
+      "Augment the neighbor with a contact schedule.";
+  }
+}
+<CODE ENDS>
+      ]]></artwork>  
   </section>
 
     <!-- Possibly a 'Contributors' section ... -->
@@ -624,7 +734,7 @@ module ietf-tvr-schedule {
    </section>
 <section title="IANA Considerations">
   <t>
-    This document registers a URI in the IETF XML registry
+    This document registers two URIs in the IETF XML registry
     <xref target="RFC3688"/>.  Following the format in <xref target="RFC3688"/>,
     the following registration is requested to be made:
   </t>
@@ -635,8 +745,14 @@ module ietf-tvr-schedule {
    XML: N/A, the requested URI is an XML namespace.
    </artwork>
 
+   <artwork>
+   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+   </artwork>
+
    <t>
-     This document registers a YANG module in the YANG Module Names
+     This document registers two YANG modules in the YANG Module Names
      registry <xref target="RFC6020"/>.
    </t>
    <artwork>
@@ -645,9 +761,15 @@ module ietf-tvr-schedule {
    prefix: tvr-schedule
    reference: RFC XXXX
    </artwork>
+
+   <artwork>
+   name: ietf-tvr-bundle-schedule
+   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule
+   prefix: bundle-schedule
+   reference: RFC XXXX
+   </artwork>
 </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>This document was produced using Marshall Rose's xml2rfc tool.</t>
       <t>The YANG model was developed using the suite of YANG tools written
       and maintained by numerous authors.</t>
     </section>
@@ -685,6 +807,7 @@ module ietf-tvr-schedule {
       &RFC8343;
       &RFC8446;
       &RFC8530;
+      &I-D.blanchet-dtn-bp-yang-model;
     </references>
     <references title="Informative References">
       <!-- Here we use entities that we defined at the beginning. -->
