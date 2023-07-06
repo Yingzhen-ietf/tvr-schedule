@@ -177,8 +177,12 @@
         <t>
           The grouping "schedule-lifetime" is to define the life time of
           the "schedule". It has a "schedule-start-time" using "date-and-time", and the
-          "schedule-end-time" can be an option of endless, duration or
-          date time.
+          "schedule-end-time" can be an option of infinite, duration or
+          date time. The "schedule-lifetime" can also be set to "always",
+          which means the schedule is always valid and will be effective
+          right away after the configuration. If the "schedule-start-time"
+          is set to a time in the past when a configuration is done, the
+          schedule is effective right away.
         </t>
         <t>
           The leaf "recurrence" specifies the repetition pattern of the
@@ -192,10 +196,7 @@
           than 24 hours, which is 8640000 in timeticks. Also each "end-time"
           must be greater than the "start-time" in the same interval. The
           "timeticks" defined in <xref target="RFC6991"/> is used to specify
-          the relative "start-time" and "end-time" in each recurrence. The
-          leaf "sequence" is to identify the instance number of the
-          "base-schedule", so the absolute "start-time" and "end-time"
-          of each value change can be calculated.
+          the relative "start-time" and "end-time" in each recurrence.
         </t>
         <t>
           The "value" leaf is defined as a union, allowing
@@ -205,6 +206,11 @@
           time using a function such as "2*t+10". The "value-default"
           leaf defines the attribute's value when it's not covered by
           the intervals.
+        </t>
+        <t>When a schedule starts in the middle of an recurrence, for
+          example, the recurrence is set to "daily", and the "schedule-start-time"
+          is 8:00AM, when the schedule starts, the "value" should be the
+          8:00AM value defined by the "base-schedule".
         </t>
         <t>
           When an attribute's schedule ends, the "value-default" SHOULD
