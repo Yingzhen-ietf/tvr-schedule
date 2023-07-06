@@ -31,8 +31,6 @@
     <!ENTITY RFC8530 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8530.xml'>
     <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-01.xml'>
-    <!ENTITY I-D.blanchet-dtn-bp-yang-model PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-blanchet-dtn-bp-yang-model-00.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -277,10 +275,7 @@ Attributes
           model <xref target="RFC8343"/> is augmented with a
           scheduled interface up and down.
         </t>
-        <t>
-          This document also specifies an augmentation to the Bundle protocol
-          YANG model <xref target="I-D.blanchet-dtn-bp-yang-model"/>.
-        </t>
+
         <t>
           More use cases can be found in <xref target="I-D.ietf-tvr-use-cases"/>.
         </t>
@@ -606,88 +601,6 @@ module ietf-tvr-schedule {
       ]]></artwork>
   </section>
 
-  <section title="The Bundle Protocol Augmenatation">
-    <t>
-      The following module is an augmentation to the Bundle protocol YANG
-      model defined in <xref target="I-D.blanchet-dtn-bp-yang-model"/>.
-    </t>
-
-    <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-bundle-schedule@2023-07-05.yang"
-module ietf-tvr-bundle-schedule {
-  yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule";
-  prefix bundle-schedule;
-
-  import ietf-bundle-protocol {
-    prefix bundle;
-  }
-  import ietf-tvr-schedule {
-    prefix tvr-schedule;
-  }
-
-  organization
-    "IETF TVR - Time Variant Routing Working Group";
-  contact
-    "WG Web:   <http://datatracker.ietf.org/wg/tvr>
-     WG List:  <mailto:tvr@ietf.org>
-
-     Author:    Yingzhen Qu
-               <mailto:yingzhen.ietf@gmail.com>
-     Author:   Acee Lindem
-               <mailto:acee.ietf@gmail.com>
-     Author:   Marc Blanchet
-               <mailto:marc.blanchet@viagenie.ca>";            
-
-  description
-    "The YANG module defines an augmenation to the Bundle
-     protocol YANG mode.
-
-     This YANG model conforms to the Network Management
-     Datastore Architecture (NMDA) as described in RFC 8342.
-
-     Copyright (c) 2023 IETF Trust and the persons identified as
-     authors of the code.  All rights reserved.
-
-     Redistribution and use in source and binary forms, with or
-     without modification, is permitted pursuant to, and subject to
-     the license terms contained in, the Revised BSD License set
-     forth in Section 4.c of the IETF Trust's Legal Provisions
-     Relating to IETF Documents
-     (https://trustee.ietf.org/license-info).
-
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.
-
-     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
-     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
-     'MAY', and 'OPTIONAL' in this document are to be interpreted as
-     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
-     they appear in all capitals, as shown here.";
-  reference
-    "RFC XXXX: YANG Data Model for Scheduled Attributes";
-
-  revision 2023-07-05 {
-    description
-      "Initial Version";
-    reference
-      "RFC XXXX: YANG Data Model for Scheduled Attributes.";
-  }
-
-  augment "/bundle:node/bundle:neighbors/bundle:neighbor" {
-    container contact-schedule {
-      description
-        "Augment Bundle node neighbor with a contact schedule.";
-      uses tvr-schedule:schedule;
-    }
-    description
-      "Augment the neighbor with a contact schedule.";
-  }
-}
-<CODE ENDS>
-      ]]></artwork>  
-  </section>
 
     <!-- Possibly a 'Contributors' section ... -->
 
@@ -734,7 +647,7 @@ module ietf-tvr-bundle-schedule {
    </section>
 <section title="IANA Considerations">
   <t>
-    This document registers two URIs in the IETF XML registry
+    This document registers a URI in the IETF XML registry
     <xref target="RFC3688"/>.  Following the format in <xref target="RFC3688"/>,
     the following registration is requested to be made:
   </t>
@@ -745,14 +658,8 @@ module ietf-tvr-bundle-schedule {
    XML: N/A, the requested URI is an XML namespace.
    </artwork>
 
-   <artwork>
-   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule
-   Registrant Contact: The IESG.
-   XML: N/A, the requested URI is an XML namespace.
-   </artwork>
-
    <t>
-     This document registers two YANG modules in the YANG Module Names
+     This document registers a YANG module in the YANG Module Names
      registry <xref target="RFC6020"/>.
    </t>
    <artwork>
@@ -762,12 +669,6 @@ module ietf-tvr-bundle-schedule {
    reference: RFC XXXX
    </artwork>
 
-   <artwork>
-   name: ietf-tvr-bundle-schedule
-   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-bundle-schedule
-   prefix: bundle-schedule
-   reference: RFC XXXX
-   </artwork>
 </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>The YANG model was developed using the suite of YANG tools written
@@ -807,7 +708,6 @@ module ietf-tvr-bundle-schedule {
       &RFC8343;
       &RFC8446;
       &RFC8530;
-      &I-D.blanchet-dtn-bp-yang-model;
     </references>
     <references title="Informative References">
       <!-- Here we use entities that we defined at the beginning. -->
