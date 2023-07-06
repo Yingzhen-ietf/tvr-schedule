@@ -246,18 +246,21 @@ Attributes
         <figure>
           <name>Tree diagram of the schedule</name>
           <artwork>
-  +--rw schedule-start-time?   yang:date-and-time
-  +--rw (schedule-end-time)?
-  |  +--:(infinite)
-  |  |  +--rw no-end-time?     empty
-  |  +--:(duration)
-  |  |  +--rw duration?        uint32
-  |  +--:(end-date-time)
-  |     +--rw end-date-time?   yang:date-and-time
-  +--rw recurrence?            recurrence-type
-  +--rw value-default?         union
-  +--rw base-schedule* [sequence]
-    +--rw sequence     uint32
+ +--rw (schedule-lifetime)?
+ |  +--:(always)
+ |  |  +--rw always?                empty
+ |  +--:(start-end-time)
+ |     +--rw start-date-time?       yang:date-and-time
+ |     +--rw (end-time)?
+ |        +--:(infinite)
+ |        |  +--rw no-end-time?     empty
+ |        +--:(duration)
+ |        |  +--rw duration?        uint32
+ |        +--:(end-date-time)
+ |           +--rw end-date-time?   yang:date-and-time
+ +--rw recurrence?                  recurrence-type
+ +--rw value-default?               union
+ +--rw base-schedule
     +--rw intervals* [start-time]
        +--rw start-time    yang:timeticks
        +--rw end-time?     yang:timeticks
@@ -302,39 +305,46 @@ module: ietf-tvr-schedule
 
   augment /if:interfaces/if:interface:
     +--rw scheduled-up-down
-       +--rw schedule-start-time?   yang:date-and-time
-       +--rw (schedule-end-time)?
-       |  +--:(infinite)
-       |  |  +--rw no-end-time?     empty
-       |  +--:(duration)
-       |  |  +--rw duration?        uint32
-       |  +--:(end-date-time)
-       |     +--rw end-date-time?   yang:date-and-time
-       +--rw recurrence?            recurrence-type
-       +--rw value-default?         union
-       +--rw base-schedule* [sequence]
-          +--rw sequence     uint32
+       +--rw (schedule-lifetime)?
+       |  +--:(always)
+       |  |  +--rw always?                empty
+       |  +--:(start-end-time)
+       |     +--rw start-date-time?       yang:date-and-time
+       |     +--rw (end-time)?
+       |        +--:(infinite)
+       |        |  +--rw no-end-time?     empty
+       |        +--:(duration)
+       |        |  +--rw duration?        uint32
+       |        +--:(end-date-time)
+       |           +--rw end-date-time?   yang:date-and-time
+       +--rw recurrence?                  recurrence-type
+       +--rw value-default?               union
+       +--rw base-schedule
           +--rw intervals* [start-time]
              +--rw start-time    yang:timeticks
              +--rw end-time?     yang:timeticks
              +--rw value?        union
   augment /lne:logical-network-elements/lne:logical-network-element:
     +--rw scheduled-power
-       +--rw schedule-start-time?   yang:date-and-time
-       +--rw (schedule-end-time)?
-       |  +--:(infinite)
-       |  |  +--rw no-end-time?     empty
-       |  +--:(duration)
-       |  |  +--rw duration?        uint32
-       |  +--:(end-date-time)
-       |     +--rw end-date-time?   yang:date-and-time
-       +--rw recurrence?            recurrence-type
-       +--rw value-default?         union
-       +--rw base-schedule* [sequence]
-          +--rw sequence     uint32
+       +--rw (schedule-lifetime)?
+       |  +--:(always)
+       |  |  +--rw always?                empty
+       |  +--:(start-end-time)
+       |     +--rw start-date-time?       yang:date-and-time
+       |     +--rw (end-time)?
+       |        +--:(infinite)
+       |        |  +--rw no-end-time?     empty
+       |        +--:(duration)
+       |        |  +--rw duration?        uint32
+       |        +--:(end-date-time)
+       |           +--rw end-date-time?   yang:date-and-time
+       +--rw recurrence?                  recurrence-type
+       +--rw value-default?               union
+       +--rw base-schedule
           +--rw intervals* [start-time]
              +--rw start-time    yang:timeticks
-
+             +--rw end-time?     yang:timeticks
+             +--rw value?        union
 
       </artwork>
   </section>
@@ -468,14 +478,15 @@ module ietf-tvr-schedule {
         leaf always {
           type empty;
           description
-            "Indicates schedule is always valid.";
+            "Indicates schedule is always valid, and the schedule
+             will be effective right away after the configuration.";
         }
       }
       case start-end-time {
         leaf start-date-time {
           type yang:date-and-time;
           description
-            "Start time.";
+            "Start time of the schedule.";
         }
         choice end-time {
           default "infinite";
@@ -535,13 +546,7 @@ module ietf-tvr-schedule {
          schedule ends.";
     }
 
-    list base-schedule {
-      key "sequence";
-      leaf sequence {
-        type uint32;
-        description
-          "Sequence number for base schedule entry.";
-      }
+    container base-schedule {
       list intervals {
         key "start-time";
         leaf start-time {
@@ -565,12 +570,11 @@ module ietf-tvr-schedule {
           description
             "Start time of the scheduled value within one recurrence.
              The calculation of the real start time is to use the
-             basestarting time defined by schedule-lifetime, the
-             sequence of this schedule, plus the timeticks. For
-             example, if a schedule starts at 2001/1/1 8:00AM with
-             an hourly recurrence, and the sequence is 2, the
-             start-time will be 2001/1/1 10:00AM plus the
-             timeticks.";
+             basestarting time defined by schedule-lifetime, recurrence,
+             and the timeticks. For example, if a schedule starts at
+             2001/1/1 8:00AM with an hourly recurrence, and the
+             timeticks is 180,000 (30 mins), the start-time will be
+             every 30 mins pass an hour after 2001/1/1.";
         }
         leaf end-time {
           type yang:timeticks;
@@ -616,7 +620,7 @@ module ietf-tvr-schedule {
            last end-time can't be larger than 8640000 (24hours).";
       }
       description
-        "List of scheduled occurences of the action or attribute
+        "The recurring base-schedule of the action or attribute
          modification";
     }
     description
@@ -647,7 +651,6 @@ module ietf-tvr-schedule {
     }
   }
 }
-
 <CODE ENDS>
       ]]></artwork>
   </section>
@@ -842,20 +845,6 @@ module ietf-tvr-ospf-schedule {
         <recurrence>daily</recurrence>
         <value-default>1</value-default>
         <base-schedule>
-          <sequence>0</sequence>
-          <intervals>
-            <start-time>360000</start-time>
-            <end-time>1800000</end-time>
-            <value>0</value>
-          </intervals>
-          <intervals>
-            <start-time>7200000</start-time>
-            <end-time>8280000</end-time>
-            <value>0</value>
-          </intervals>
-        </base-schedule>
-        <base-schedule>
-          <sequence>1</sequence>
           <intervals>
             <start-time>360000</start-time>
             <end-time>1800000</end-time>
