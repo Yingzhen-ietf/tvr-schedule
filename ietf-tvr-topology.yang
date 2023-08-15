@@ -1,0 +1,142 @@
+module ietf-tvr-topology {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
+  prefix tvr-topo;
+
+  import ietf-yang-types {
+    prefix yang;
+  }
+
+  import ietf-te-types {
+    prefix te-types;
+  }
+
+  import ietf-network {
+    prefix "nw";
+    reference
+      "RFC 8345: A YANG Data Model for Network Topologies";
+  }
+
+  import ietf-network-topology {
+    prefix "nt";
+    reference
+      "RFC 8345: A YANG Data Model for Network Topologies";
+  }
+
+  import ietf-tvr-common {
+    prefix "tvr-cmn";
+  }
+
+  organization
+    "IETF Time-Variant Routing Working Group";
+
+  contact
+    "WG Web:   <https://datatracker.ietf.org/wg/tvr/>
+     WG List:  <mailto:tvr@ietf.org>
+
+     Author:   Eric Kinzie
+               <mailto:ekinzie@labn.net>
+     Author:   Don Fedyk
+               <mailto:dfedyk@labn.net>
+     Author:   Yingzhen Qu
+               <mailto:yingzhen.ietf@gmail.com>
+     Author:   Acee Lindem
+               <mailto:acee.ietf@gmail.com>
+     Author:   Marc Blanchet
+               <mailto:marc.blanchet@viagenie.ca>";
+
+  description
+    "This YANG module contains YANG definitions for describing
+    network links with an time-variant availability schedule.
+
+    Copyright (c) 2023 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set forth
+    in Section 4.c of the IETF Trust's Legal Provisions Relating
+    to IETF Documents (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+    NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+    'MAY', and 'OPTIONAL' in this document are to be interpreted as
+    described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+    they appear in all capitals, as shown here.";
+
+  revision 2023-08-15 {
+    description
+      "Initial revision";
+    reference
+      "RFC XXXX A YANG Data Model for Time Variant Attributes";
+  }
+
+  augment "/nw:networks/nw:network/nw:network-types" {
+    description
+      "Network type for TVR topology";
+    container tvr-topology {
+      presence "Indicate TVR topology.";
+      description
+        "The presence of the container node inidcates TVR topology.";
+    }
+  }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    when "../nw:network-types/tvr-topo:tvr-topology" {
+      description
+        "Augmentation parameters apply only for networks with
+         TVR topology";
+       }
+    description
+      "Augments TVR topology node availability.";
+    
+    container available {
+      description
+        "The time at which this link becomes available.";
+      uses tvr-cmn:schedule;
+    }    
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    when "../nw:network-types/tvr-topo:tvr-topology" {
+      description
+        "Augmentation applicable only for TVR topology.";
+    }
+    description
+      "Augments TVR topology link attributes.";
+    
+    container link-attributes-schedule {
+      description
+        "This container defined time-variant link attributues.";
+
+      uses tvr-cmn:schedule-lifetime;
+
+      container available {
+        description
+          "The time at which this link becomes available.";
+        uses tvr-cmn:base-schedule;
+      }
+      container bandwidth {
+        description
+          "Scheduled link bandwidth.
+           The predicted link capacity specified in a generic
+           format. If the value measured by the system is less than
+           this value, the system value is used.  If the value
+           measured by the system is greater than this value the
+           predicted value SHOULD be used.";
+        uses tvr-cmn:base-schedule;
+      }
+      container delay {
+        description
+          "The one-way delay or latency in microseconds. If the
+           value measured by the system is less than this value
+           the predicted value SHOULD be used.";
+        uses tvr-cmn:base-schedule;
+      }
+    }
+  }
+}
