@@ -81,7 +81,7 @@ module ietf-tvr-topology {
     container tvr-topology {
       presence "Indicate TVR topology.";
       description
-        "The presence of the container node inidcates TVR topology.";
+        "The presence of the container node indicates TVR topology.";
     }
   }
 
@@ -96,7 +96,7 @@ module ietf-tvr-topology {
     
     container available {
       description
-        "The time at which this link becomes available.";
+        "The time at which this node becomes available.";
       uses tvr-cmn:schedule;
     }    
   }
@@ -111,7 +111,7 @@ module ietf-tvr-topology {
     
     container link-attributes-schedule {
       description
-        "This container defined time-variant link attributues.";
+        "This container defined time-variant link attributes.";
 
       uses tvr-cmn:schedule-lifetime;
 
