@@ -3,21 +3,12 @@ module ietf-tvr-schedule {
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
   prefix tvr-schedule;
 
+  import ietf-yang-types {
+    prefix "yang";
+  }
+
   import ietf-tvr-common {
     prefix "tvr-cmn";
-  }
-
-  import ietf-interfaces {
-    prefix "if";
-    reference
-      "RFC 8343: A YANG Data Model for Interface
-               Management (NMDA Version)";
-  }
-
-  import ietf-logical-network-element {
-    prefix "lne";
-    reference
-      "RFC 8530: YANG Model for Logical Network Elements";
   }
 
   organization
@@ -73,27 +64,44 @@ module ietf-tvr-schedule {
       "RFC XXXX: YANG Data Model for Scheduled Attributes.";
   }
 
-  augment "/if:interfaces/if:interface" {
+  container tvr-schedule {
     description
-      "Augments interface with scheduled attribute.";
-    container scheduled-up-down {
+      "This container defined time variant attributes
+       with a schedule.";
+
+    leaf router-id {
+      type yang:dotted-quad;
       description
-        "Scheduled interface up and down. This is to work with the
-         leaf 'enabled' for the configured state of the interface.";
-
-      uses tvr-cmn:schedule;
+        "A 32-bit number used to identify a router.";
     }
-  }
 
-  augment "/lne:logical-network-elements"
-        + "/lne:logical-network-element" {
-    description
-      "Augments logical network elements with scheduled power
-       shutdown.";
     container scheduled-power {
       description
         "Scheduled power up and down.";
       uses tvr-cmn:schedule;
+    }
+
+    container interfaces {
+      description
+        "Container for TVR interface attributes.";
+
+      list interfaces {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "A name of the interface.";
+        }
+
+        container scheduled-up-down {
+          description
+           "Scheduled interface up and down. This is to work with
+            the leaf 'enabled' for the configured state of the
+            interface.";
+
+          uses tvr-cmn:schedule;
+        }
+      }
     }
   }
 }

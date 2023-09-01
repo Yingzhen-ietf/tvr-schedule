@@ -4,23 +4,19 @@ module ietf-tvr-topology {
   prefix tvr-topo;
 
   import ietf-yang-types {
-    prefix yang;
+    prefix "yang";
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-te-types {
     prefix te-types;
-  }
-
-  import ietf-network {
-    prefix "nw";
-    reference
-      "RFC 8345: A YANG Data Model for Network Topologies";
-  }
-
-  import ietf-network-topology {
-    prefix "nt";
-    reference
-      "RFC 8345: A YANG Data Model for Network Topologies";
   }
 
   import ietf-tvr-common {
@@ -47,7 +43,7 @@ module ietf-tvr-topology {
 
   description
     "This YANG module contains YANG definitions for describing
-    network links with an time-variant availability schedule.
+    network topology with an time-variant availability schedule.
 
     Copyright (c) 2023 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
@@ -75,50 +71,44 @@ module ietf-tvr-topology {
       "RFC XXXX A YANG Data Model for Time Variant Attributes";
   }
 
-  augment "/nw:networks/nw:network/nw:network-types" {
-    description
-      "Network type for TVR topology";
-    container tvr-topology {
-      presence "Indicate TVR topology.";
-      description
-        "The presence of the container node indicates TVR topology.";
+  container tvr-topology {
+    list nodes {
+      key "node-id";
+      leaf node-id {
+        type inet:uri;
+        description
+          "Identifier for a node, uniquely identifies a node. This
+           may be the same as the node-id defined in the ietf-network
+           module defined in RFC 8345.";
+      }
+      container available {
+        description
+          "The time at which this node becomes available.";
+        uses tvr-cmn:schedule;
+      }  
     }
-  }
 
-  augment "/nw:networks/nw:network/nw:node" {
-    when "../nw:network-types/tvr-topo:tvr-topology" {
-      description
-        "Augmentation parameters apply only for networks with
-         TVR topology";
-       }
-    description
-      "Augments TVR topology node availability.";
-    
-    container available {
-      description
-        "The time at which this node becomes available.";
-      uses tvr-cmn:schedule;
-    }    
-  }
-
-  augment "/nw:networks/nw:network/nt:link" {
-    when "../nw:network-types/tvr-topo:tvr-topology" {
-      description
-        "Augmentation applicable only for TVR topology.";
-    }
-    description
-      "Augments TVR topology link attributes.";
-    
-    container link-attributes-schedule {
-      description
-        "This container defined time-variant link attributes.";
-
-      uses tvr-cmn:schedule-lifetime;
-
+    list links {
+      key "source-node source-link-id";
+      leaf source-node {
+        type inet:uri;
+        description
+          "A name refers to the source node of the link.";
+      }
+      leaf destination-node {
+        type inet:uri;
+        description
+          "A name refers to the destination node of the link.";
+      }
+      leaf source-link-id {
+        type string;
+        description
+          "A name refers to the link of the source node.";
+      }
       container available {
         description
           "The time at which this link becomes available.";
-        uses tvr-cmn:base-schedule;
+        uses tvr-cmn:schedule;
       }
       container bandwidth {
         description
@@ -128,14 +118,14 @@ module ietf-tvr-topology {
            this value, the system value is used.  If the value
            measured by the system is greater than this value the
            predicted value SHOULD be used.";
-        uses tvr-cmn:base-schedule;
+        uses tvr-cmn:schedule;
       }
       container delay {
         description
           "The one-way delay or latency in microseconds. If the
            value measured by the system is less than this value
            the predicted value SHOULD be used.";
-        uses tvr-cmn:base-schedule;
+        uses tvr-cmn:schedule;
       }
     }
   }
