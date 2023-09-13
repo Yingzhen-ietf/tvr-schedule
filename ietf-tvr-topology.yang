@@ -3,20 +3,10 @@ module ietf-tvr-topology {
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
   prefix tvr-topo;
 
-  import ietf-yang-types {
-    prefix "yang";
-    reference
-      "RFC 6991: Common YANG Data Types";
-  }
-
   import ietf-inet-types {
     prefix inet;
     reference
       "RFC 6991: Common YANG Data Types";
-  }
-
-  import ietf-te-types {
-    prefix te-types;
   }
 
   import ietf-tvr-common {
@@ -71,7 +61,7 @@ module ietf-tvr-topology {
       "RFC XXXX A YANG Data Model for Time Variant Attributes";
   }
 
-  container tvr-topology {
+  container topology-schedule {
     list nodes {
       key "node-id";
       leaf node-id {
