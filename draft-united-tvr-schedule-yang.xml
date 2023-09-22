@@ -1,0 +1,1224 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc [
+    <!ENTITY RFC2119 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
+    <!ENTITY RFC3688 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3688.xml'>
+    <!ENTITY RFC6020 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml'>
+    <!ENTITY RFC6241 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml'>
+    <!ENTITY RFC6242 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6242.xml'>
+    <!ENTITY RFC6991 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6991.xml'>
+    <!ENTITY RFC7950 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7950.xml'>
+    <!ENTITY RFC8040 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8040.xml'>
+    <!ENTITY RFC8174 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8174.xml'>
+    <!ENTITY RFC8340 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8340.xml'>
+    <!ENTITY RFC8341 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8341.xml'>
+    <!ENTITY RFC8342 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8342.xml'>
+    <!ENTITY RFC8343 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8343.xml'>
+    <!ENTITY RFC8446 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
+    <!ENTITY RFC8530 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8530.xml'>
+    <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-01.xml'>
+    ]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<?rfc strict="no" ?>
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+
+<?rfc rfcedstyle="yes" ?>
+<?rfc subcompact="no" ?>
+
+<rfc category="std" docName="draft-united-tvr-schedule-yang-00" ipr="trust200902"
+     consensus="true" submissionType="IETF" version="3">
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN"
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+  <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the
+         full title is longer than 39 characters -->
+
+  <title abbrev="TVR Schedule YANG">YANG Model for Scheduled Attributes </title>
+
+    <!-- add 'role="editor"' below for the editors if appropriate -->
+
+    <!-- Another author who claims to be an editor -->
+
+    <author fullname="Yingzhen Qu" initials="Y" surname="Qu">
+      <organization>Futurewei</organization>
+      <address>
+        <postal>
+          <street>2330 Central Expressway</street>
+          <city>Santa Clara</city>
+          <region>CA</region>
+          <code>95050</code>
+          <country>USA</country>
+        </postal>
+        <phone></phone>
+        <email>yingzhen.qu@futurewei.com</email>
+      </address>
+    </author>
+    <author fullname="Acee Lindem" initials="A." surname="Lindem">
+      <organization>LabN Consulting, L.L.C.</organization>
+      <address>
+        <postal>
+          <street>301 Midenhall Way</street>
+          <city>Cary, NC 27513</city>
+        </postal>
+        <email>acee.ietf@gmail.com</email>
+      </address>
+    </author>
+    <author initials='E.' surname='Kinzie' fullname='Eric Kinzie'>
+      <organization>LabN Consulting, L.L.C.</organization>
+      <address>
+        <email>ekinzie@labn.net</email>
+      </address>
+    </author>
+    <author initials='D.' surname='Fedyk' fullname='Don Fedyk'>
+      <organization>LabN Consulting, L.L.C.</organization>
+      <address>
+        <email>dfedyk@labn.net</email>
+      </address>
+    </author>
+    <author fullname="Marc Blanchet" initials="M." surname="Blanchet">
+      <organization>Viagenie</organization>
+      <address>
+        <postal>
+          <street></street>
+          <city></city>
+        </postal>
+        <email>marc.blanchet@viagenie.ca</email>
+      </address>
+    </author>
+    <date/>
+
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill
+         in the current day for you. If only the current year is specified, xml2rfc will fill
+   in the current day and month for you. If the year is not the current one, it is
+   necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the
+   purpose of calculating the expiry date).  With drafts it is normally sufficient to
+   specify just the year. -->
+
+    <!-- Meta-data Declarations -->
+
+    <area>General</area>
+
+    <workgroup>Internet</workgroup>
+
+    <!-- WG name at the upperleft corner of the doc,
+         IETF is fine for individual submissions.
+   If this element is not present, the default is "Network Working Group",
+         which is used by the RFC Editor as a nod to the history of the IETF. -->
+
+    <!-- Keywords will be incorporated into HTML output
+         files in a meta tag but they have no effect on text or nroff
+         output. If you submit your draft to the RFC Editor, the
+         keywords will be used for the search engine. -->
+
+    <abstract>
+      <t>
+        The YANG model in this document includes three modules, and can be used
+        to manage network resources and topologies with scheduled attributes, such
+        as predictable link loss and reconnect as a function of time. The intent 
+        is to have this information  be utilized by Time-Variant Routing systems.
+      </t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Overview">
+      <t>
+        YANG <xref target="RFC7950"></xref> is a data definition language
+        used to define the contents of a conceptual data store
+        that allows networked devices to be managed using NETCONF
+        <xref target="RFC6241"/>.  YANG is proving relevant beyond its
+        initial confines, as bindings to other interfaces (e.g., ReST) and
+        encodings other than XML (e.g., JSON) are being defined.  Furthermore,
+        YANG data models can be used as the basis for implementation of other
+        interfaces, such as CLI and programmatic APIs.
+      </t>
+
+      <t>In some network scenarios, it's possible to predict the times
+        at which one router will be able to establish a link with another router.
+        Links can be predictably lost and re-established, and neighbors may
+        change as a function of time. For examples of such networks and
+        scenarios, please reference TVR (Time-Variant Routing) Use Cases 
+       <xref target="I-D.ietf-tvr-use-cases"/>.</t>
+
+      <t>
+        The YANG model in this document can be used to manage network resources
+        and topologies with scheduled attributes. There are three YANG modules
+        in this document.
+      </t>
+
+      <t>Module ietf-tvr-common.yang contains the common YANG definitions. Module
+        ietf-tvr-topology.yang defines a network topology with time-variant
+        availability. Module ietf-tvr-node.yang is to be used to manage scheduled
+        attributes of a single node.
+      </t>
+
+      <t>
+        The YANG modules in this document conform to the Network Management
+        Datastore Architecture (NMDA) <xref target="RFC8342"/>.
+      </t>
+
+      <section title="Requirements Language">
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in <xref target="RFC2119"/>
+        <xref target="RFC8174"/>.</t>
+      </section>
+    </section>
+
+    <section title="Tree Diagrams">
+      <t>
+        This document uses the graphical representation of data models
+        defined in <xref target="RFC8340"/>.
+      </t>
+    </section>
+
+    <section title="Design of the model">
+      <section title="Common Definitions">
+        <t>Module ietf-tvr-common.yang contains the common definitions
+          that can be used by other modules.
+        </t>
+        <t>
+          The grouping "schedule" is defined in this module, which can be
+          used by other models to define time variant attributes.
+        </t>
+        <t>
+          The grouping "schedule-lifetime" is to define the life time of
+          a "schedule". It has a "schedule-start-time" using "date-and-time", and the
+          "schedule-end-time" can be an option of infinite, duration or
+          date time. The "schedule-lifetime" can also be set to "always",
+          which means the schedule is always valid and will be effective
+          right away after the configuration. If the "schedule-start-time"
+          is set to a time in the past when a configuration is done, the
+          schedule is effective right away.
+        </t>
+        <t>
+          A schedule may have a repetition pattern and the leaf "recurrence"
+          defines the duration of the repetition pattern of in the
+          "base-schedule", such as daily or weekly. The "base-schedule",
+          which is the basic unit of this schedule, consists a list of
+          "intervals". These intervals specify the attribute values during
+          the "base-schedule". The "recurrence" defines the duration of
+          each "base-schedule", so the configured "intervals" should be
+          within this duration. For example, if the "recurrence" is configured
+          as daily, the last "end-time" in the list should not be larger
+          than 24 hours, which is 8640000 in timeticks. Also each "end-time"
+          must be greater than the "start-time" in the same interval. The
+          "timeticks" defined in <xref target="RFC6991"/> is used to specify
+          the relative "start-time" and "end-time" in each recurrence.
+        </t>
+        <t>
+          The "value" leaf is defined as a union, allowing it to be a simple
+          boolean value, an integer, or any other type presented using a string.
+          For instance, the string can represent a value that dynamically changes
+          over time using a function such as "2*t+10". The parsing of the
+          string is up to an implementation. The "value-default"
+          leaf defines the attribute's value when it's not covered by
+          the intervals.
+        </t>
+        <t>When a schedule starts in the middle of an recurrence, for
+          example, the recurrence is set to "daily", and the "schedule-start-time"
+          is 8:00AM, when the schedule starts, the "value" should be the
+          8:00AM value defined by the "base-schedule".
+        </t>
+        <t>
+          When an attribute's schedule ends, the "value-default" SHOULD
+          be used.
+        </t>
+
+        <t>
+          The following figure provides an illustration of two attributes and
+          their scheduled value changes. The attributes A1 and A2 take on different
+          values at different times. The attribute A1 will take on the value v1 from
+          the time t0 until t1, the value v2 from t1 until t2, and v3 from t2 until t3.
+          The attribute A2 will take on the value vv1 from time t0 until t1 and vv2 from v1
+          until v3.
+        </t>
+        <figure>
+          <name>Time Varying Properties</name>
+          <artwork>
+Attributes
+          +-------------------+----------+------+
+      A1  |       v1          |   v2     |  v3  |
+          +-------------------+----------+------+
+      A2  |      vv1          |      vv2        |
+          +-------------------+-----------------+
+         t0                  t1        t2      t3
+                         Time
+          </artwork>
+        </figure>
+
+        <t>
+          The following is the tree diagram of the grouping
+          "schedule".
+        </t>
+        <figure>
+          <name>Tree diagram of the schedule</name>
+          <artwork>
+ +--rw (schedule-lifetime)?
+ |  +--:(always)
+ |  |  +--rw always?                empty
+ |  +--:(start-end-time)
+ |     +--rw start-date-time?       yang:date-and-time
+ |     +--rw (end-time)?
+ |        +--:(infinite)
+ |        |  +--rw no-end-time?     empty
+ |        +--:(duration)
+ |        |  +--rw duration?        uint32
+ |        +--:(end-date-time)
+ |           +--rw end-date-time?   yang:date-and-time
+ +--rw recurrence?                  recurrence-type
+ +--rw value-default?               union
+ +--rw base-schedule
+    +--rw intervals* [start-time]
+       +--rw start-time    yang:timeticks
+       +--rw end-time?     yang:timeticks
+       +--rw value?        union
+
+          </artwork>
+        </figure>
+      </section>
+      <section title="TVR Node YANG Module">
+        <t>Module ietf-tvr-node.yang is a device model and designed to
+          manage a single node with scheduled attributes.</t>
+        <t>Each node has  list of interfaces, and each interface has
+          a power up and down schedule.</t>
+      </section>
+      <section title="TVR Topology YANG Module">
+        <t>
+          Module ietf-tvr-topology.yang describes a network topology with
+          a time-variant availability schedule.
+        </t>
+        <t>
+          The module has a list of nodes, identified by a unique "node-id".
+          Each node has a list of links. A link's bandwidth and delay
+        </t>
+      </section>
+
+    </section>
+
+  <section title="TVR YANG Trees">
+    <section title="TVR Node YANG Tree">
+    <t>
+      The following figure shows the tree diagram of the TVR Node
+      scheduling.
+    </t>
+
+      <artwork>
+module: ietf-tvr-node
+  +--rw node-schedule
+     +--rw router-id?            yang:dotted-quad
+     +--rw power-schedule
+     |  +--rw (schedule-lifetime)?
+     |  |  +--:(always)
+     |  |  |  +--rw always?                empty
+     |  |  +--:(start-end-time)
+     |  |     +--rw start-date-time?       yang:date-and-time
+     |  |     +--rw (end-time)?
+     |  |        +--:(infinite)
+     |  |        |  +--rw no-end-time?     empty
+     |  |        +--:(duration)
+     |  |        |  +--rw duration?        uint32
+     |  |        +--:(end-date-time)
+     |  |           +--rw end-date-time?   yang:date-and-time
+     |  +--rw recurrence?                  recurrence-type
+     |  +--rw value-default?               union
+     |  +--rw base-schedule
+     |     +--rw intervals* [start-time]
+     |        +--rw start-time    yang:timeticks
+     |        +--rw end-time?     yang:timeticks
+     |        +--rw value?        union
+     +--rw interface-schedule
+        +--rw interfaces* [name]
+           +--rw name                string
+           +--rw up-down-schedule
+              +--rw (schedule-lifetime)?
+              |  +--:(always)
+              |  |  +--rw always?                empty
+              |  +--:(start-end-time)
+              |     +--rw start-date-time?       yang:date-and-time
+              |     +--rw (end-time)?
+              |        +--:(infinite)
+              |        |  +--rw no-end-time?     empty
+              |        +--:(duration)
+              |        |  +--rw duration?        uint32
+              |        +--:(end-date-time)
+              |           +--rw end-date-time?   yang:date-and-time
+              +--rw recurrence?                  recurrence-type
+              +--rw value-default?               union
+              +--rw base-schedule
+                 +--rw intervals* [start-time]
+                    +--rw start-time    yang:timeticks
+                    +--rw end-time?     yang:timeticks
+                    +--rw value?        union
+      </artwork>
+    </section>
+    <section title="TVR Topology YANG Tree">
+      <t>
+        The following figure shows the tree diagram of the TVR Topology
+      scheduling.
+    </t>
+
+      <artwork>
+module: ietf-tvr-topology
+  +--rw topology-schedule
+     +--rw nodes* [node-id]
+     |  +--rw node-id      inet:uri
+     |  +--rw available
+     |     +--rw (schedule-lifetime)?
+     |     |  +--:(always)
+     |     |  |  +--rw always?                empty
+     |     |  +--:(start-end-time)
+     |     |     +--rw start-date-time?       yang:date-and-time
+     |     |     +--rw (end-time)?
+     |     |        +--:(infinite)
+     |     |        |  +--rw no-end-time?     empty
+     |     |        +--:(duration)
+     |     |        |  +--rw duration?        uint32
+     |     |        +--:(end-date-time)
+     |     |           +--rw end-date-time?   yang:date-and-time
+     |     +--rw recurrence?                  recurrence-type
+     |     +--rw value-default?               union
+     |     +--rw base-schedule
+     |        +--rw intervals* [start-time]
+     |           +--rw start-time    yang:timeticks
+     |           +--rw end-time?     yang:timeticks
+     |           +--rw value?        union
+     +--rw links* [source-node source-link-id]
+        +--rw source-node         inet:uri
+        +--rw destination-node?   inet:uri
+        +--rw source-link-id      string
+        +--rw available
+        |  +--rw (schedule-lifetime)?
+        |  |  +--:(always)
+        |  |  |  +--rw always?                empty
+        |  |  +--:(start-end-time)
+        |  |     +--rw start-date-time?       yang:date-and-time
+        |  |     +--rw (end-time)?
+        |  |        +--:(infinite)
+        |  |        |  +--rw no-end-time?     empty
+        |  |        +--:(duration)
+        |  |        |  +--rw duration?        uint32
+        |  |        +--:(end-date-time)
+        |  |           +--rw end-date-time?   yang:date-and-time
+        |  +--rw recurrence?                  recurrence-type
+        |  +--rw value-default?               union
+        |  +--rw base-schedule
+        |     +--rw intervals* [start-time]
+        |        +--rw start-time    yang:timeticks
+        |        +--rw end-time?     yang:timeticks
+        |        +--rw value?        union
+        +--rw bandwidth
+        |  +--rw (schedule-lifetime)?
+        |  |  +--:(always)
+        |  |  |  +--rw always?                empty
+        |  |  +--:(start-end-time)
+        |  |     +--rw start-date-time?       yang:date-and-time
+        |  |     +--rw (end-time)?
+        |  |        +--:(infinite)
+        |  |        |  +--rw no-end-time?     empty
+        |  |        +--:(duration)
+        |  |        |  +--rw duration?        uint32
+        |  |        +--:(end-date-time)
+        |  |           +--rw end-date-time?   yang:date-and-time
+        |  +--rw recurrence?                  recurrence-type
+        |  +--rw value-default?               union
+        |  +--rw base-schedule
+        |     +--rw intervals* [start-time]
+        |        +--rw start-time    yang:timeticks
+        |        +--rw end-time?     yang:timeticks
+        |        +--rw value?        union
+        +--rw delay
+           +--rw (schedule-lifetime)?
+           |  +--:(always)
+           |  |  +--rw always?                empty
+           |  +--:(start-end-time)
+           |     +--rw start-date-time?       yang:date-and-time
+           |     +--rw (end-time)?
+           |        +--:(infinite)
+           |        |  +--rw no-end-time?     empty
+           |        +--:(duration)
+           |        |  +--rw duration?        uint32
+           |        +--:(end-date-time)
+           |           +--rw end-date-time?   yang:date-and-time
+           +--rw recurrence?                  recurrence-type
+           +--rw value-default?               union
+           +--rw base-schedule
+              +--rw intervals* [start-time]
+                 +--rw start-time    yang:timeticks
+                 +--rw end-time?     yang:timeticks
+                 +--rw value?        union        
+      </artwork>
+    </section>
+
+  </section>
+
+
+  <section title="TVR Schedule YANG Modules">
+    <section title="TVR Common YANG Module">
+      <artwork><![CDATA[
+<CODE BEGINS> file "ietf-tvr-common@2023-09-12.yang"
+module ietf-tvr-common {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-common";
+  prefix tvr-cmn;
+
+  import ietf-yang-types {
+    prefix "yang";
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+
+  organization
+    "IETF TVR - Time Variant Routing Working Group";
+  contact
+    "WG Web:   <http://datatracker.ietf.org/wg/tvr>
+     WG List:  <mailto:tvr@ietf.org>
+
+     Author:   Yingzhen Qu
+               <mailto:yingzhen.ietf@gmail.com>
+     Author:   Acee Lindem
+               <mailto:acee.ietf@gmail.com>
+     Author:   Marc Blanchet
+               <mailto:marc.blanchet@viagenie.ca>
+     Author:   Eric Kinzie
+               <mailto:ekinzie@labn.net>
+     Author:   Don Fedyk
+               <mailto:dfedyk@labn.net>";
+
+  description
+    "The YANG module contains common YANG definitions for
+     time-variant schedule.
+
+     This YANG model conforms to the Network Management
+     Datastore Architecture (NMDA) as described in RFC 8342.
+
+     Copyright (c) 2023 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Revised BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
+  reference
+    "RFC XXXX: YANG Data Model for Scheduled Attributes";
+
+  revision 2023-09-22 {
+    description
+      "Initial Version";
+    reference
+      "RFC XXXX: YANG Data Model for Scheduled Attributes.";
+  }
+
+  typedef recurrence-type {
+    type enumeration {
+      enum once {
+        description
+           "Repeat the scheduled action or attribute modificaton
+           only once";
+      }
+      enum hourly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+          once per hour.";
+      }
+      enum daily {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per day.";
+      }
+      enum weekly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per week.";
+      }
+      enum monthly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per week.";
+      }
+      enum yearly {
+        description
+          "Repeat the scheduled action or attribute modificaiton
+           once per year.";
+      }
+    }
+    description
+      "Types of recurrence";
+  }
+
+  grouping schedule-lifetime {
+    description
+      "Schedule lifetime specification.";
+    choice schedule-lifetime {
+      default "always";
+      description
+        "Options for specifying schedule lifetimes";
+      case always {
+        leaf always {
+          type empty;
+          description
+            "Indicates schedule is always valid, and the schedule
+             will be effective right away after the configuration.";
+        }
+      }
+      case start-end-time {
+        leaf start-date-time {
+          type yang:date-and-time;
+          description
+            "Start time of the schedule.";
+        }
+        choice end-time {
+          default "infinite";
+          description
+            "End-time setting.";
+          case infinite {
+            leaf no-end-time {
+              type empty;
+              description
+                "Indicates schedule lifetime end-time is infinite.";
+            }
+          }
+          case duration {
+            leaf duration {
+              type uint32 {
+                range "1..2147483646";
+              }
+              units "seconds";
+              description
+                "Schedule lifetime duration, in seconds";
+            }
+          }
+          case end-date-time {
+            leaf end-date-time {
+              type yang:date-and-time;
+              description
+                "End time.";
+            }
+          }
+        }
+      }
+    }
+  }
+
+  grouping base-schedule {
+    leaf recurrence {
+      type recurrence-type;
+      must "(current() != 'once') or ../start-date-time" {
+        error-message "A single occurrence requires a start-time";
+        description
+          "With single recurrence of a schedule, a start-time
+           is required.";
+       }
+      description
+        "Type of recurrence";
+    }
+
+    leaf value-default {
+      type union {
+        type boolean;
+        type uint32;
+        type string;
+      }
+      description
+        "Attribute default value. This value is used when the value
+         is not covered by the intervals, as well as when the
+         schedule ends.";
+    }
+
+    container base-schedule {
+      list intervals {
+        key "start-time";
+        leaf start-time {
+          type yang:timeticks;
+          must "((../../../recurrence != 'hourly') or "
+            +      "(current() < 360000)) and "
+            +  "((../../../recurrence != 'daily') or "
+            +      "(current() < 8640000)) and "
+            +  "((../../../recurrence != 'monthly') or "
+            +      "(current() < 267840000)) and "
+            +   "((../../../recurrence != 'yearly') or "
+            +      "(current() < 3162240000))"  {
+            error-message
+              "The start-time must not exceed the recurrence
+               interval";
+            description
+              "The start-time must not exceed the recurrrence
+               interval. For example, for a 'monthy' recurrence, the
+               start-time must not exceed 31 days.";
+          }
+          description
+            "Start time of the scheduled value within one recurrence.
+             The calculation of the real start time is to use the
+             basestarting time defined by schedule-lifetime, recurrence,
+             and the timeticks. For example, if a schedule starts at
+             2001/1/1 8:00AM with an hourly recurrence, and the
+             timeticks is 180,000 (30 mins), the start-time will be
+             every 30 mins pass an hour after 2001/1/1.";
+        }
+        leaf end-time {
+          type yang:timeticks;
+          must "(current() > ../start-time) and "
+            +  "((../../../recurrence != 'hourly') or "
+            +      "(current() < 360000)) and "
+            +  "((../../../recurrence != 'daily') or "
+            +      "(current() < 8640000)) and "
+            +  "((../../../recurrence != 'monthly') or "
+            +      "(current() < 267840000)) and "
+            +   "((../../../recurrence != 'yearly') or "
+            +      "(current() < 3162240000))"  {
+            error-message
+              "The end-time must be greater than the end time and
+               must not exceed the recurrrence interval.";
+            description
+              "The end-time must be greater than the end time and
+               must not exceed the recurrrence interval. For example,
+               for a 'daily' recurrence, the time-tick offset must
+               not exceed 24 hours.";
+          }
+          description
+            "End time of the scheduled change. The calculation of the
+             end-time is the same as the start-time.";
+        }
+        leaf value {
+          type union {
+            type boolean;
+            type uint32;
+            type string;
+          }
+          description
+            "Value for the scheduled attribute during the
+             specified time period.
+             When type string is used, it can be a simple value such
+             as an int, or a string representing a value that changes
+             its value based on a function.";
+        }
+        description
+          "List of intervals for action or attribute modification.
+           The intervals should be contained within each recurrence.
+           For example, when the recurrence is set to daily, the list
+           of intervals should be within this daily range, e.g., the
+           last end-time can't be larger than 8640000 (24hours).";
+      }
+      description
+        "The recurring base-schedule of the action or attribute
+         modification";
+    }
+    description
+      "Grouping definition of base-schedule.";    
+  }
+
+  grouping schedule {
+    uses schedule-lifetime;
+    uses base-schedule;
+    description
+      "Complete schedule for a action or attribute modification.";
+  }
+}
+<CODE ENDS>
+      ]]></artwork>
+    </section>
+    <section title="TVR Schedule Node Module">
+    <t>The following RFCs are referenced in the "ietf-tvr-node" YANG
+      module: <xref target="RFC6991"/>, <xref target="RFC8343"/> and
+      <xref target="RFC8530"/>.</t>
+
+      <artwork><![CDATA[
+<CODE BEGINS> file "ietf-tvr-node@2023-09-12.yang"
+module ietf-tvr-node {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
+  prefix tvr-node;
+
+  import ietf-yang-types {
+    prefix "yang";
+  }
+
+  import ietf-tvr-common {
+    prefix "tvr-cmn";
+  }
+
+  organization
+    "IETF TVR - Time Variant Routing Working Group";
+  contact
+    "WG Web:   <http://datatracker.ietf.org/wg/tvr>
+     WG List:  <mailto:tvr@ietf.org>
+
+     Author:   Yingzhen Qu
+               <mailto:yingzhen.ietf@gmail.com>
+     Author:   Acee Lindem
+               <mailto:acee.ietf@gmail.com>
+     Author:   Marc Blanchet
+               <mailto:marc.blanchet@viagenie.ca>
+     Author:   Eric Kinzie
+               <mailto:ekinzie@labn.net>
+     Author:   Don Fedyk
+               <mailto:dfedyk@labn.net>";
+
+  description
+    "The YANG module defines a schedule for changing
+     attributes of a single node.
+
+     This YANG model conforms to the Network Management
+     Datastore Architecture (NMDA) as described in RFC 8342.
+
+     Copyright (c) 2023 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Revised BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
+  reference
+    "RFC XXXX: YANG Data Model for Scheduled Attributes";
+
+  revision 2023-09-12 {
+    description
+      "Initial Version";
+    reference
+      "RFC XXXX: YANG Data Model for Scheduled Attributes.";
+  }
+
+  container node-schedule {
+    description
+      "This container defined time variant attributes
+       for node's schedule.";
+
+    leaf router-id {
+      type yang:dotted-quad;
+      description
+        "A 32-bit number used to identify a router.";
+    }
+
+    container power-schedule {
+      description
+        "Scheduled power up and down.";
+      uses tvr-cmn:schedule;
+    }
+
+    container interface-schedule {
+      description
+        "Container for TVR node interface attributes.";
+
+      list interfaces {
+        key "name";
+        leaf name {
+          type string;
+          description
+            "Name of the interface.";
+        }
+
+        container up-down-schedule {
+          description
+           "Schedule interface up or down. This is to work with
+            the leaf 'enabled' for the configured state of the
+            interface.";
+
+          uses tvr-cmn:schedule;
+        }
+      }
+    }
+  }
+}
+<CODE ENDS>
+      ]]></artwork>
+    </section>
+    <section title="TVR Toplogy Module">
+      <artwork><![CDATA[
+<CODE BEGINS> file "ietf-tvr-topology@2023-09-22.yang"
+module ietf-tvr-topology {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
+  prefix tvr-topo;
+
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+
+  import ietf-tvr-common {
+    prefix "tvr-cmn";
+  }
+
+  organization
+    "IETF Time-Variant Routing Working Group";
+
+  contact
+    "WG Web:   <https://datatracker.ietf.org/wg/tvr/>
+     WG List:  <mailto:tvr@ietf.org>
+
+     Author:   Eric Kinzie
+               <mailto:ekinzie@labn.net>
+     Author:   Don Fedyk
+               <mailto:dfedyk@labn.net>
+     Author:   Yingzhen Qu
+               <mailto:yingzhen.ietf@gmail.com>
+     Author:   Acee Lindem
+               <mailto:acee.ietf@gmail.com>
+     Author:   Marc Blanchet
+               <mailto:marc.blanchet@viagenie.ca>";
+
+  description
+    "This YANG module contains YANG definitions for describing
+    network topology with an time-variant availability schedule.
+
+    Copyright (c) 2023 IETF Trust and the persons identified as
+    authors of the code.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or
+    without modification, is permitted pursuant to, and subject to
+    the license terms contained in, the Revised BSD License set forth
+    in Section 4.c of the IETF Trust's Legal Provisions Relating
+    to IETF Documents (https://trustee.ietf.org/license-info).
+
+    This version of this YANG module is part of RFC XXXX
+    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+    for full legal notices.
+
+    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+    NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+    'MAY', and 'OPTIONAL' in this document are to be interpreted as
+    described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+    they appear in all capitals, as shown here.";
+
+  revision 2023-09-22 {
+    description
+      "Initial revision";
+    reference
+      "RFC XXXX A YANG Data Model for Time Variant Attributes";
+  }
+
+  container topology-schedule {
+    list nodes {
+      key "node-id";
+      leaf node-id {
+        type inet:uri;
+        description
+          "Identifier for a node, uniquely identifies a node. This
+           may be the same as the node-id defined in the ietf-network
+           module defined in RFC 8345.";
+      }
+      container available {
+        description
+          "The time at which this node becomes available.";
+        uses tvr-cmn:schedule;
+      }  
+    }
+
+    list links {
+      key "source-node source-link-id";
+      leaf source-node {
+        type inet:uri;
+        description
+          "A name refers to the source node of the link.";
+      }
+      leaf destination-node {
+        type inet:uri;
+        description
+          "A name refers to the destination node of the link.";
+      }
+      leaf source-link-id {
+        type string;
+        description
+          "A name refers to the link of the source node.";
+      }
+      container available {
+        description
+          "The time at which this link becomes available.";
+        uses tvr-cmn:schedule;
+      }
+      container bandwidth {
+        description
+          "Scheduled link bandwidth.
+           The predicted link capacity specified in a generic
+           format. If the value measured by the system is less than
+           this value, the system value is used.  If the value
+           measured by the system is greater than this value the
+           predicted value SHOULD be used.";
+        uses tvr-cmn:schedule;
+      }
+      container delay {
+        description
+          "The one-way delay or latency in microseconds. If the
+           value measured by the system is less than this value
+           the predicted value SHOULD be used.";
+        uses tvr-cmn:schedule;
+      }
+    }
+  }
+}
+<CODE ENDS>
+      ]]></artwork>
+    </section>
+  </section>
+
+
+    <!-- Possibly a 'Contributors' section ... -->
+
+    <section anchor="Security" title="Security Considerations">
+      <t>
+        The YANG modules specified in this document define a schema for
+        data that is designed to be accessed via network
+        management protocols such as NETCONF <xref target="RFC6241"/> or
+        RESTCONF <xref target="RFC8040"/>. The lowest NETCONF layer is the secure transport
+        layer, and the mandatory-to-implement secure transport is Secure Shell (SSH)
+        <xref target="RFC6242"/>. The lowest RESTCONF layer is HTTPS, and the
+        mandatory-to-implement secure transport is TLS <xref target="RFC8446"/>.
+      </t>
+
+      <t>
+        The NETCONF access control model <xref target="RFC8341"/> provides the
+        means to restrict access for particular NETCONF or RESTCONF users to a
+        pre-configured subset of all available NETCONF or RESTCONF protocol
+        operations and content.
+      </t>
+
+      <t>
+        There are a number of data nodes defined in ietf-tvr-schedule.yang module
+        that are writable/creatable/deletable (i.e., config true, which is the default).
+        These data nodes may be considered sensitive or vulnerable in some network
+        environments. Write operations (e.g., edit-config) to these data nodes without
+        proper protection can have a negative effect on network operations. There are
+        the subtrees and data nodes and their sensitivity/vulnerability:
+      </t>
+      <ul spacing="compact" empty="true">
+        <li>/if:interfaces/if:interface/scheduled-attributes</li>
+        <li>/lne:logical-network-elements/lne:logical-network-element/scheduled-attribute
+        Modifications to these scheduled attributes may result in a
+        denial of service.</li>
+      </ul>
+
+      <t>
+        Some of the readable data nodes in the ietf-tvr-schedule.yang module
+        may be considered sensitive or vulnerable in some network environments. It is thus
+        important to control read access (e.g., via get, get-config, or notification)
+        to these data nodes.
+      </t>
+
+   </section>
+<section title="IANA Considerations">
+  <t>
+    This document registers a URI in the IETF XML registry
+    <xref target="RFC3688"/>.  Following the format in <xref target="RFC3688"/>,
+    the following registration is requested to be made:
+  </t>
+
+   <artwork>
+   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-common
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+   </artwork>
+   <artwork>
+   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-node
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+   </artwork>
+      <artwork>
+   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-topology
+   Registrant Contact: The IESG.
+   XML: N/A, the requested URI is an XML namespace.
+   </artwork>
+   <t>
+     This document registers a YANG module in the YANG Module Names
+     registry <xref target="RFC6020"/>.
+   </t>
+   <artwork>
+   name: ietf-tvr-common
+   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-common
+   prefix: tvr-cmn
+   reference: RFC XXXX
+   </artwork>
+    <artwork>
+   name: ietf-tvr-node
+   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-node
+   prefix: tvr-node
+   reference: RFC XXXX
+   </artwork>
+   <artwork>
+   name: ietf-tvr-topology
+   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-topology
+   prefix: tvr-topo
+   reference: RFC XXXX
+   </artwork>
+</section>
+    <section anchor="Acknowledgements" title="Acknowledgements">
+      <t>The YANG model was developed using the suite of YANG tools written
+      and maintained by numerous authors.</t>
+    </section>
+  </middle>
+
+  <!--  *****BACK MATTER ***** -->
+
+  <back>
+    <!-- References split into informative and normative -->
+
+    <!-- There are 2 ways to insert reference entries from the citation libraries:
+     1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+     2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+        (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+
+     Both are cited textually in the same manner: by using xref elements.
+     If you use the PI option, xml2rfc will, by default, try to find included files in the same
+     directory as the including file. You can also define the XML_LIBRARY environment variable
+     with a value containing a set of directories to search.  These can be either in the local
+     filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+    <references title="Normative References">
+      <!--?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml"?-->
+      &RFC2119;
+      &RFC3688;
+      &RFC6020;
+      &RFC6241;
+      &RFC6242;
+      &RFC6991;
+      &RFC7950;
+      &RFC8040;
+      &RFC8174;
+      &RFC8341;
+      &RFC8342;
+      &RFC8343;
+      &RFC8446;
+      &RFC8530;
+    </references>
+    <references title="Informative References">
+      <!-- Here we use entities that we defined at the beginning. -->
+      &RFC8340;
+      &I-D.ietf-tvr-use-cases;
+    </references>
+
+    <section>
+      <name>Example: Add a scheduled cost to OSPF interface</name>
+      <t>In OSPF (Open Shortest Path First), the interface cost is a
+        metric used to determine the preference or desirability of a
+        particular link or interface. By default, the OSPF interface
+        cost is calculated based on the bandwidth of the interface,
+        and it is also configurable.</t>
+      <t>This example demonstrates how an OSPF interface can be extended
+        with a cost that changes with a schedule.</t>
+      <artwork><![CDATA[
+module ietf-tvr-ospf-schedule {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-ospf-schedule";
+  prefix ospf-schedule;
+
+  import ietf-routing {
+    prefix "rt";
+    reference
+      "RFC 8349: A YANG Data Model for Routing
+       Management (NMDA Version)";
+  }
+  import ietf-ospf {
+    prefix "ospf";
+    reference
+      "RFC 9129: A YANG Data Model for OSPF Protocol";
+  }
+
+  import ietf-tvr-schedule {
+    prefix "tvr-schedule";
+  }
+
+  augment "/rt:routing/rt:control-plane-protocols/"
+    + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
+    + "ospf:interfaces/ospf:interface" {
+    container scheduled-cost {
+      description
+        "Augment OSPF interface with a scheduled interface cost.";
+      uses tvr-schedule:schedule;
+    }
+  }
+}
+      ]]></artwork>
+    </section>
+    <section>
+      <name>Example: A node with scheduled power</name>
+      <t>In this configuration example, a node's power is scheduled between
+        2023/8/12 0:00 UTC to the end of 2023/08/13 with a daily
+        schedule. In each day, the node is scheduled to be off between
+        1:00 to 5:00 and 20:00 to 23:00. The two intervals and the
+        corresponding value are defined, the "value-default" is to define
+        the value that's not covered by the intervals.</t>
+      <t>THe following figure shows the intended power schedule.</t>
+
+<artwork><![CDATA[
+
+   1   0          1        0   1    0          1        0  1
+  +-|----|---------------|---|-+-|----|---------------|---|-+
+  0 1    5               20 23 0 1    5              20  23 24 
+  |        2023/08/12          |        2023/08/13          |
+   
+]]></artwork>
+
+       <t>The following XML demonstrate the configuration.</t>
+<artwork><![CDATA[
+<?xml version='1.0' encoding='UTF-8'?>
+  <node-schedule xmlns="urn:ietf:params:xml:ns:yang:ietf-tvr-node">
+      <router-id>192.168.0.1</router-id>
+      <power-schedule xmlns="urn:ietf:params:xml:ns:yang:
+                              ietf-tvr-node">
+        <start-date-time>2023-08-12T00:00:00.00Z</start-date-time>
+        <end-date-time>2023-08-13T24:00:00.00Z</end-date-time>
+        <recurrence>daily</recurrence>
+        <value-default>1</value-default>
+        <base-schedule>
+          <intervals>
+            <start-time>360000</start-time>
+            <end-time>1800000</end-time>
+            <value>0</value>
+          </intervals>
+          <intervals>
+            <start-time>7200000</start-time>
+            <end-time>8280000</end-time>
+            <value>0</value>
+          </intervals>
+        </base-schedule>
+      </power-schedule>
+  </node-schedule>
+]]></artwork>
+    </section>
+  </back>
+</rfc>

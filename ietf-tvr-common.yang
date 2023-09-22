@@ -55,7 +55,7 @@ module ietf-tvr-common {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-08-15 {
+  revision 2023-09-22 {
     description
       "Initial Version";
     reference
@@ -152,6 +152,7 @@ module ietf-tvr-common {
       }
     }
   }
+
   grouping base-schedule {
     leaf recurrence {
       type recurrence-type;
@@ -168,6 +169,7 @@ module ietf-tvr-common {
     leaf value-default {
       type union {
         type boolean;
+        type uint32;
         type string;
       }
       description
@@ -257,7 +259,7 @@ module ietf-tvr-common {
     description
       "Grouping definition of base-schedule.";    
   }
-  
+
   grouping schedule {
     uses schedule-lifetime;
     uses base-schedule;
