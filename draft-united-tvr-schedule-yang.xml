@@ -311,7 +311,17 @@ Attributes
         </t>
         <t>
           The module has a list of nodes, identified by a unique "node-id".
-          Each node has a list of links. A link's bandwidth and delay
+          Each node has a list of links. Links are modeled as unidirectional.
+          Link availability is described from the viewpoint of a particular
+          source node (the transmitting node) and beginning at a particular
+          time.Each link in the list contains the range of times during
+          which it is available.
+        </t>
+        <t>
+          The "source-link-id" is a string and used to identify a link
+          as viewed from the source-node. Bandwidth and delay are predicted
+          link attributes. Delay is the link propagation time and does not
+          include any queuing delays.
         </t>
       </section>
 
