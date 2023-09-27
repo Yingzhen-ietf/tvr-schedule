@@ -645,12 +645,13 @@ module ietf-tvr-common {
           }
           description
             "Start time of the scheduled value within one recurrence.
-             The calculation of the real start time is to use the
-             basestarting time defined by schedule-lifetime, recurrence,
-             and the timeticks. For example, if a schedule starts at
-             2001/1/1 8:00AM with an hourly recurrence, and the
-             timeticks is 180,000 (30 mins), the start-time will be
-             every 30 mins pass an hour after 2001/1/1.";
+             The calculation of the real start time is to use
+             the basestarting time defined by schedule-lifetime,
+             recurrence, and the timeticks. For example, if a
+             schedule starts at 2001/1/1 8:00AM with an hourly
+             recurrence, and the timeticks is 180,000 (30 mins),
+             the start-time will be every 30 mins pass an hour
+             after 2001/1/1.";
         }
         leaf end-time {
           type yang:timeticks;
