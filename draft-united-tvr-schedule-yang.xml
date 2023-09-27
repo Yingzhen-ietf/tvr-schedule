@@ -226,13 +226,9 @@
           the relative "start-time" and "end-time" in each recurrence.
         </t>
         <t>
-          The "value" leaf is defined as a union, allowing it to be a simple
-          boolean value, an integer, or any other type presented using a string.
-          For instance, the string can represent a value that dynamically changes
-          over time using a function such as "2*t+10". The parsing of the
-          string is up to an implementation. The "value-default"
-          leaf defines the attribute's value when it's not covered by
-          the intervals.
+          No leaf is provided for values in the schedule.
+          The base-schedule can be augmented in the YANG "uses" clause
+          to include a value of an appropriate type, if necessary.
         </t>
         <t>When a schedule starts in the middle of an recurrence, for
           example, the recurrence is set to "daily", and the "schedule-start-time"
@@ -241,7 +237,7 @@
         </t>
         <t>
           When an attribute's schedule ends, the "value-default" SHOULD
-          be used.
+          be used, if present.
         </t>
 
         <t>
@@ -282,12 +278,11 @@ Attributes
  |  +--:(end-date-time)
  |     +-- end-date-time?   yang:date-and-time
  +-- recurrence?            recurrence-type
- +-- value-default?         union
+ +-- value-default
  +-- base-schedule
     +-- intervals* [start-time]
        +-- start-time?   yang:timeticks
        +-- end-time?     yang:timeticks
-       +-- value?        union
           </artwork>
         </figure>
       </section>
@@ -341,12 +336,11 @@ module: ietf-tvr-node
      |  |  +--:(end-date-time)
      |  |     +--rw end-date-time?   yang:date-and-time
      |  +--rw recurrence?            recurrence-type
-     |  +--rw value-default?         union
+     |  +--rw value-default
      |  +--rw base-schedule
      |     +--rw intervals* [start-time]
      |        +--rw start-time    yang:timeticks
      |        +--rw end-time?     yang:timeticks
-     |        +--rw value?        union
      +--rw interface-schedule
         +--rw interfaces* [name]
            +--rw name                string
@@ -360,12 +354,11 @@ module: ietf-tvr-node
               |  +--:(end-date-time)
               |     +--rw end-date-time?   yang:date-and-time
               +--rw recurrence?            recurrence-type
-              +--rw value-default?         union
+              +--rw value-default
               +--rw base-schedule
                  +--rw intervals* [start-time]
                     +--rw start-time    yang:timeticks
                     +--rw end-time?     yang:timeticks
-                    +--rw value?        union
       </artwork>
     </section>
     <section title="TVR Topology YANG Tree">
@@ -389,49 +382,16 @@ module: ietf-tvr-topology
      |     |  +--:(end-date-time)
      |     |     +--rw end-date-time?   yang:date-and-time
      |     +--rw recurrence?            recurrence-type
-     |     +--rw value-default?         union
+     |     +--rw value-default
      |     +--rw base-schedule
      |        +--rw intervals* [start-time]
      |           +--rw start-time    yang:timeticks
      |           +--rw end-time?     yang:timeticks
-     |           +--rw value?        union
      +--rw links* [source-node source-link-id]
         +--rw source-node         inet:uri
         +--rw destination-node?   inet:uri
         +--rw source-link-id      string
         +--rw available* [start-date-time]
-        |  +--rw start-date-time        yang:date-and-time
-        |  +--rw (end-time)?
-        |  |  +--:(infinite)
-        |  |  |  +--rw no-end-time?     empty
-        |  |  +--:(duration)
-        |  |  |  +--rw duration?        uint32
-        |  |  +--:(end-date-time)
-        |  |     +--rw end-date-time?   yang:date-and-time
-        |  +--rw recurrence?            recurrence-type
-        |  +--rw value-default?         union
-        |  +--rw base-schedule
-        |     +--rw intervals* [start-time]
-        |        +--rw start-time    yang:timeticks
-        |        +--rw end-time?     yang:timeticks
-        |        +--rw value?        union
-        +--rw bandwidth* [start-date-time]
-        |  +--rw start-date-time        yang:date-and-time
-        |  +--rw (end-time)?
-        |  |  +--:(infinite)
-        |  |  |  +--rw no-end-time?     empty
-        |  |  +--:(duration)
-        |  |  |  +--rw duration?        uint32
-        |  |  +--:(end-date-time)
-        |  |     +--rw end-date-time?   yang:date-and-time
-        |  +--rw recurrence?            recurrence-type
-        |  +--rw value-default?         union
-        |  +--rw base-schedule
-        |     +--rw intervals* [start-time]
-        |        +--rw start-time    yang:timeticks
-        |        +--rw end-time?     yang:timeticks
-        |        +--rw value?        union
-        +--rw delay* [start-date-time]
            +--rw start-date-time        yang:date-and-time
            +--rw (end-time)?
            |  +--:(infinite)
@@ -441,12 +401,28 @@ module: ietf-tvr-topology
            |  +--:(end-date-time)
            |     +--rw end-date-time?   yang:date-and-time
            +--rw recurrence?            recurrence-type
-           +--rw value-default?         union
+           +--rw value-default
            +--rw base-schedule
-              +--rw intervals* [start-time]
-                 +--rw start-time    yang:timeticks
-                 +--rw end-time?     yang:timeticks
-                 +--rw value?        union
+           |  +--rw intervals* [start-time]
+           |     +--rw start-time    yang:timeticks
+           |     +--rw end-time?     yang:timeticks
+           +--rw bandwidth
+           |  +--rw recurrence?      recurrence-type
+           |  +--rw value-default
+           |  |  +--rw default-bandwidth?   te-types:te-bandwidth
+           |  +--rw base-schedule
+           |     +--rw intervals* [start-time]
+           |        +--rw start-time    yang:timeticks
+           |        +--rw end-time?     yang:timeticks
+           |        +--rw value?        te-types:te-bandwidth
+           +--rw delay
+              +--rw recurrence?      recurrence-type
+              +--rw value-default
+              +--rw base-schedule
+                 +--rw intervals* [start-time]
+                    +--rw start-time    yang:timeticks
+                    +--rw end-time?     yang:timeticks
+                    +--rw value?        uint32
       </artwork>
     </section>
 
@@ -610,16 +586,11 @@ module ietf-tvr-common {
         "Type of recurrence";
     }
 
-    leaf value-default {
-      type union {
-        type boolean;
-        type uint32;
-        type string;
-      }
+    container value-default {
       description
-        "Attribute default value. This value is used when the value
-         is not covered by the intervals, as well as when the
-         schedule ends.";
+        "Attribute default value. This container should be augmented
+        with a leaf that is used when the value is not covered by
+        the intervals, as well as when the schedule ends.";
     }
 
     container base-schedule {
@@ -676,19 +647,6 @@ module ietf-tvr-common {
           description
             "End time of the scheduled change. The calculation of the
              end-time is the same as the start-time.";
-        }
-        leaf value {
-          type union {
-            type boolean;
-            type uint32;
-            type string;
-          }
-          description
-            "Value for the scheduled attribute during the
-             specified time period.
-             When type string is used, it can be a simple value such
-             as an int, or a string representing a value that changes
-             its value based on a function.";
         }
         description
           "List of intervals for action or attribute modification.
@@ -803,7 +761,7 @@ module ietf-tvr-node {
     list power-schedule {
       key "start-date-time";
       description
-        "Scheduled power up and down.";
+        "Scheduled times that the power is up.";
       uses tvr-cmn:schedule;
     }
 
@@ -822,9 +780,9 @@ module ietf-tvr-node {
         list up-down-schedule {
           key "start-date-time";
           description
-           "Schedule interface up or down. This is to work with
-            the leaf 'enabled' for the configured state of the
-            interface.";
+           "Scheduled times that the interface is up. This is to
+           work with the leaf 'enabled' for the configured state
+           of the interface.";
 
           uses tvr-cmn:schedule;
         }
@@ -832,6 +790,7 @@ module ietf-tvr-node {
     }
   }
 }
+
 <CODE ENDS>
       ]]></artwork>
     </section>
@@ -847,6 +806,10 @@ module ietf-tvr-topology {
     prefix inet;
     reference
       "RFC 6991: Common YANG Data Types";
+  }
+
+  import ietf-te-types {
+    prefix te-types;
   }
 
   import ietf-tvr-common {
@@ -941,25 +904,51 @@ module ietf-tvr-topology {
         description
           "The time at which this link becomes available.";
         uses tvr-cmn:schedule;
-      }
-      list bandwidth {
-        key "start-date-time";
-        description
-          "Scheduled link bandwidth.
-           The predicted link capacity specified in a generic
-           format. If the value measured by the system is less than
-           this value, the system value is used.  If the value
-           measured by the system is greater than this value the
-           predicted value SHOULD be used.";
-        uses tvr-cmn:schedule;
-      }
-      list delay {
-        key "start-date-time";
-        description
-          "The one-way delay or latency in microseconds. If the
-           value measured by the system is less than this value
-           the predicted value SHOULD be used.";
-        uses tvr-cmn:schedule;
+        container bandwidth {
+          description
+            "Scheduled link bandwidth.
+             If the value measured by the system is less than this
+             value, the system value is used.  If the value measured
+             by the system is greater than this value the predicted
+             value SHOULD be used.";
+          uses tvr-cmn:base-schedule {
+            augment value-default {
+              leaf default-bandwidth {
+                type te-types:te-bandwidth;
+                default "0";
+                description
+                 "The predicted link capacity specified in a
+                 generic format.";
+              }
+            }
+            augment base-schedule/intervals {
+              leaf value {
+                type te-types:te-bandwidth;
+                description
+                 "The predicted link capacity specified in a
+                 generic format.";
+              }
+            }
+          }
+        }
+        container delay {
+          description
+            "The one-way delay or latency in microseconds. If the
+             value measured by the system is less than this value
+             the predicted value SHOULD be used.";
+          uses tvr-cmn:base-schedule {
+            augment base-schedule/intervals {
+              leaf value {
+                type uint32 {
+                  range "0..16777215";
+                }
+                description
+                 "The predicted link capacity specified in a
+                 generic format.";
+              }
+            }
+          }
+        }
       }
     }
   }

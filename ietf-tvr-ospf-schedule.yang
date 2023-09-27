@@ -15,8 +15,8 @@ module ietf-tvr-ospf-schedule {
       "RFC 9129: A YANG Data Model for OSPF Protocol";
   }
 
-  import ietf-tvr-schedule {
-    prefix "tvr-schedule";
+  import ietf-tvr-common {
+    prefix "tvr-cmn";
   }
 
   augment "/rt:routing/rt:control-plane-protocols/"
@@ -25,7 +25,15 @@ module ietf-tvr-ospf-schedule {
     container scheduled-cost {
       description
         "Augment OSPF interface with a scheduled interface cost.";
-      uses tvr-schedule:schedule;
+      uses tvr-cmn:schedule {
+        augment base-schedule/intervals {
+          leaf value {
+            type uint32;
+            description
+             "interface cost";
+          }
+        }
+      }
     }
   }
 }

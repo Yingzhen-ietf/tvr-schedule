@@ -9,6 +9,10 @@ module ietf-tvr-topology {
       "RFC 6991: Common YANG Data Types";
   }
 
+  import ietf-te-types {
+    prefix te-types;
+  }
+
   import ietf-tvr-common {
     prefix "tvr-cmn";
   }
@@ -101,25 +105,51 @@ module ietf-tvr-topology {
         description
           "The time at which this link becomes available.";
         uses tvr-cmn:schedule;
-      }
-      list bandwidth {
-        key "start-date-time";
-        description
-          "Scheduled link bandwidth.
-           The predicted link capacity specified in a generic
-           format. If the value measured by the system is less than
-           this value, the system value is used.  If the value
-           measured by the system is greater than this value the
-           predicted value SHOULD be used.";
-        uses tvr-cmn:schedule;
-      }
-      list delay {
-        key "start-date-time";
-        description
-          "The one-way delay or latency in microseconds. If the
-           value measured by the system is less than this value
-           the predicted value SHOULD be used.";
-        uses tvr-cmn:schedule;
+        container bandwidth {
+          description
+            "Scheduled link bandwidth.
+             If the value measured by the system is less than this
+             value, the system value is used.  If the value measured
+             by the system is greater than this value the predicted
+             value SHOULD be used.";
+          uses tvr-cmn:base-schedule {
+            augment value-default {
+              leaf default-bandwidth {
+                type te-types:te-bandwidth;
+                default "0";
+                description
+                 "The predicted link capacity specified in a
+                 generic format.";
+              }
+            }
+            augment base-schedule/intervals {
+              leaf value {
+                type te-types:te-bandwidth;
+                description
+                 "The predicted link capacity specified in a
+                 generic format.";
+              }
+            }
+          }
+        }
+        container delay {
+          description
+            "The one-way delay or latency in microseconds. If the
+             value measured by the system is less than this value
+             the predicted value SHOULD be used.";
+          uses tvr-cmn:base-schedule {
+            augment base-schedule/intervals {
+              leaf value {
+                type uint32 {
+                  range "0..16777215";
+                }
+                description
+                 "The predicted link capacity specified in a
+                 generic format.";
+              }
+            }
+          }
+        }
       }
     }
   }

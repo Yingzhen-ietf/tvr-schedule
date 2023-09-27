@@ -78,7 +78,7 @@ module ietf-tvr-node {
     list power-schedule {
       key "start-date-time";
       description
-        "Scheduled power up and down.";
+        "Scheduled times that the power is up.";
       uses tvr-cmn:schedule;
     }
 
@@ -97,9 +97,9 @@ module ietf-tvr-node {
         list up-down-schedule {
           key "start-date-time";
           description
-           "Schedule interface up or down. This is to work with
-            the leaf 'enabled' for the configured state of the
-            interface.";
+           "Scheduled times that the interface is up. This is to
+           work with the leaf 'enabled' for the configured state
+           of the interface.";
 
           uses tvr-cmn:schedule;
         }

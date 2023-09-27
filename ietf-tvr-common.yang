@@ -151,16 +151,11 @@ module ietf-tvr-common {
         "Type of recurrence";
     }
 
-    leaf value-default {
-      type union {
-        type boolean;
-        type uint32;
-        type string;
-      }
+    container value-default {
       description
-        "Attribute default value. This value is used when the value
-         is not covered by the intervals, as well as when the
-         schedule ends.";
+        "Attribute default value. This container should be augmented
+        with a leaf that is used when the value is not covered by
+        the intervals, as well as when the schedule ends.";
     }
 
     container base-schedule {
@@ -217,19 +212,6 @@ module ietf-tvr-common {
           description
             "End time of the scheduled change. The calculation of the
              end-time is the same as the start-time.";
-        }
-        leaf value {
-          type union {
-            type boolean;
-            type uint32;
-            type string;
-          }
-          description
-            "Value for the scheduled attribute during the
-             specified time period.
-             When type string is used, it can be a simple value such
-             as an int, or a string representing a value that changes
-             its value based on a function.";
         }
         description
           "List of intervals for action or attribute modification.

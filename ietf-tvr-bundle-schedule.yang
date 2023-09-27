@@ -6,8 +6,8 @@ module ietf-tvr-bundle-schedule {
   import ietf-bundle-protocol {
     prefix bundle;
   }
-  import ietf-tvr-schedule {
-    prefix tvr-schedule;
+  import ietf-tvr-common {
+    prefix tvr-cmn;
   }
 
   organization
@@ -63,7 +63,7 @@ module ietf-tvr-bundle-schedule {
     container contact-schedule {
       description
         "Augment Bundle node neighbor with a contact schedule.";
-      uses tvr-schedule:schedule;
+      uses tvr-cmn:schedule;
     }
     description
       "Augment the neighbor with a contact schedule.";
