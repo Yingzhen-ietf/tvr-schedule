@@ -71,7 +71,8 @@ module ietf-tvr-topology {
            may be the same as the node-id defined in the ietf-network
            module defined in RFC 8345.";
       }
-      container available {
+      list available {
+        key "start-date-time";
         description
           "The time at which this node becomes available.";
         uses tvr-cmn:schedule;
@@ -95,12 +96,14 @@ module ietf-tvr-topology {
         description
           "A name refers to the link of the source node.";
       }
-      container available {
+      list available {
+        key "start-date-time";
         description
           "The time at which this link becomes available.";
         uses tvr-cmn:schedule;
       }
-      container bandwidth {
+      list bandwidth {
+        key "start-date-time";
         description
           "Scheduled link bandwidth.
            The predicted link capacity specified in a generic
@@ -110,7 +113,8 @@ module ietf-tvr-topology {
            predicted value SHOULD be used.";
         uses tvr-cmn:schedule;
       }
-      container delay {
+      list delay {
+        key "start-date-time";
         description
           "The one-way delay or latency in microseconds. If the
            value measured by the system is less than this value

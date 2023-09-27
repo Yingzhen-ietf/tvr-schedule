@@ -75,7 +75,8 @@ module ietf-tvr-schedule {
         "A 32-bit number used to identify a router.";
     }
 
-    container scheduled-power {
+    list scheduled-power {
+      key "start-date-time";
       description
         "Scheduled power up and down.";
       uses tvr-cmn:schedule;
@@ -93,7 +94,8 @@ module ietf-tvr-schedule {
             "A name of the interface.";
         }
 
-        container scheduled-up-down {
+        list scheduled-up-down {
+          key "start-date-time";
           description
            "Scheduled interface up and down. This is to work with
             the leaf 'enabled' for the configured state of the

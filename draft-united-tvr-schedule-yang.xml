@@ -206,11 +206,9 @@
           The grouping "schedule-lifetime" is to define the life time of
           a "schedule". It has a "schedule-start-time" using "date-and-time", and the
           "schedule-end-time" can be an option of infinite, duration or
-          date time. The "schedule-lifetime" can also be set to "always",
-          which means the schedule is always valid and will be effective
-          right away after the configuration. If the "schedule-start-time"
-          is set to a time in the past when a configuration is done, the
-          schedule is effective right away.
+          date time.
+          If the "schedule-start-time" is set to a time in the past when
+          a configuration is done, the schedule is effective right away.
         </t>
         <t>
           A schedule may have a repetition pattern and the leaf "recurrence"
@@ -275,26 +273,21 @@ Attributes
         <figure>
           <name>Tree diagram of the schedule</name>
           <artwork>
- +--rw (schedule-lifetime)?
- |  +--:(always)
- |  |  +--rw always?                empty
- |  +--:(start-end-time)
- |     +--rw start-date-time?       yang:date-and-time
- |     +--rw (end-time)?
- |        +--:(infinite)
- |        |  +--rw no-end-time?     empty
- |        +--:(duration)
- |        |  +--rw duration?        uint32
- |        +--:(end-date-time)
- |           +--rw end-date-time?   yang:date-and-time
- +--rw recurrence?                  recurrence-type
- +--rw value-default?               union
- +--rw base-schedule
-    +--rw intervals* [start-time]
-       +--rw start-time    yang:timeticks
-       +--rw end-time?     yang:timeticks
-       +--rw value?        union
-
+ +-- start-date-time?       yang:date-and-time
+ +-- (end-time)?
+ |  +--:(infinite)
+ |  |  +-- no-end-time?     empty
+ |  +--:(duration)
+ |  |  +-- duration?        uint32
+ |  +--:(end-date-time)
+ |     +-- end-date-time?   yang:date-and-time
+ +-- recurrence?            recurrence-type
+ +-- value-default?         union
+ +-- base-schedule
+    +-- intervals* [start-time]
+       +-- start-time?   yang:timeticks
+       +-- end-time?     yang:timeticks
+       +-- value?        union
           </artwork>
         </figure>
       </section>
@@ -338,21 +331,17 @@ Attributes
 module: ietf-tvr-node
   +--rw node-schedule
      +--rw router-id?            yang:dotted-quad
-     +--rw power-schedule
-     |  +--rw (schedule-lifetime)?
-     |  |  +--:(always)
-     |  |  |  +--rw always?                empty
-     |  |  +--:(start-end-time)
-     |  |     +--rw start-date-time?       yang:date-and-time
-     |  |     +--rw (end-time)?
-     |  |        +--:(infinite)
-     |  |        |  +--rw no-end-time?     empty
-     |  |        +--:(duration)
-     |  |        |  +--rw duration?        uint32
-     |  |        +--:(end-date-time)
-     |  |           +--rw end-date-time?   yang:date-and-time
-     |  +--rw recurrence?                  recurrence-type
-     |  +--rw value-default?               union
+     +--rw power-schedule* [start-date-time]
+     |  +--rw start-date-time        yang:date-and-time
+     |  +--rw (end-time)?
+     |  |  +--:(infinite)
+     |  |  |  +--rw no-end-time?     empty
+     |  |  +--:(duration)
+     |  |  |  +--rw duration?        uint32
+     |  |  +--:(end-date-time)
+     |  |     +--rw end-date-time?   yang:date-and-time
+     |  +--rw recurrence?            recurrence-type
+     |  +--rw value-default?         union
      |  +--rw base-schedule
      |     +--rw intervals* [start-time]
      |        +--rw start-time    yang:timeticks
@@ -361,21 +350,17 @@ module: ietf-tvr-node
      +--rw interface-schedule
         +--rw interfaces* [name]
            +--rw name                string
-           +--rw up-down-schedule
-              +--rw (schedule-lifetime)?
-              |  +--:(always)
-              |  |  +--rw always?                empty
-              |  +--:(start-end-time)
-              |     +--rw start-date-time?       yang:date-and-time
-              |     +--rw (end-time)?
-              |        +--:(infinite)
-              |        |  +--rw no-end-time?     empty
-              |        +--:(duration)
-              |        |  +--rw duration?        uint32
-              |        +--:(end-date-time)
-              |           +--rw end-date-time?   yang:date-and-time
-              +--rw recurrence?                  recurrence-type
-              +--rw value-default?               union
+           +--rw up-down-schedule* [start-date-time]
+              +--rw start-date-time        yang:date-and-time
+              +--rw (end-time)?
+              |  +--:(infinite)
+              |  |  +--rw no-end-time?     empty
+              |  +--:(duration)
+              |  |  +--rw duration?        uint32
+              |  +--:(end-date-time)
+              |     +--rw end-date-time?   yang:date-and-time
+              +--rw recurrence?            recurrence-type
+              +--rw value-default?         union
               +--rw base-schedule
                  +--rw intervals* [start-time]
                     +--rw start-time    yang:timeticks
@@ -394,21 +379,17 @@ module: ietf-tvr-topology
   +--rw topology-schedule
      +--rw nodes* [node-id]
      |  +--rw node-id      inet:uri
-     |  +--rw available
-     |     +--rw (schedule-lifetime)?
-     |     |  +--:(always)
-     |     |  |  +--rw always?                empty
-     |     |  +--:(start-end-time)
-     |     |     +--rw start-date-time?       yang:date-and-time
-     |     |     +--rw (end-time)?
-     |     |        +--:(infinite)
-     |     |        |  +--rw no-end-time?     empty
-     |     |        +--:(duration)
-     |     |        |  +--rw duration?        uint32
-     |     |        +--:(end-date-time)
-     |     |           +--rw end-date-time?   yang:date-and-time
-     |     +--rw recurrence?                  recurrence-type
-     |     +--rw value-default?               union
+     |  +--rw available* [start-date-time]
+     |     +--rw start-date-time        yang:date-and-time
+     |     +--rw (end-time)?
+     |     |  +--:(infinite)
+     |     |  |  +--rw no-end-time?     empty
+     |     |  +--:(duration)
+     |     |  |  +--rw duration?        uint32
+     |     |  +--:(end-date-time)
+     |     |     +--rw end-date-time?   yang:date-and-time
+     |     +--rw recurrence?            recurrence-type
+     |     +--rw value-default?         union
      |     +--rw base-schedule
      |        +--rw intervals* [start-time]
      |           +--rw start-time    yang:timeticks
@@ -418,66 +399,54 @@ module: ietf-tvr-topology
         +--rw source-node         inet:uri
         +--rw destination-node?   inet:uri
         +--rw source-link-id      string
-        +--rw available
-        |  +--rw (schedule-lifetime)?
-        |  |  +--:(always)
-        |  |  |  +--rw always?                empty
-        |  |  +--:(start-end-time)
-        |  |     +--rw start-date-time?       yang:date-and-time
-        |  |     +--rw (end-time)?
-        |  |        +--:(infinite)
-        |  |        |  +--rw no-end-time?     empty
-        |  |        +--:(duration)
-        |  |        |  +--rw duration?        uint32
-        |  |        +--:(end-date-time)
-        |  |           +--rw end-date-time?   yang:date-and-time
-        |  +--rw recurrence?                  recurrence-type
-        |  +--rw value-default?               union
+        +--rw available* [start-date-time]
+        |  +--rw start-date-time        yang:date-and-time
+        |  +--rw (end-time)?
+        |  |  +--:(infinite)
+        |  |  |  +--rw no-end-time?     empty
+        |  |  +--:(duration)
+        |  |  |  +--rw duration?        uint32
+        |  |  +--:(end-date-time)
+        |  |     +--rw end-date-time?   yang:date-and-time
+        |  +--rw recurrence?            recurrence-type
+        |  +--rw value-default?         union
         |  +--rw base-schedule
         |     +--rw intervals* [start-time]
         |        +--rw start-time    yang:timeticks
         |        +--rw end-time?     yang:timeticks
         |        +--rw value?        union
-        +--rw bandwidth
-        |  +--rw (schedule-lifetime)?
-        |  |  +--:(always)
-        |  |  |  +--rw always?                empty
-        |  |  +--:(start-end-time)
-        |  |     +--rw start-date-time?       yang:date-and-time
-        |  |     +--rw (end-time)?
-        |  |        +--:(infinite)
-        |  |        |  +--rw no-end-time?     empty
-        |  |        +--:(duration)
-        |  |        |  +--rw duration?        uint32
-        |  |        +--:(end-date-time)
-        |  |           +--rw end-date-time?   yang:date-and-time
-        |  +--rw recurrence?                  recurrence-type
-        |  +--rw value-default?               union
+        +--rw bandwidth* [start-date-time]
+        |  +--rw start-date-time        yang:date-and-time
+        |  +--rw (end-time)?
+        |  |  +--:(infinite)
+        |  |  |  +--rw no-end-time?     empty
+        |  |  +--:(duration)
+        |  |  |  +--rw duration?        uint32
+        |  |  +--:(end-date-time)
+        |  |     +--rw end-date-time?   yang:date-and-time
+        |  +--rw recurrence?            recurrence-type
+        |  +--rw value-default?         union
         |  +--rw base-schedule
         |     +--rw intervals* [start-time]
         |        +--rw start-time    yang:timeticks
         |        +--rw end-time?     yang:timeticks
         |        +--rw value?        union
-        +--rw delay
-           +--rw (schedule-lifetime)?
-           |  +--:(always)
-           |  |  +--rw always?                empty
-           |  +--:(start-end-time)
-           |     +--rw start-date-time?       yang:date-and-time
-           |     +--rw (end-time)?
-           |        +--:(infinite)
-           |        |  +--rw no-end-time?     empty
-           |        +--:(duration)
-           |        |  +--rw duration?        uint32
-           |        +--:(end-date-time)
-           |           +--rw end-date-time?   yang:date-and-time
-           +--rw recurrence?                  recurrence-type
-           +--rw value-default?               union
+        +--rw delay* [start-date-time]
+           +--rw start-date-time        yang:date-and-time
+           +--rw (end-time)?
+           |  +--:(infinite)
+           |  |  +--rw no-end-time?     empty
+           |  +--:(duration)
+           |  |  +--rw duration?        uint32
+           |  +--:(end-date-time)
+           |     +--rw end-date-time?   yang:date-and-time
+           +--rw recurrence?            recurrence-type
+           +--rw value-default?         union
            +--rw base-schedule
               +--rw intervals* [start-time]
                  +--rw start-time    yang:timeticks
                  +--rw end-time?     yang:timeticks
-                 +--rw value?        union        
+                 +--rw value?        union
       </artwork>
     </section>
 
@@ -487,7 +456,7 @@ module: ietf-tvr-topology
   <section title="TVR Schedule YANG Modules">
     <section title="TVR Common YANG Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-common@2023-09-12.yang"
+<CODE BEGINS> file "ietf-tvr-common@2023-09-22.yang"
 module ietf-tvr-common {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-common";
@@ -592,52 +561,37 @@ module ietf-tvr-common {
   grouping schedule-lifetime {
     description
       "Schedule lifetime specification.";
-    choice schedule-lifetime {
-      default "always";
+    leaf start-date-time {
+      type yang:date-and-time;
       description
-        "Options for specifying schedule lifetimes";
-      case always {
-        leaf always {
+        "Start time of the schedule.";
+    }
+    choice end-time {
+      default "infinite";
+      description
+        "End-time setting.";
+      case infinite {
+        leaf no-end-time {
           type empty;
           description
-            "Indicates schedule is always valid, and the schedule
-             will be effective right away after the configuration.";
+            "Indicates schedule lifetime end-time is infinite.";
         }
       }
-      case start-end-time {
-        leaf start-date-time {
+      case duration {
+        leaf duration {
+          type uint32 {
+            range "1..2147483646";
+          }
+          units "seconds";
+          description
+            "Schedule lifetime duration, in seconds";
+        }
+      }
+      case end-date-time {
+        leaf end-date-time {
           type yang:date-and-time;
           description
-            "Start time of the schedule.";
-        }
-        choice end-time {
-          default "infinite";
-          description
-            "End-time setting.";
-          case infinite {
-            leaf no-end-time {
-              type empty;
-              description
-                "Indicates schedule lifetime end-time is infinite.";
-            }
-          }
-          case duration {
-            leaf duration {
-              type uint32 {
-                range "1..2147483646";
-              }
-              units "seconds";
-              description
-                "Schedule lifetime duration, in seconds";
-            }
-          }
-          case end-date-time {
-            leaf end-date-time {
-              type yang:date-and-time;
-              description
-                "End time.";
-            }
-          }
+            "End time.";
         }
       }
     }
@@ -757,6 +711,7 @@ module ietf-tvr-common {
       "Complete schedule for a action or attribute modification.";
   }
 }
+
 <CODE ENDS>
       ]]></artwork>
     </section>
@@ -844,7 +799,8 @@ module ietf-tvr-node {
         "A 32-bit number used to identify a router.";
     }
 
-    container power-schedule {
+    list power-schedule {
+      key "start-date-time";
       description
         "Scheduled power up and down.";
       uses tvr-cmn:schedule;
@@ -862,7 +818,8 @@ module ietf-tvr-node {
             "Name of the interface.";
         }
 
-        container up-down-schedule {
+        list up-down-schedule {
+          key "start-date-time";
           description
            "Schedule interface up or down. This is to work with
             the leaf 'enabled' for the configured state of the
@@ -953,7 +910,8 @@ module ietf-tvr-topology {
            may be the same as the node-id defined in the ietf-network
            module defined in RFC 8345.";
       }
-      container available {
+      list available {
+        key "start-date-time";
         description
           "The time at which this node becomes available.";
         uses tvr-cmn:schedule;
@@ -977,12 +935,14 @@ module ietf-tvr-topology {
         description
           "A name refers to the link of the source node.";
       }
-      container available {
+      list available {
+        key "start-date-time";
         description
           "The time at which this link becomes available.";
         uses tvr-cmn:schedule;
       }
-      container bandwidth {
+      list bandwidth {
+        key "start-date-time";
         description
           "Scheduled link bandwidth.
            The predicted link capacity specified in a generic
@@ -992,7 +952,8 @@ module ietf-tvr-topology {
            predicted value SHOULD be used.";
         uses tvr-cmn:schedule;
       }
-      container delay {
+      list delay {
+        key "start-date-time";
         description
           "The one-way delay or latency in microseconds. If the
            value measured by the system is less than this value
