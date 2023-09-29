@@ -153,9 +153,10 @@ module ietf-tvr-common {
 
     container value-default {
       description
-        "Attribute default value. This container should be augmented
-        with a leaf that is used when the value is not covered by
-        the intervals, as well as when the schedule ends.";
+        "Attributes default values. This container should be
+        augmented with one or more leafs, each of which is used
+        when the value is not covered by a base-schedule interval,
+        as well as when the schedule ends.";
     }
 
     container base-schedule {
@@ -212,6 +213,11 @@ module ietf-tvr-common {
           description
             "End time of the scheduled change. The calculation of the
              end-time is the same as the start-time.";
+        }
+        container value {
+          description
+           "Attribute value(s). This container should be augmented
+           with attributes that apply to the current interval.";
         }
         description
           "List of intervals for action or attribute modification.
