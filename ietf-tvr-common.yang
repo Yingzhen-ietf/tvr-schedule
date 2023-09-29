@@ -141,12 +141,6 @@ module ietf-tvr-common {
   grouping base-schedule {
     leaf recurrence {
       type recurrence-type;
-      must "(current() != 'once') or ../start-date-time" {
-        error-message "A single occurrence requires a start-time";
-        description
-          "With single recurrence of a schedule, a start-time
-           is required.";
-       }
       description
         "Type of recurrence";
     }
