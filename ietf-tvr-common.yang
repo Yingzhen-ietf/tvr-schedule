@@ -141,6 +141,7 @@ module ietf-tvr-common {
   grouping base-schedule {
     leaf recurrence {
       type recurrence-type;
+      default "once";
       description
         "Type of recurrence";
     }
