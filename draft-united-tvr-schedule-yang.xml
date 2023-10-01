@@ -264,27 +264,47 @@ Attributes
         </figure>
 
         <t>
-          The following is the tree diagram of the grouping
-          "schedule".
+          The following is the tree diagram of the groupings
+          in tvr-common.yang. 
         </t>
         <figure>
-          <name>Tree diagram of the schedule</name>
+          <name>Tree diagram of common TVR groupings</name>
           <artwork>
- +-- start-date-time?       yang:date-and-time
- +-- (end-time)?
- |  +--:(infinite)
- |  |  +-- no-end-time?     empty
- |  +--:(duration)
- |  |  +-- duration?        uint32
- |  +--:(end-date-time)
- |     +-- end-date-time?   yang:date-and-time
- +-- recurrence?            recurrence-type
- +-- value-default
- +-- base-schedule
-    +-- intervals* [start-time]
-       +-- start-time?   yang:timeticks
-       +-- end-time?     yang:timeticks
-       +-- value
+            module: ietf-tvr-common
+
+  grouping schedule-lifetime:
+    +-- start-date-time?       yang:date-and-time
+    +-- (end-time)?
+       +--:(infinite)
+       |  +-- no-end-time?     empty
+       +--:(duration)
+       |  +-- duration?        uint32
+       +--:(end-date-time)
+          +-- end-date-time?   yang:date-and-time
+  grouping base-schedule:
+    +-- recurrence?      recurrence-type
+    +-- value-default
+    +-- base-schedule
+       +-- intervals* [start-time]
+          +-- start-time?   yang:timeticks
+          +-- end-time?     yang:timeticks
+          +-- value
+  grouping schedule:
+    +-- start-date-time?       yang:date-and-time
+    +-- (end-time)?
+    |  +--:(infinite)
+    |  |  +-- no-end-time?     empty
+    |  +--:(duration)
+    |  |  +-- duration?        uint32
+    |  +--:(end-date-time)
+    |     +-- end-date-time?   yang:date-and-time
+    +-- recurrence?            recurrence-type
+    +-- value-default
+    +-- base-schedule
+       +-- intervals* [start-time]
+          +-- start-time?   yang:timeticks
+          +-- end-time?     yang:timeticks
+          +-- value
           </artwork>
         </figure>
       </section>
@@ -1106,7 +1126,7 @@ module ietf-tvr-topology {
     </references>
 
     <section>
-v      <name>Example: Add a scheduled cost to OSPF interface</name>
+      <name>Example: Add a scheduled cost to OSPF interface</name>
       <t>In OSPF (Open Shortest Path First), the interface cost is a
         metric used to determine the preference or desirability of a
         particular link or interface. By default, the OSPF interface
