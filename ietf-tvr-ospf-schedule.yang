@@ -22,12 +22,13 @@ module ietf-tvr-ospf-schedule {
   augment "/rt:routing/rt:control-plane-protocols/"
     + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
     + "ospf:interfaces/ospf:interface" {
-    container scheduled-cost {
+    list scheduled-cost {
+      key "start-date-time";
       description
         "Augment OSPF interface with a scheduled interface cost.";
       uses tvr-cmn:schedule {
-        augment base-schedule/intervals {
-          leaf value {
+        augment base-schedule/intervals/value {
+          leaf cost {
             type uint32;
             description
              "interface cost";

@@ -122,8 +122,8 @@ module ietf-tvr-topology {
                  generic format.";
               }
             }
-            augment base-schedule/intervals {
-              leaf value {
+            augment base-schedule/intervals/value {
+              leaf bandwidth {
                 type te-types:te-bandwidth;
                 description
                  "The predicted link capacity specified in a
@@ -138,8 +138,8 @@ module ietf-tvr-topology {
              value measured by the system is less than this value
              the predicted value SHOULD be used.";
           uses tvr-cmn:base-schedule {
-            augment base-schedule/intervals {
-              leaf value {
+            augment base-schedule/intervals/value {
+              leaf delay {
                 type uint32 {
                   range "0..16777215";
                 }

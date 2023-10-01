@@ -227,8 +227,9 @@
         </t>
         <t>
           No leaf is provided for values in the schedule.
-          The base-schedule can be augmented in the YANG "uses" clause
-          to include a value of an appropriate type, if necessary.
+          The base-schedule can, if necessary, be augmented in the YANG
+          "uses" clause to fill in the empty value container with whatever
+          is required to represent the affected data.
         </t>
         <t>When a schedule starts in the middle of an recurrence, for
           example, the recurrence is set to "daily", and the "schedule-start-time"
@@ -283,6 +284,7 @@ Attributes
     +-- intervals* [start-time]
        +-- start-time?   yang:timeticks
        +-- end-time?     yang:timeticks
+       +-- value
           </artwork>
         </figure>
       </section>
@@ -341,6 +343,7 @@ module: ietf-tvr-node
      |     +--rw intervals* [start-time]
      |        +--rw start-time    yang:timeticks
      |        +--rw end-time?     yang:timeticks
+     |        +--rw value
      +--rw interface-schedule
         +--rw interfaces* [name]
            +--rw name                string
@@ -359,6 +362,7 @@ module: ietf-tvr-node
                  +--rw intervals* [start-time]
                     +--rw start-time    yang:timeticks
                     +--rw end-time?     yang:timeticks
+                    +--rw value
       </artwork>
     </section>
     <section title="TVR Topology YANG Tree">
@@ -387,6 +391,7 @@ module: ietf-tvr-topology
      |        +--rw intervals* [start-time]
      |           +--rw start-time    yang:timeticks
      |           +--rw end-time?     yang:timeticks
+     |           +--rw value
      +--rw links* [source-node source-link-id]
         +--rw source-node         inet:uri
         +--rw destination-node?   inet:uri
@@ -406,6 +411,7 @@ module: ietf-tvr-topology
            |  +--rw intervals* [start-time]
            |     +--rw start-time    yang:timeticks
            |     +--rw end-time?     yang:timeticks
+           |     +--rw value
            +--rw bandwidth
            |  +--rw recurrence?      recurrence-type
            |  +--rw value-default
@@ -414,7 +420,8 @@ module: ietf-tvr-topology
            |     +--rw intervals* [start-time]
            |        +--rw start-time    yang:timeticks
            |        +--rw end-time?     yang:timeticks
-           |        +--rw value?        te-types:te-bandwidth
+           |        +--rw value
+           |           +--rw bandwidth?   te-types:te-bandwidth
            +--rw delay
               +--rw recurrence?      recurrence-type
               +--rw value-default
@@ -422,7 +429,8 @@ module: ietf-tvr-topology
                  +--rw intervals* [start-time]
                     +--rw start-time    yang:timeticks
                     +--rw end-time?     yang:timeticks
-                    +--rw value?        uint32
+                    +--rw value
+                       +--rw delay?   uint32
       </artwork>
     </section>
 
@@ -588,9 +596,10 @@ module ietf-tvr-common {
 
     container value-default {
       description
-        "Attribute default value. This container should be augmented
-        with a leaf that is used when the value is not covered by
-        the intervals, as well as when the schedule ends.";
+        "Attributes default values. This container should be
+        augmented with one or more leafs, each of which is used
+        when the value is not covered by a base-schedule interval,
+        as well as when the schedule ends.";
     }
 
     container base-schedule {
@@ -648,6 +657,11 @@ module ietf-tvr-common {
             "End time of the scheduled change. The calculation of the
              end-time is the same as the start-time.";
         }
+        container value {
+          description
+           "Attribute value(s). This container should be augmented
+           with attributes that apply to the current interval.";
+        }
         description
           "List of intervals for action or attribute modification.
            The intervals should be contained within each recurrence.
@@ -670,7 +684,6 @@ module ietf-tvr-common {
       "Complete schedule for a action or attribute modification.";
   }
 }
-
 <CODE ENDS>
       ]]></artwork>
     </section>
@@ -921,8 +934,8 @@ module ietf-tvr-topology {
                  generic format.";
               }
             }
-            augment base-schedule/intervals {
-              leaf value {
+            augment base-schedule/intervals/value {
+              leaf bandwidth {
                 type te-types:te-bandwidth;
                 description
                  "The predicted link capacity specified in a
@@ -937,8 +950,8 @@ module ietf-tvr-topology {
              value measured by the system is less than this value
              the predicted value SHOULD be used.";
           uses tvr-cmn:base-schedule {
-            augment base-schedule/intervals {
-              leaf value {
+            augment base-schedule/intervals/value {
+              leaf delay {
                 type uint32 {
                   range "0..16777215";
                 }
@@ -1126,10 +1139,19 @@ module ietf-tvr-ospf-schedule {
   augment "/rt:routing/rt:control-plane-protocols/"
     + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
     + "ospf:interfaces/ospf:interface" {
-    container scheduled-cost {
+    list scheduled-cost {
+      key "start-date-time";
       description
         "Augment OSPF interface with a scheduled interface cost.";
-      uses tvr-cmn:schedule;
+      uses tvr-cmn:schedule {
+        augment base-schedule/intervals/value {
+          leaf cost {
+            type uint32;
+            description
+             "interface cost";
+          }
+        }
+      }
     }
   }
 }
