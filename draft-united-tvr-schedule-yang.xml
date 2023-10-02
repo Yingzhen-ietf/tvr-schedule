@@ -54,7 +54,7 @@
     <!-- The abbreviated title is used in the page header - it is only necessary if the
          full title is longer than 39 characters -->
 
-  <title abbrev="TVR Schedule YANG">YANG Model for Scheduled Attributes </title>
+  <title abbrev="TVR Schedule YANG">YANG Data Model for Scheduled Attributes </title>
 
     <!-- add 'role="editor"' below for the editors if appropriate -->
 
@@ -167,7 +167,7 @@
         in this document.
       </t>
 
-      <t>Module ietf-tvr-common.yang contains the common YANG definitions. Module
+      <t>Module ietf-tvr-schedule.yang contains the common YANG definitions. Module
         ietf-tvr-topology.yang defines a network topology with time-variant
         availability. Module ietf-tvr-node.yang is to be used to manage scheduled
         attributes of a single node.
@@ -195,7 +195,7 @@
 
     <section title="Design of the model">
       <section title="Common Definitions">
-        <t>Module ietf-tvr-common.yang contains the common definitions
+        <t>Module ietf-tvr-schedule.yang contains the common definitions
           that can be used by other modules.
         </t>
         <t>
@@ -265,12 +265,12 @@ Attributes
 
         <t>
           The following is the tree diagram of the groupings
-          in tvr-common.yang. 
+          in ietf-tvr-schedule.yang. 
         </t>
         <figure>
           <name>Tree diagram of common TVR groupings</name>
           <artwork>
-            module: ietf-tvr-common
+            module: ietf-tvr-schedule
 
   grouping schedule-lifetime:
     +-- start-date-time?       yang:date-and-time
@@ -311,8 +311,8 @@ Attributes
       <section title="TVR Node YANG Module">
         <t>Module ietf-tvr-node.yang is a device model and designed to
           manage a single node with scheduled attributes.</t>
-        <t>Each node has  list of interfaces, and each interface has
-          a power up and down schedule.</t>
+        <t>Each node has  list of interfaces, and each interface has 
+          a list of power up and down schedules.</t>
       </section>
       <section title="TVR Topology YANG Module">
         <t>
@@ -324,7 +324,7 @@ Attributes
           Each node has a list of links. Links are modeled as unidirectional.
           Link availability is described from the viewpoint of a particular
           source node (the transmitting node) and beginning at a particular
-          time.Each link in the list contains the range of times during
+          time. Each link in the list contains the range of times during
           which it is available.
         </t>
         <t>
@@ -359,11 +359,13 @@ module: ietf-tvr-node
      |  |     +--rw end-date-time?   yang:date-and-time
      |  +--rw recurrence?            recurrence-type
      |  +--rw value-default
+     |  |  +--rw default-power?   boolean
      |  +--rw base-schedule
      |     +--rw intervals* [start-time]
      |        +--rw start-time    yang:timeticks
      |        +--rw end-time?     yang:timeticks
      |        +--rw value
+     |           +--rw power?   boolean
      +--rw interface-schedule
         +--rw interfaces* [name]
            +--rw name                string
@@ -378,11 +380,13 @@ module: ietf-tvr-node
               |     +--rw end-date-time?   yang:date-and-time
               +--rw recurrence?            recurrence-type
               +--rw value-default
+              |  +--rw default-available?   boolean
               +--rw base-schedule
                  +--rw intervals* [start-time]
                     +--rw start-time    yang:timeticks
                     +--rw end-time?     yang:timeticks
                     +--rw value
+                       +--rw availble?   boolean
       </artwork>
     </section>
     <section title="TVR Topology YANG Tree">
@@ -407,11 +411,13 @@ module: ietf-tvr-topology
      |     |     +--rw end-date-time?   yang:date-and-time
      |     +--rw recurrence?            recurrence-type
      |     +--rw value-default
+     |     |  +--rw default-node-available?   boolean
      |     +--rw base-schedule
      |        +--rw intervals* [start-time]
      |           +--rw start-time    yang:timeticks
      |           +--rw end-time?     yang:timeticks
      |           +--rw value
+     |              +--rw node-availble?   boolean
      +--rw links* [source-node source-link-id]
         +--rw source-node         inet:uri
         +--rw destination-node?   inet:uri
@@ -425,13 +431,6 @@ module: ietf-tvr-topology
            |  |  +--rw duration?        uint32
            |  +--:(end-date-time)
            |     +--rw end-date-time?   yang:date-and-time
-           +--rw recurrence?            recurrence-type
-           +--rw value-default
-           +--rw base-schedule
-           |  +--rw intervals* [start-time]
-           |     +--rw start-time    yang:timeticks
-           |     +--rw end-time?     yang:timeticks
-           |     +--rw value
            +--rw bandwidth
            |  +--rw recurrence?      recurrence-type
            |  +--rw value-default
@@ -445,6 +444,7 @@ module: ietf-tvr-topology
            +--rw delay
               +--rw recurrence?      recurrence-type
               +--rw value-default
+              |  +--rw default-delay?   uint32
               +--rw base-schedule
                  +--rw intervals* [start-time]
                     +--rw start-time    yang:timeticks
@@ -458,13 +458,13 @@ module: ietf-tvr-topology
 
 
   <section title="TVR Schedule YANG Modules">
-    <section title="TVR Common YANG Module">
+    <section title="TVR Schedule YANG Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-common@2023-09-22.yang"
-module ietf-tvr-common {
+<CODE BEGINS> file "ietf-tvr-schedule@2023-10-02.yang"
+module ietf-tvr-schedule {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-common";
-  prefix tvr-cmn;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
+  prefix tvr-schd;
 
   import ietf-yang-types {
     prefix "yang";
@@ -518,7 +518,7 @@ module ietf-tvr-common {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-09-22 {
+  revision 2023-10-02 {
     description
       "Initial Version";
     reference
@@ -604,12 +604,7 @@ module ietf-tvr-common {
   grouping base-schedule {
     leaf recurrence {
       type recurrence-type;
-      must "(current() != 'once') or ../start-date-time" {
-        error-message "A single occurrence requires a start-time";
-        description
-          "With single recurrence of a schedule, a start-time
-           is required.";
-       }
+      default "once";
       description
         "Type of recurrence";
     }
@@ -708,12 +703,8 @@ module ietf-tvr-common {
       ]]></artwork>
     </section>
     <section title="TVR Schedule Node Module">
-    <t>The following RFCs are referenced in the "ietf-tvr-node" YANG
-      module: <xref target="RFC6991"/>, <xref target="RFC8343"/> and
-      <xref target="RFC8530"/>.</t>
-
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2023-09-12.yang"
+<CODE BEGINS> file "ietf-tvr-node@2023-10-02.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
@@ -723,8 +714,8 @@ module ietf-tvr-node {
     prefix "yang";
   }
 
-  import ietf-tvr-common {
-    prefix "tvr-cmn";
+  import ietf-tvr-schedule {
+    prefix "tvr-schd";
   }
 
   organization
@@ -773,7 +764,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-09-12 {
+  revision 2023-10-02 {
     description
       "Initial Version";
     reference
@@ -795,7 +786,23 @@ module ietf-tvr-node {
       key "start-date-time";
       description
         "Scheduled times that the power is up.";
-      uses tvr-cmn:schedule;
+      uses tvr-schd:schedule {
+        augment value-default {
+          leaf default-power {
+            type boolean;
+            default false;
+            description
+              "By default, the node is powed off.";
+          }
+        }
+        augment base-schedule/intervals/value {
+          leaf power {
+            type boolean;
+            description
+              "Node availability.";
+          }
+        }
+      }
     }
 
     container interface-schedule {
@@ -807,7 +814,9 @@ module ietf-tvr-node {
         leaf name {
           type string;
           description
-            "Name of the interface.";
+            "Name of the interface.
+             If used with the ietf-interfaces module, the name should
+             match the name of the interface.";
         }
 
         list up-down-schedule {
@@ -817,19 +826,34 @@ module ietf-tvr-node {
            work with the leaf 'enabled' for the configured state
            of the interface.";
 
-          uses tvr-cmn:schedule;
+          uses tvr-schd:schedule {
+            augment value-default {
+              leaf default-available {
+                type boolean;
+                default false;
+                description
+                  "By default, the link is not available.";
+              }
+            }
+            augment base-schedule/intervals/value {
+              leaf availble {
+                type boolean;
+                description
+                  "Link availability.";
+              }
+            }
+          }
         }
       }
     }
   }
 }
-
 <CODE ENDS>
       ]]></artwork>
     </section>
     <section title="TVR Toplogy Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2023-09-22.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2023-10-02.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -845,8 +869,8 @@ module ietf-tvr-topology {
     prefix te-types;
   }
 
-  import ietf-tvr-common {
-    prefix "tvr-cmn";
+  import ietf-tvr-schedule {
+    prefix "tvr-schd";
   }
 
   organization
@@ -890,11 +914,11 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2023-09-22 {
+  revision 2023-10-02 {
     description
       "Initial revision";
     reference
-      "RFC XXXX A YANG Data Model for Time Variant Attributes";
+      "RFC XXXX: YANG Data Model for Scheduled Attributes";
   }
 
   container topology-schedule {
@@ -911,7 +935,23 @@ module ietf-tvr-topology {
         key "start-date-time";
         description
           "The time at which this node becomes available.";
-        uses tvr-cmn:schedule;
+        uses tvr-schd:schedule {
+          augment value-default {
+            leaf default-node-available {
+              type boolean;
+              default false;
+              description
+                "By default, the node is powed off.";
+            }
+          }
+          augment base-schedule/intervals/value {
+            leaf node-availble {
+              type boolean;
+              description
+                "Node availability.";
+            }
+          }
+        }
       }  
     }
 
@@ -936,7 +976,8 @@ module ietf-tvr-topology {
         key "start-date-time";
         description
           "The time at which this link becomes available.";
-        uses tvr-cmn:schedule;
+        uses tvr-schd:schedule-lifetime;
+
         container bandwidth {
           description
             "Scheduled link bandwidth.
@@ -944,22 +985,22 @@ module ietf-tvr-topology {
              value, the system value is used.  If the value measured
              by the system is greater than this value the predicted
              value SHOULD be used.";
-          uses tvr-cmn:base-schedule {
+          uses tvr-schd:base-schedule {
             augment value-default {
               leaf default-bandwidth {
                 type te-types:te-bandwidth;
                 default "0";
                 description
-                 "The predicted link capacity specified in a
-                 generic format.";
+                  "The default link capacity specified in a
+                   generic format.";
               }
             }
             augment base-schedule/intervals/value {
               leaf bandwidth {
                 type te-types:te-bandwidth;
                 description
-                 "The predicted link capacity specified in a
-                 generic format.";
+                  "The predicted link capacity specified in a
+                   generic format.";
               }
             }
           }
@@ -969,15 +1010,25 @@ module ietf-tvr-topology {
             "The one-way delay or latency in microseconds. If the
              value measured by the system is less than this value
              the predicted value SHOULD be used.";
-          uses tvr-cmn:base-schedule {
+          uses tvr-schd:base-schedule {
+            augment value-default {
+              leaf default-delay {
+                type uint32 {
+                  range "0..16777215";
+                }
+                description
+                  "The default link capacity specified in a
+                   generic format.";
+              }
+            }
             augment base-schedule/intervals/value {
               leaf delay {
                 type uint32 {
                   range "0..16777215";
                 }
                 description
-                 "The predicted link capacity specified in a
-                 generic format.";
+                  "The predicted link delayspecified in a
+                   generic format.";
               }
             }
           }
@@ -1013,7 +1064,8 @@ module ietf-tvr-topology {
       </t>
 
       <t>
-        There are a number of data nodes defined in ietf-tvr-schedule.yang module
+        There are a number of data nodes defined in ietf-tvr-node.yang module and
+        ietf-tvr-topology.yang
         that are writable/creatable/deletable (i.e., config true, which is the default).
         These data nodes may be considered sensitive or vulnerable in some network
         environments. Write operations (e.g., edit-config) to these data nodes without
@@ -1021,14 +1073,16 @@ module ietf-tvr-topology {
         the subtrees and data nodes and their sensitivity/vulnerability:
       </t>
       <ul spacing="compact" empty="true">
-        <li>/if:interfaces/if:interface/scheduled-attributes</li>
-        <li>/lne:logical-network-elements/lne:logical-network-element/scheduled-attribute
+        <li>/node-schedule/power-schedule</li>
+        <li>/node-schedule/interface-schedule</li>
+        <li>/topology-schedule/nodes/available</li>
+        <li>/topology-schedule/links/available
         Modifications to these scheduled attributes may result in a
         denial of service.</li>
       </ul>
 
       <t>
-        Some of the readable data nodes in the ietf-tvr-schedule.yang module
+        Some of the readable data nodes in the ietf-tvr-node.yang module and ietf-tvr-topolgy.yang module
         may be considered sensitive or vulnerable in some network environments. It is thus
         important to control read access (e.g., via get, get-config, or notification)
         to these data nodes.
@@ -1043,7 +1097,7 @@ module ietf-tvr-topology {
   </t>
 
    <artwork>
-   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-common
+   URI: urn:ietf:params:xml:ns:yang:ietf-tvr-schedule
    Registrant Contact: The IESG.
    XML: N/A, the requested URI is an XML namespace.
    </artwork>
@@ -1062,9 +1116,9 @@ module ietf-tvr-topology {
      registry <xref target="RFC6020"/>.
    </t>
    <artwork>
-   name: ietf-tvr-common
-   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-common
-   prefix: tvr-cmn
+   name: ietf-tvr-schedule
+   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-schedule
+   prefix: tvr-schd
    reference: RFC XXXX
    </artwork>
     <artwork>
@@ -1152,8 +1206,8 @@ module ietf-tvr-ospf-schedule {
       "RFC 9129: A YANG Data Model for OSPF Protocol";
   }
 
-  import ietf-tvr-common {
-    prefix "tvr-cmn";
+  import ietf-tvr-schedule {
+    prefix "tvr-schd";
   }
 
   augment "/rt:routing/rt:control-plane-protocols/"
@@ -1163,7 +1217,7 @@ module ietf-tvr-ospf-schedule {
       key "start-date-time";
       description
         "Augment OSPF interface with a scheduled interface cost.";
-      uses tvr-cmn:schedule {
+      uses tvr-schd:schedule {
         augment base-schedule/intervals/value {
           leaf cost {
             type uint32;
@@ -1206,17 +1260,23 @@ module ietf-tvr-ospf-schedule {
         <start-date-time>2023-08-12T00:00:00.00Z</start-date-time>
         <end-date-time>2023-08-13T24:00:00.00Z</end-date-time>
         <recurrence>daily</recurrence>
-        <value-default>1</value-default>
+        <value-default>
+          <default-power>false</default-power>
+        </value-default>
         <base-schedule>
           <intervals>
             <start-time>360000</start-time>
             <end-time>1800000</end-time>
-            <value>0</value>
+            <value>
+              <power>true</power>
+            </value>
           </intervals>
           <intervals>
             <start-time>7200000</start-time>
             <end-time>8280000</end-time>
-            <value>0</value>
+            <value>
+              <power>true</power>
+            </value>
           </intervals>
         </base-schedule>
       </power-schedule>

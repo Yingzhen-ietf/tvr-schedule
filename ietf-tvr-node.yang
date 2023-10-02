@@ -7,8 +7,8 @@ module ietf-tvr-node {
     prefix "yang";
   }
 
-  import ietf-tvr-common {
-    prefix "tvr-cmn";
+  import ietf-tvr-schedule {
+    prefix "tvr-schd";
   }
 
   organization
@@ -57,7 +57,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-09-12 {
+  revision 2023-10-02 {
     description
       "Initial Version";
     reference
@@ -79,7 +79,23 @@ module ietf-tvr-node {
       key "start-date-time";
       description
         "Scheduled times that the power is up.";
-      uses tvr-cmn:schedule;
+      uses tvr-schd:schedule {
+        augment value-default {
+          leaf default-power {
+            type boolean;
+            default false;
+            description
+              "By default, the node is powed off.";
+          }
+        }
+        augment base-schedule/intervals/value {
+          leaf power {
+            type boolean;
+            description
+              "Node availability.";
+          }
+        }
+      }
     }
 
     container interface-schedule {
@@ -91,7 +107,9 @@ module ietf-tvr-node {
         leaf name {
           type string;
           description
-            "Name of the interface.";
+            "Name of the interface.
+             If used with the ietf-interfaces module, the name should
+             match the name of the interface.";
         }
 
         list up-down-schedule {
@@ -101,7 +119,23 @@ module ietf-tvr-node {
            work with the leaf 'enabled' for the configured state
            of the interface.";
 
-          uses tvr-cmn:schedule;
+          uses tvr-schd:schedule {
+            augment value-default {
+              leaf default-available {
+                type boolean;
+                default false;
+                description
+                  "By default, the link is not available.";
+              }
+            }
+            augment base-schedule/intervals/value {
+              leaf availble {
+                type boolean;
+                description
+                  "Link availability.";
+              }
+            }
+          }
         }
       }
     }

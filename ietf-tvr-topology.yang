@@ -13,8 +13,8 @@ module ietf-tvr-topology {
     prefix te-types;
   }
 
-  import ietf-tvr-common {
-    prefix "tvr-cmn";
+  import ietf-tvr-schedule {
+    prefix "tvr-schd";
   }
 
   organization
@@ -58,11 +58,11 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2023-09-22 {
+  revision 2023-10-02 {
     description
       "Initial revision";
     reference
-      "RFC XXXX A YANG Data Model for Time Variant Attributes";
+      "RFC XXXX: YANG Data Model for Scheduled Attributes";
   }
 
   container topology-schedule {
@@ -79,7 +79,23 @@ module ietf-tvr-topology {
         key "start-date-time";
         description
           "The time at which this node becomes available.";
-        uses tvr-cmn:schedule;
+        uses tvr-schd:schedule {
+          augment value-default {
+            leaf default-node-available {
+              type boolean;
+              default false;
+              description
+                "By default, the node is powed off.";
+            }
+          }
+          augment base-schedule/intervals/value {
+            leaf node-availble {
+              type boolean;
+              description
+                "Node availability.";
+            }
+          }
+        }
       }  
     }
 
@@ -104,7 +120,8 @@ module ietf-tvr-topology {
         key "start-date-time";
         description
           "The time at which this link becomes available.";
-        uses tvr-cmn:schedule;
+        uses tvr-schd:schedule-lifetime;
+
         container bandwidth {
           description
             "Scheduled link bandwidth.
@@ -112,22 +129,22 @@ module ietf-tvr-topology {
              value, the system value is used.  If the value measured
              by the system is greater than this value the predicted
              value SHOULD be used.";
-          uses tvr-cmn:base-schedule {
+          uses tvr-schd:base-schedule {
             augment value-default {
               leaf default-bandwidth {
                 type te-types:te-bandwidth;
                 default "0";
                 description
-                 "The predicted link capacity specified in a
-                 generic format.";
+                  "The default link capacity specified in a
+                   generic format.";
               }
             }
             augment base-schedule/intervals/value {
               leaf bandwidth {
                 type te-types:te-bandwidth;
                 description
-                 "The predicted link capacity specified in a
-                 generic format.";
+                  "The predicted link capacity specified in a
+                   generic format.";
               }
             }
           }
@@ -137,15 +154,25 @@ module ietf-tvr-topology {
             "The one-way delay or latency in microseconds. If the
              value measured by the system is less than this value
              the predicted value SHOULD be used.";
-          uses tvr-cmn:base-schedule {
+          uses tvr-schd:base-schedule {
+            augment value-default {
+              leaf default-delay {
+                type uint32 {
+                  range "0..16777215";
+                }
+                description
+                  "The default link capacity specified in a
+                   generic format.";
+              }
+            }
             augment base-schedule/intervals/value {
               leaf delay {
                 type uint32 {
                   range "0..16777215";
                 }
                 description
-                 "The predicted link capacity specified in a
-                 generic format.";
+                  "The predicted link delayspecified in a
+                   generic format.";
               }
             }
           }
