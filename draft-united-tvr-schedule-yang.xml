@@ -131,7 +131,7 @@
       <t>
         The YANG model in this document includes three modules, and can be used
         to manage network resources and topologies with scheduled attributes, such
-        as predictable link loss and link connectivity as a function of time. The intent 
+        as predictable link loss and link connectivity as a function of time. The intent
         is to have this information be utilized by Time-Variant Routing systems.
       </t>
     </abstract>
@@ -154,7 +154,7 @@
         at which one router will be able to establish a link with another router.
         Links can be predictably lost and re-established, and neighbors may
         change as a function of time. For examples of such networks and
-        scenarios, please reference TVR (Time-Variant Routing) Use Cases 
+        scenarios, please reference TVR (Time-Variant Routing) Use Cases
        <xref target="I-D.ietf-tvr-use-cases"/>.</t>
 
       <t>
@@ -163,7 +163,7 @@
         in this document.
       </t>
 
-      <t>Module ietf-tvr-schedule.yang contains the common YANG definitions. Module
+      <t>Module ietf-tvr-schedule.yang contains the schedule YANG definitions. Module
         ietf-tvr-topology.yang defines a network topology with time-variant
         availability. Module ietf-tvr-node.yang is to be used to manage scheduled
         attributes of a single node.
@@ -190,8 +190,8 @@
     </section>
 
     <section title="Design of the model">
-      <section title="Common Definitions">
-        <t>Module ietf-tvr-schedule.yang contains the common definitions
+      <section title="Schedule Definitions">
+        <t>Module ietf-tvr-schedule.yang contains schedule definitions
           that can be used by other modules.
         </t>
         <t>
@@ -261,10 +261,10 @@ Attributes
 
         <t>
           The following is the tree diagram of the groupings
-          in ietf-tvr-schedule.yang. 
+          in ietf-tvr-schedule.yang.
         </t>
         <figure>
-          <name>Tree diagram of common TVR groupings</name>
+          <name>Tree diagram of TVR Schedule groupings</name>
           <artwork>
             module: ietf-tvr-schedule
 
@@ -307,7 +307,7 @@ Attributes
       <section title="TVR Node YANG Module">
         <t>Module ietf-tvr-node.yang is a device model and designed to
           manage a single node with scheduled attributes.</t>
-        <t>Each node has  list of interfaces, and each interface has 
+        <t>Each node has  list of interfaces, and each interface has
           a list of power up and down schedules.</t>
       </section>
       <section title="TVR Topology YANG Module">
@@ -685,7 +685,7 @@ module ietf-tvr-schedule {
          modification";
     }
     description
-      "Grouping definition of base-schedule.";    
+      "Grouping definition of base-schedule.";
   }
 
   grouping schedule {
@@ -781,21 +781,26 @@ module ietf-tvr-node {
     list power-schedule {
       key "start-date-time";
       description
-        "Scheduled times that the power is up.";
+        "Power schedule for the node. The node's power is
+         represented by a boolean value with 'true' indicating
+         the node is powered on and 'false' indicating the node
+         is powered off.";
       uses tvr-schd:schedule {
         augment value-default {
           leaf default-power {
             type boolean;
             default false;
             description
-              "By default, the node is powed off.";
+              "This indicates the default node power when for
+               time periods when no interval is defined. If
+               unspecified, the node is powered down by default.";
           }
         }
         augment base-schedule/intervals/value {
           leaf power {
             type boolean;
             description
-              "Node availability.";
+              "Indicates whether the node is powered on.";
           }
         }
       }
@@ -844,6 +849,7 @@ module ietf-tvr-node {
     }
   }
 }
+
 <CODE ENDS>
       ]]></artwork>
     </section>
@@ -948,7 +954,7 @@ module ietf-tvr-topology {
             }
           }
         }
-      }  
+      }
     }
 
     list links {
@@ -1239,9 +1245,9 @@ module ietf-tvr-ospf-schedule {
 
    1   0          1        0   1    0          1        0  1
   +-|----|---------------|---|-+-|----|---------------|---|-+
-  0 1    5               20 23 0 1    5              20  23 24 
+  0 1    5               20 23 0 1    5              20  23 24
   |        2023/08/12          |        2023/08/13          |
-   
+
 ]]></artwork>
 
        <t>The following XML demonstrate the configuration.</t>

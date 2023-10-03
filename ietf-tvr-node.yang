@@ -78,21 +78,26 @@ module ietf-tvr-node {
     list power-schedule {
       key "start-date-time";
       description
-        "Scheduled times that the power is up.";
+        "Power schedule for the node. The node's power is
+         represented by a boolean value with 'true' indicating
+         the node is powered on and 'false' indicating the node
+         is powered off.";
       uses tvr-schd:schedule {
         augment value-default {
           leaf default-power {
             type boolean;
             default false;
             description
-              "By default, the node is powed off.";
+              "This indicates the default node power when for
+               time periods when no interval is defined. If
+               unspecified, the node is powered down by default.";
           }
         }
         augment base-schedule/intervals/value {
           leaf power {
             type boolean;
             description
-              "Node availability.";
+              "Indicates whether the node is powered on.";
           }
         }
       }
@@ -141,4 +146,3 @@ module ietf-tvr-node {
     }
   }
 }
-
