@@ -427,6 +427,13 @@ module: ietf-tvr-topology
            |  |  +--rw duration?        uint32
            |  +--:(end-date-time)
            |     +--rw end-date-time?   yang:date-and-time
+           +--rw recurrence?            recurrence-type
+           +--rw value-default
+           +--rw base-schedule
+           |  +--rw intervals* [start-time]
+           |     +--rw start-time    yang:timeticks
+           |     +--rw end-time?     yang:timeticks
+           |     +--rw value
            +--rw bandwidth
            |  +--rw recurrence?      recurrence-type
            |  +--rw value-default
@@ -954,7 +961,7 @@ module ietf-tvr-topology {
             }
           }
         }
-      }
+      }  
     }
 
     list links {
@@ -978,7 +985,7 @@ module ietf-tvr-topology {
         key "start-date-time";
         description
           "The time at which this link becomes available.";
-        uses tvr-schd:schedule-lifetime;
+        uses tvr-schd:schedule;
 
         container bandwidth {
           description

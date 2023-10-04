@@ -120,7 +120,7 @@ module ietf-tvr-topology {
         key "start-date-time";
         description
           "The time at which this link becomes available.";
-        uses tvr-schd:schedule-lifetime;
+        uses tvr-schd:schedule;
 
         container bandwidth {
           description
