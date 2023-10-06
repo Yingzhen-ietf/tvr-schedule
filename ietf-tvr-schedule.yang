@@ -189,13 +189,13 @@ module ietf-tvr-schedule {
           type yang:timeticks;
           must "(current() > ../start-time) and "
             +  "((../../../recurrence != 'hourly') or "
-            +      "(current() < 360000)) and "
+            +      "(current() < (./start-time + 360000))) and "
             +  "((../../../recurrence != 'daily') or "
-            +      "(current() < 8640000)) and "
+            +      "(current() < (./start-time + 8640000))) and "
             +  "((../../../recurrence != 'monthly') or "
-            +      "(current() < 267840000)) and "
+            +      "(current() < (./start-time + 267840000))) and "
             +   "((../../../recurrence != 'yearly') or "
-            +      "(current() < 3162240000))"  {
+            +      "(current() < (./start-time + 3162240000)))"  {
             error-message
               "The end-time must be greater than the end time and
                must not exceed the recurrrence interval.";
@@ -203,7 +203,7 @@ module ietf-tvr-schedule {
               "The end-time must be greater than the end time and
                must not exceed the recurrrence interval. For example,
                for a 'daily' recurrence, the time-tick offset must
-               not exceed 24 hours.";
+               not exceed the start-time + 24 hours.";
           }
           description
             "End time of the scheduled change. The calculation of the
@@ -226,7 +226,7 @@ module ietf-tvr-schedule {
          modification";
     }
     description
-      "Grouping definition of base-schedule.";    
+      "Grouping definition of base-schedule.";
   }
 
   grouping schedule {
@@ -236,4 +236,3 @@ module ietf-tvr-schedule {
       "Complete schedule for a action or attribute modification.";
   }
 }
-
