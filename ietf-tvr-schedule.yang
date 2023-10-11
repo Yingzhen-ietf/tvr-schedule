@@ -55,7 +55,7 @@ module ietf-tvr-schedule {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-10-02 {
+  revision 2023-10-11 {
     description
       "Initial Version";
     reference
@@ -189,13 +189,13 @@ module ietf-tvr-schedule {
           type yang:timeticks;
           must "(current() > ../start-time) and "
             +  "((../../../recurrence != 'hourly') or "
-            +      "(current() < (./start-time + 360000))) and "
+            +      "(current() < (../start-time + 360000))) and "
             +  "((../../../recurrence != 'daily') or "
-            +      "(current() < (./start-time + 8640000))) and "
+            +      "(current() < (../start-time + 8640000))) and "
             +  "((../../../recurrence != 'monthly') or "
-            +      "(current() < (./start-time + 267840000))) and "
+            +      "(current() < (../start-time + 267840000))) and "
             +   "((../../../recurrence != 'yearly') or "
-            +      "(current() < (./start-time + 3162240000)))"  {
+            +      "(current() < (../start-time + 3162240000)))"  {
             error-message
               "The end-time must be greater than the end time and
                must not exceed the recurrrence interval.";

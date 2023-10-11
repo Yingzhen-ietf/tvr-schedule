@@ -58,7 +58,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2023-10-02 {
+  revision 2023-10-11 {
     description
       "Initial revision";
     reference
@@ -66,8 +66,12 @@ module ietf-tvr-topology {
   }
 
   container topology-schedule {
+    description
+      "Network topology schedules.";
     list nodes {
       key "node-id";
+      description
+        "List of nodes with schedules.";
       leaf node-id {
         type inet:uri;
         description
@@ -81,15 +85,19 @@ module ietf-tvr-topology {
           "The time at which this node becomes available.";
         uses tvr-schd:schedule {
           augment value-default {
+            description
+              "Augment default node availability.";
             leaf default-node-available {
               type boolean;
               default false;
               description
-                "By default, the node is powed off.";
+                "By default, the node is powered off.";
             }
           }
           augment base-schedule/intervals/value {
-            leaf node-availble {
+            description
+              "Augment scheduled node availability.";
+            leaf node-available {
               type boolean;
               description
                 "Node availability.";
@@ -101,6 +109,8 @@ module ietf-tvr-topology {
 
     list links {
       key "source-node source-link-id";
+      description
+        "List of links.";
       leaf source-node {
         type inet:uri;
         description
@@ -131,6 +141,8 @@ module ietf-tvr-topology {
              value SHOULD be used.";
           uses tvr-schd:base-schedule {
             augment value-default {
+              description
+                "Augment default interface bandwidth.";
               leaf default-bandwidth {
                 type te-types:te-bandwidth;
                 default "0";
@@ -140,6 +152,8 @@ module ietf-tvr-topology {
               }
             }
             augment base-schedule/intervals/value {
+              description
+                "Augment scheduled interface bandwidth.";
               leaf bandwidth {
                 type te-types:te-bandwidth;
                 description
@@ -156,6 +170,8 @@ module ietf-tvr-topology {
              the predicted value SHOULD be used.";
           uses tvr-schd:base-schedule {
             augment value-default {
+              description
+                "Augment default delay.";
               leaf default-delay {
                 type uint32 {
                   range "0..16777215";
@@ -166,12 +182,14 @@ module ietf-tvr-topology {
               }
             }
             augment base-schedule/intervals/value {
+              description
+                "Augment scheduled delay.";
               leaf delay {
                 type uint32 {
                   range "0..16777215";
                 }
                 description
-                  "The predicted link delayspecified in a
+                  "The predicted link delay specified in a
                    generic format.";
               }
             }

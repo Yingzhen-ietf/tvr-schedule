@@ -57,7 +57,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2023-10-02 {
+  revision 2023-10-11 {
     description
       "Initial Version";
     reference
@@ -84,6 +84,8 @@ module ietf-tvr-node {
          is powered off.";
       uses tvr-schd:schedule {
         augment value-default {
+          description
+            "Augment the default power state.";
           leaf default-power {
             type boolean;
             default false;
@@ -94,6 +96,8 @@ module ietf-tvr-node {
           }
         }
         augment base-schedule/intervals/value {
+          description
+            "Augmment the scheduled power state.";
           leaf power {
             type boolean;
             description
@@ -109,6 +113,8 @@ module ietf-tvr-node {
 
       list interfaces {
         key "name";
+        description
+          "List of interface with schedules.";
         leaf name {
           type string;
           description
@@ -126,6 +132,8 @@ module ietf-tvr-node {
 
           uses tvr-schd:schedule {
             augment value-default {
+              description
+                "Augment default interface state.";
               leaf default-available {
                 type boolean;
                 default false;
@@ -134,6 +142,8 @@ module ietf-tvr-node {
               }
             }
             augment base-schedule/intervals/value {
+              description
+                "Augment scheduled interface state.";
               leaf availble {
                 type boolean;
                 description
