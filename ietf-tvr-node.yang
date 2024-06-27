@@ -31,8 +31,8 @@ module ietf-tvr-node {
                <mailto:dfedyk@labn.net>";
 
   description
-    "The YANG module defines a schedule for changing
-     attributes of a single node.
+    "The YANG module is to configure and manage node attributes
+     with schedules.
 
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
@@ -59,7 +59,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-03-03 {
+  revision 2024-06-26 {
     description
       "Initial Version";
     reference
@@ -68,17 +68,17 @@ module ietf-tvr-node {
 
   container node-schedule {
     description
-      "This container defined time variant attributes
-       for node's schedule.";
+      "This container defines a node's time variant attributes
+       with schedules.";
 
-    leaf router-id {
+    leaf node-id {
       type yang:dotted-quad;
       description
-        "A 32-bit number used to identify a router.";
+        "A 32-bit number used to identify a node.";
     }
 
 
-    container power-schedule {
+    container node-power-schedule {
       description
         "Power schedule for the node. The node's power is
          represented by a boolean value with 'true' indicating
@@ -89,8 +89,8 @@ module ietf-tvr-node {
         type boolean;
         default false;
         description
-          "This indicates the default node power when for
-           time periods when no interval is defined. If
+          "This indicates the default node power for the time 
+           periods when no specific power value is specified. If
            unspecified, the node is powered down by default.";
       }
       uses tvr-schd:tvr-schedule {

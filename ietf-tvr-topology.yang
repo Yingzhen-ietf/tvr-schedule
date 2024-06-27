@@ -58,7 +58,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2024-03-03 {
+  revision 2024-06-26 {
     description
       "Initial revision";
     reference

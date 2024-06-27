@@ -26,9 +26,9 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8342.xml'>
     <!ENTITY RFC8446 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
-    <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-01.xml'>
-    <!ENTITY I-D.ma-opsawg-schedule-yang PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ma-opsawg-schedule-yang-04.xml'>
+    <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-09.xml'>
+    <!ENTITY I-D.ietf-netmod-schedule-yang PUBLIC ''
+     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-02.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -39,7 +39,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-united-tvr-schedule-yang-01" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-01" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -62,10 +62,6 @@
       <organization>Futurewei Technologies</organization>
       <address>
         <postal>
-          <street>2330 Central Expressway</street>
-          <city>Santa Clara</city>
-          <region>CA</region>
-          <code>95050</code>
           <country>USA</country>
         </postal>
         <phone></phone>
@@ -197,13 +193,14 @@
           that can be used by other modules.
         </t>
         <t>
-          The grouping "tvr-schedule" consists of a list of schedule, and each
-          schedule consists time periods with recurrence. For each schedule
-          instance, it uses the grouping "recurrence" defined in <xref target="I-D.ma-opsawg-schedule-yang"/>.
+          The grouping "tvr-schedule" consists of a list of schedules, and each
+          schedule is either a single time period or recurring time periods. For each schedule
+          instance, it utilizes the groupings "period-of-time" and "recurrence-utc" as
+          defined in <xref target="I-D.ietf-netmod-schedule-yang"/>.
         </t>
         <t>
-          The container "attr-value" is a place holder for a model that
-          uses the "tvr-schedule", so attribute values can be augmented.
+          The container "attr-value" is a place holder for a module that
+          uses the "tvr-schedule", where attribute values can be augmented.
         </t> 
         <t>
           When an attribute's schedule ends, the "value-default" SHOULD
@@ -236,7 +233,8 @@ Attributes
       <section title="TVR Node YANG Module">
         <t>Module ietf-tvr-node.yang is a device model and designed to
           manage a single node with scheduled attributes.</t>
-        <t>Each node has  list of interfaces, and each interface has
+        <t>Each node has power schedules at the node level and interface level.
+          A node has a list of interfaces, and each interface has
           a list of power up and down schedules.</t>
       </section>
       <section title="TVR Topology YANG Module">
@@ -272,22 +270,33 @@ Attributes
       <artwork>
 module: ietf-tvr-node
   +--rw node-schedule
-     +--rw router-id?            yang:dotted-quad
-     +--rw power-schedule
+     +--rw node-id?               yang:dotted-quad
+     +--rw node-power-schedule
      |  +--rw power-default?   boolean
      |  +--rw schedules* [schedule-id]
-     |     +--rw schedule-id         uint32
-     |     +--rw recurrence-first
-     |     |  +--rw date-time-start?        union
-     |     |  +--rw time-zone-identifier?   sys:timezone-name
-     |     |  +--rw duration?               duration
-     |     +--rw frequency?          identityref
-     |     +--rw interval?           uint32
-     |     +--rw (recurrence-bound)?
-     |     |  +--:(until)
-     |     |  |  +--rw until?        union
-     |     |  +--:(count)
-     |     |     +--rw count?        uint32
+     |     +--rw schedule-id                     uint32
+     |     +--rw (schedule-type)?
+     |     |  +--:(period)
+     |     |  |  +--rw period-description?       string
+     |     |  |  +--rw period-start              yang:date-and-time
+     |     |  |  +--rw time-zone-identifier?     sys:timezone-name
+     |     |  |  +--rw (period-type)?
+     |     |  |     +--:(explicit)
+     |     |  |     |  +--rw period-end?         yang:date-and-time
+     |     |  |     +--:(duration)
+     |     |  |        +--rw duration?           duration
+     |     |  +--:(recurrence)
+     |     |     +--rw recurrence-first
+     |     |     |  +--rw utc-start-time?   yang:date-and-time
+     |     |     |  +--rw duration?         uint32
+     |     |     +--rw (recurrence-bound)?
+     |     |     |  +--:(until)
+     |     |     |  |  +--rw utc-until?          yang:date-and-time
+     |     |     |  +--:(count)
+     |     |     |     +--rw count?              uint32
+     |     |     +--rw recurrence-description?   string
+     |     |     +--rw frequency                 identityref
+     |     |     +--rw interval?                 uint32
      |     +--rw attr-value
      |        +--rw power-state?   boolean
      +--rw interface-schedule
@@ -296,18 +305,29 @@ module: ietf-tvr-node
            +--rw state-default?      boolean
            +--rw up-down-schedule
               +--rw schedules* [schedule-id]
-                 +--rw schedule-id         uint32
-                 +--rw recurrence-first
-                 |  +--rw date-time-start?        union
-                 |  +--rw time-zone-identifier?   sys:timezone-name
-                 |  +--rw duration?               duration
-                 +--rw frequency?          identityref
-                 +--rw interval?           uint32
-                 +--rw (recurrence-bound)?
-                 |  +--:(until)
-                 |  |  +--rw until?        union
-                 |  +--:(count)
-                 |     +--rw count?        uint32
+                 +--rw schedule-id                     uint32
+                 +--rw (schedule-type)?
+                 |  +--:(period)
+                 |  |  +--rw period-description?       string
+                 |  |  +--rw period-start              yang:date-and-time
+                 |  |  +--rw time-zone-identifier?     sys:timezone-name
+                 |  |  +--rw (period-type)?
+                 |  |     +--:(explicit)
+                 |  |     |  +--rw period-end?         yang:date-and-time
+                 |  |     +--:(duration)
+                 |  |        +--rw duration?           duration
+                 |  +--:(recurrence)
+                 |     +--rw recurrence-first
+                 |     |  +--rw utc-start-time?   yang:date-and-time
+                 |     |  +--rw duration?         uint32
+                 |     +--rw (recurrence-bound)?
+                 |     |  +--:(until)
+                 |     |  |  +--rw utc-until?          yang:date-and-time
+                 |     |  +--:(count)
+                 |     |     +--rw count?              uint32
+                 |     +--rw recurrence-description?   string
+                 |     +--rw frequency                 identityref
+                 |     +--rw interval?                 uint32
                  +--rw attr-value
                     +--rw available?   boolean
       </artwork>
@@ -319,78 +339,152 @@ module: ietf-tvr-node
     </t>
 
       <artwork>
-module: ietf-tvr-topology
-  +--rw topology-schedule
-     +--rw nodes* [node-id]
-     |  +--rw node-id      inet:uri
-     |  +--rw available
-     |     +--rw default-node-available?   boolean
-     |     +--rw schedules* [schedule-id]
-     |        +--rw schedule-id         uint32
-     |        +--rw recurrence-first
-     |        |  +--rw date-time-start?        union
-     |        |  +--rw time-zone-identifier?   sys:timezone-name
-     |        |  +--rw duration?               duration
-     |        +--rw frequency?          identityref
-     |        +--rw interval?           uint32
-     |        +--rw (recurrence-bound)?
-     |        |  +--:(until)
-     |        |  |  +--rw until?        union
-     |        |  +--:(count)
-     |        |     +--rw count?        uint32
-     |        +--rw attr-value
-     |           +--rw node-available?   boolean
+module: ietf-tvr-node
+  +--rw node-schedule
+     +--rw node-id?               yang:dotted-quad
+     +--rw node-power-schedule
+     |  +--rw power-default?   boolean
+     |  +--rw schedules* [schedule-id]
+     |     +--rw schedule-id                     uint32
+     |     +--rw (schedule-type)?
+     |     |  +--:(period)
+     |     |  |  +--rw period-description?       string
+     |     |  |  +--rw period-start              yang:date-and-time
+     |     |  |  +--rw time-zone-identifier?     sys:timezone-name
+     |     |  |  +--rw (period-type)?
+     |     |  |     +--:(explicit)
+     |     |  |     |  +--rw period-end?         yang:date-and-time
+     |     |  |     +--:(duration)
+     |     |  |        +--rw duration?           duration
+     |     |  +--:(recurrence)
+     |     |     +--rw recurrence-first
+     |     |     |  +--rw utc-start-time?   yang:date-and-time
+     |     |     |  +--rw duration?         uint32
+     |     |     +--rw (recurrence-bound)?
+     |     |     |  +--:(until)
+     |     |     |  |  +--rw utc-until?          yang:date-and-time
+     |     |     |  +--:(count)
+     |     |     |     +--rw count?              uint32
+     |     |     +--rw recurrence-description?   string
+     |     |     +--rw frequency                 identityref
+     |     |     +--rw interval?                 uint32
+     |     +--rw attr-value
+     |        +--rw power-state?   boolean
+     +--rw interface-schedule
+        +--rw interfaces* [name]
+           +--rw name                union
+           +--rw state-default?      boolean
+           +--rw up-down-schedule
+              +--rw schedules* [schedule-id]
+                 +--rw schedule-id                     uint32
+                 +--rw (schedule-type)?
+                 |  +--:(period)
+                 |  |  +--rw period-description?       string
+                 |  |  +--rw period-start              yang:date-and-time
+                 |  |  +--rw time-zone-identifier?     sys:timezone-name
+                 |  |  +--rw (period-type)?
+                 |  |     +--:(explicit)
+                 |  |     |  +--rw period-end?         yang:date-and-time
+                 |  |     +--:(duration)
+                 |  |        +--rw duration?           duration
+                 |  +--:(recurrence)
+                 |     +--rw recurrence-first
+                 |     |  +--rw utc-start-time?   yang:date-and-time
+                 |     |  +--rw duration?         uint32
+                 |     +--rw (recurrence-bound)?
+                 |     |  +--:(until)
+                 |     |  |  +--rw utc-until?          yang:date-and-time
+                 |     |  +--:(count)
+                 |     |     +--rw count?              uint32
+                 |     +--rw recurrence-description?   string
+                 |     +--rw frequency                 identityref
+                 |     +--rw interval?                 uint32
+                 +--rw attr-value
+                    +--rw available?   boolean
      +--rw links* [source-node source-link-id]
         +--rw source-node         inet:uri
         +--rw destination-node?   inet:uri
         +--rw source-link-id      string
         +--rw available
            +--rw schedules* [schedule-id]
-           |  +--rw schedule-id         uint32
-           |  +--rw recurrence-first
-           |  |  +--rw date-time-start?        union
-           |  |  +--rw time-zone-identifier?   sys:timezone-name
-           |  |  +--rw duration?               duration
-           |  +--rw frequency?          identityref
-           |  +--rw interval?           uint32
-           |  +--rw (recurrence-bound)?
-           |  |  +--:(until)
-           |  |  |  +--rw until?        union
-           |  |  +--:(count)
-           |  |     +--rw count?        uint32
+           |  +--rw schedule-id                     uint32
+           |  +--rw (schedule-type)?
+           |  |  +--:(period)
+           |  |  |  +--rw period-description?       string
+           |  |  |  +--rw period-start              yang:date-and-time
+           |  |  |  +--rw time-zone-identifier?     sys:timezone-name
+           |  |  |  +--rw (period-type)?
+           |  |  |     +--:(explicit)
+           |  |  |     |  +--rw period-end?         yang:date-and-time
+           |  |  |     +--:(duration)
+           |  |  |        +--rw duration?           duration
+           |  |  +--:(recurrence)
+           |  |     +--rw recurrence-first
+           |  |     |  +--rw utc-start-time?   yang:date-and-time
+           |  |     |  +--rw duration?         uint32
+           |  |     +--rw (recurrence-bound)?
+           |  |     |  +--:(until)
+           |  |     |  |  +--rw utc-until?          yang:date-and-time
+           |  |     |  +--:(count)
+           |  |     |     +--rw count?              uint32
+           |  |     +--rw recurrence-description?   string
+           |  |     +--rw frequency                 identityref
+           |  |     +--rw interval?                 uint32
            |  +--rw attr-value
            +--rw bandwidth
            |  +--rw default-bandwidth?   te-types:te-bandwidth
            |  +--rw schedules* [schedule-id]
-           |     +--rw schedule-id         uint32
-           |     +--rw recurrence-first
-           |     |  +--rw date-time-start?        union
-           |     |  +--rw time-zone-identifier?   sys:timezone-name
-           |     |  +--rw duration?               duration
-           |     +--rw frequency?          identityref
-           |     +--rw interval?           uint32
-           |     +--rw (recurrence-bound)?
-           |     |  +--:(until)
-           |     |  |  +--rw until?        union
-           |     |  +--:(count)
-           |     |     +--rw count?        uint32
+           |     +--rw schedule-id                     uint32
+           |     +--rw (schedule-type)?
+           |     |  +--:(period)
+           |     |  |  +--rw period-description?       string
+           |     |  |  +--rw period-start              yang:date-and-time
+           |     |  |  +--rw time-zone-identifier?     sys:timezone-name
+           |     |  |  +--rw (period-type)?
+           |     |  |     +--:(explicit)
+           |     |  |     |  +--rw period-end?         yang:date-and-time
+           |     |  |     +--:(duration)
+           |     |  |        +--rw duration?           duration
+           |     |  +--:(recurrence)
+           |     |     +--rw recurrence-first
+           |     |     |  +--rw utc-start-time?   yang:date-and-time
+           |     |     |  +--rw duration?         uint32
+           |     |     +--rw (recurrence-bound)?
+           |     |     |  +--:(until)
+           |     |     |  |  +--rw utc-until?          yang:date-and-time
+           |     |     |  +--:(count)
+           |     |     |     +--rw count?              uint32
+           |     |     +--rw recurrence-description?   string
+           |     |     +--rw frequency                 identityref
+           |     |     +--rw interval?                 uint32
            |     +--rw attr-value
            |        +--rw bandwidth?   te-types:te-bandwidth
            +--rw delay
               +--rw default-delay?   uint32
               +--rw schedules* [schedule-id]
-                 +--rw schedule-id         uint32
-                 +--rw recurrence-first
-                 |  +--rw date-time-start?        union
-                 |  +--rw time-zone-identifier?   sys:timezone-name
-                 |  +--rw duration?               duration
-                 +--rw frequency?          identityref
-                 +--rw interval?           uint32
-                 +--rw (recurrence-bound)?
-                 |  +--:(until)
-                 |  |  +--rw until?        union
-                 |  +--:(count)
-                 |     +--rw count?        uint32
+                 +--rw schedule-id                     uint32
+                 +--rw (schedule-type)?
+                 |  +--:(period)
+                 |  |  +--rw period-description?       string
+                 |  |  +--rw period-start              yang:date-and-time
+                 |  |  +--rw time-zone-identifier?     sys:timezone-name
+                 |  |  +--rw (period-type)?
+                 |  |     +--:(explicit)
+                 |  |     |  +--rw period-end?         yang:date-and-time
+                 |  |     +--:(duration)
+                 |  |        +--rw duration?           duration
+                 |  +--:(recurrence)
+                 |     +--rw recurrence-first
+                 |     |  +--rw utc-start-time?   yang:date-and-time
+                 |     |  +--rw duration?         uint32
+                 |     +--rw (recurrence-bound)?
+                 |     |  +--:(until)
+                 |     |  |  +--rw utc-until?          yang:date-and-time
+                 |     |  +--:(count)
+                 |     |     +--rw count?              uint32
+                 |     +--rw recurrence-description?   string
+                 |     +--rw frequency                 identityref
+                 |     +--rw interval?                 uint32
                  +--rw attr-value
                     +--rw delay?   uint32
       </artwork>
@@ -402,7 +496,7 @@ module: ietf-tvr-topology
   <section title="TVR Schedule YANG Modules">
     <section title="TVR Schedule YANG Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-schedule@2024-03-03.yang"
+<CODE BEGINS> file "ietf-tvr-schedule@2024-06-26.yang"
 module ietf-tvr-schedule {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
@@ -460,7 +554,7 @@ module ietf-tvr-schedule {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-03-03 {
+  revision 2024-06-26 {
     description
       "Initial Version";
     reference
@@ -475,7 +569,21 @@ module ietf-tvr-schedule {
         description
           "Identifies the schedule.";
       }
-      uses schedule:recurrence;
+      choice schedule-type {
+        description
+          "Choice of schedule type.";
+        case period {
+          description
+            "A schedule with a single instance.";
+          uses schedule:period-of-time;
+        }
+        case recurrence {
+          description
+            "A schedule with recurrence. The time is defined in UTC
+             format.";
+          uses schedule:recurrence-utc;
+        }
+      }
 
       container attr-value {
         description
@@ -486,15 +594,16 @@ module ietf-tvr-schedule {
         "list of schedules.";
     }
     description
-      "A common grouping defintion of schedules.";
+      "A common grouping definition of schedules.";
   }
+
 }
 <CODE ENDS>
       ]]></artwork>
     </section>
     <section title="TVR Schedule Node Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2024-03-03.yang"
+<CODE BEGINS> file "ietf-tvr-node@2024-06-26.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
@@ -528,8 +637,8 @@ module ietf-tvr-node {
                <mailto:dfedyk@labn.net>";
 
   description
-    "The YANG module defines a schedule for changing
-     attributes of a single node.
+    "The YANG module is to configure and manage node attributes
+     with schedules.
 
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
@@ -556,7 +665,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-03-03 {
+  revision 2024-06-26 {
     description
       "Initial Version";
     reference
@@ -565,17 +674,17 @@ module ietf-tvr-node {
 
   container node-schedule {
     description
-      "This container defined time variant attributes
-       for node's schedule.";
+      "This container defines a node's time variant attributes
+       with schedules.";
 
-    leaf router-id {
+    leaf node-id {
       type yang:dotted-quad;
       description
-        "A 32-bit number used to identify a router.";
+        "A 32-bit number used to identify a node.";
     }
 
 
-    container power-schedule {
+    container node-power-schedule {
       description
         "Power schedule for the node. The node's power is
          represented by a boolean value with 'true' indicating
@@ -586,8 +695,8 @@ module ietf-tvr-node {
         type boolean;
         default false;
         description
-          "This indicates the default node power when for
-           time periods when no interval is defined. If
+          "This indicates the default node power for the time 
+           periods when no specific power value is specified. If
            unspecified, the node is powered down by default.";
       }
       uses tvr-schd:tvr-schedule {
@@ -653,9 +762,9 @@ module ietf-tvr-node {
 <CODE ENDS>
       ]]></artwork>
     </section>
-    <section title="TVR Toplogy Module">
+    <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2024-03-03.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2024-06-26.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -716,7 +825,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2024-03-03 {
+  revision 2024-06-26 {
     description
       "Initial revision";
     reference
@@ -982,7 +1091,7 @@ module ietf-tvr-topology {
       &RFC8341;
       &RFC8342;
       &RFC8446;
-      &I-D.ma-opsawg-schedule-yang;
+      &I-D.ietf-netmod-schedule-yang;
     </references>
     <references title="Informative References">
       <!-- Here we use entities that we defined at the beginning. -->

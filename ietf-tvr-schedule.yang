@@ -55,7 +55,7 @@ module ietf-tvr-schedule {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-03-03 {
+  revision 2024-06-26 {
     description
       "Initial Version";
     reference
@@ -70,7 +70,21 @@ module ietf-tvr-schedule {
         description
           "Identifies the schedule.";
       }
-      uses schedule:recurrence;
+      choice schedule-type {
+        description
+          "Choice of schedule type.";
+        case period {
+          description
+            "A schedule with a single instance.";
+          uses schedule:period-of-time;
+        }
+        case recurrence {
+          description
+            "A schedule with recurrence. The time is defined in UTC
+             format.";
+          uses schedule:recurrence-utc;
+        }
+      }
 
       container attr-value {
         description
@@ -83,4 +97,5 @@ module ietf-tvr-schedule {
     description
       "A common grouping defintion of schedules.";
   }
+
 }
