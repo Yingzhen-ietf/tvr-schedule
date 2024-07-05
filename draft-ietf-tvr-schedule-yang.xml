@@ -339,68 +339,38 @@ module: ietf-tvr-node
     </t>
 
       <artwork>
-module: ietf-tvr-node
-  +--rw node-schedule
-     +--rw node-id?               yang:dotted-quad
-     +--rw node-power-schedule
-     |  +--rw power-default?   boolean
-     |  +--rw schedules* [schedule-id]
-     |     +--rw schedule-id                     uint32
-     |     +--rw (schedule-type)?
-     |     |  +--:(period)
-     |     |  |  +--rw period-description?       string
-     |     |  |  +--rw period-start              yang:date-and-time
-     |     |  |  +--rw time-zone-identifier?     sys:timezone-name
-     |     |  |  +--rw (period-type)?
-     |     |  |     +--:(explicit)
-     |     |  |     |  +--rw period-end?         yang:date-and-time
-     |     |  |     +--:(duration)
-     |     |  |        +--rw duration?           duration
-     |     |  +--:(recurrence)
-     |     |     +--rw recurrence-first
-     |     |     |  +--rw utc-start-time?   yang:date-and-time
-     |     |     |  +--rw duration?         uint32
-     |     |     +--rw (recurrence-bound)?
-     |     |     |  +--:(until)
-     |     |     |  |  +--rw utc-until?          yang:date-and-time
-     |     |     |  +--:(count)
-     |     |     |     +--rw count?              uint32
-     |     |     +--rw recurrence-description?   string
-     |     |     +--rw frequency                 identityref
-     |     |     +--rw interval?                 uint32
-     |     +--rw attr-value
-     |        +--rw power-state?   boolean
-     +--rw interface-schedule
-        +--rw interfaces* [name]
-           +--rw name                union
-           +--rw state-default?      boolean
-           +--rw up-down-schedule
-              +--rw schedules* [schedule-id]
-                 +--rw schedule-id                     uint32
-                 +--rw (schedule-type)?
-                 |  +--:(period)
-                 |  |  +--rw period-description?       string
-                 |  |  +--rw period-start              yang:date-and-time
-                 |  |  +--rw time-zone-identifier?     sys:timezone-name
-                 |  |  +--rw (period-type)?
-                 |  |     +--:(explicit)
-                 |  |     |  +--rw period-end?         yang:date-and-time
-                 |  |     +--:(duration)
-                 |  |        +--rw duration?           duration
-                 |  +--:(recurrence)
-                 |     +--rw recurrence-first
-                 |     |  +--rw utc-start-time?   yang:date-and-time
-                 |     |  +--rw duration?         uint32
-                 |     +--rw (recurrence-bound)?
-                 |     |  +--:(until)
-                 |     |  |  +--rw utc-until?          yang:date-and-time
-                 |     |  +--:(count)
-                 |     |     +--rw count?              uint32
-                 |     +--rw recurrence-description?   string
-                 |     +--rw frequency                 identityref
-                 |     +--rw interval?                 uint32
-                 +--rw attr-value
-                    +--rw available?   boolean
+module: ietf-tvr-topology
+  +--rw topology-schedule
+     +--rw nodes* [node-id]
+     |  +--rw node-id      inet:uri
+     |  +--rw available
+     |     +--rw default-node-available?   boolean
+     |     +--rw schedules* [schedule-id]
+     |        +--rw schedule-id                     uint32
+     |        +--rw (schedule-type)?
+     |        |  +--:(period)
+     |        |  |  +--rw period-description?       string
+     |        |  |  +--rw period-start              yang:date-and-time
+     |        |  |  +--rw time-zone-identifier?     sys:timezone-name
+     |        |  |  +--rw (period-type)?
+     |        |  |     +--:(explicit)
+     |        |  |     |  +--rw period-end?         yang:date-and-time
+     |        |  |     +--:(duration)
+     |        |  |        +--rw duration?           duration
+     |        |  +--:(recurrence)
+     |        |     +--rw recurrence-first
+     |        |     |  +--rw utc-start-time?   yang:date-and-time
+     |        |     |  +--rw duration?         uint32
+     |        |     +--rw (recurrence-bound)?
+     |        |     |  +--:(until)
+     |        |     |  |  +--rw utc-until?          yang:date-and-time
+     |        |     |  +--:(count)
+     |        |     |     +--rw count?              uint32
+     |        |     +--rw recurrence-description?   string
+     |        |     +--rw frequency                 identityref
+     |        |     +--rw interval?                 uint32
+     |        +--rw attr-value
+     |           +--rw node-available?   boolean
      +--rw links* [source-node source-link-id]
         +--rw source-node         inet:uri
         +--rw destination-node?   inet:uri
