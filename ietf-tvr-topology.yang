@@ -125,67 +125,57 @@ module ietf-tvr-topology {
       }
       container available {
         description
-          "The time at which this link becomes available.";
-        uses tvr-schd:tvr-schedule;
-
-        container bandwidth {
-          description
-            "Scheduled link bandwidth.
-             If the value measured by the system is less than this
-             value, the system value is used.  If the value measured
-             by the system is greater than this value the predicted
-             value SHOULD be used.";
-
-          leaf default-bandwidth {
-            type te-types:te-bandwidth;
-            default "0";
+          "The time at which this link  becomes available.";
+        uses tvr-schd:tvr-schedule {
+          augment "schedules/attr-value" {
             description
-              "The default link capacity specified in a
-               generic format.";
-          }
-          
-          uses tvr-schd:tvr-schedule {
-            augment "schedules/attr-value" {
+              "Augment scheduled values.";
+            leaf link-available {
+              type boolean;
               description
-                "Augment scheduled interface bandwidth.";
-              leaf bandwidth {
-                type te-types:te-bandwidth;
-                description
-                  "The predicted link capacity specified in a
-                   generic format.";
+                "The predicted link availability.";
+            }
+            leaf bandwidth {
+              type te-types:te-bandwidth;
+              description
+                "The predicted link capacity specified in a
+                 generic format.  If the value measured by the system
+                 is less than this value, the system value is used.
+                 If the value measured by the system is greater than
+                 this value the predicted value SHOULD be used.";
+            }
+            leaf delay {
+              type uint32 {
+                range "0..16777215";
               }
+              description
+                "The predicted one-way delay or latency in
+                microseconds. If the value measured by the system is
+                less than this value the predicted value SHOULD be used.";
             }
           }
         }
-        container delay {
+        leaf default-link-available {
+          type boolean;
+          default "false";
           description
-            "The one-way delay or latency in microseconds. If the
-             value measured by the system is less than this value
-             the predicted value SHOULD be used.";
-
-          leaf default-delay {
-            type uint32 {
-              range "0..16777215";
-            }
-            description
-              "The default link capacity specified in a
-               generic format.";
+            "The default link availibility.  During times when the schedule
+            does not specifiy an availability, this value is used.";
+        }
+        leaf default-bandwidth {
+          type te-types:te-bandwidth;
+          default "0";
+          description
+            "The default link capacity specified in a
+             generic format.";
+        }
+        leaf default-delay {
+          type uint32 {
+            range "0..16777215";
           }
-          
-          uses tvr-schd:tvr-schedule {
-            augment "schedules/attr-value" {
-              description
-                "Augment scheduled delay.";
-              leaf delay {
-                type uint32 {
-                  range "0..16777215";
-                }
-                description
-                  "The predicted link delay specified in a
-                   generic format.";
-              }
-            }
-          }
+          description
+            "The default link capacity specified in a
+             generic format.";
         }
       }
     }
