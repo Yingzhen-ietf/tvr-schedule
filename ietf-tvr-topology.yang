@@ -9,8 +9,10 @@ module ietf-tvr-topology {
       "RFC 6991: Common YANG Data Types";
   }
 
-  import ietf-te-types {
-    prefix te-types;
+  import ietf-yang-types {
+    prefix "yang";
+    reference
+      "RFC 6991: Common YANG Data Types";
   }
 
   import ietf-tvr-schedule {
@@ -58,7 +60,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2024-06-26 {
+  revision 2024-07-05 {
     description
       "Initial revision";
     reference
@@ -136,13 +138,14 @@ module ietf-tvr-topology {
                 "The predicted link availability.";
             }
             leaf bandwidth {
-              type te-types:te-bandwidth;
+              type yang:gauge64;
+              units "bits/second";
               description
-                "The predicted link capacity specified in a
-                 generic format.  If the value measured by the system
-                 is less than this value, the system value is used.
-                 If the value measured by the system is greater than
-                 this value the predicted value SHOULD be used.";
+                "The predicted link capacity. If the value measured
+                 by the system is less than this value, the system
+                 value is used. If the value measured by the system
+                 is greater than this value the predicted value
+                 SHOULD be used.";
             }
             leaf delay {
               type uint32 {
@@ -163,7 +166,8 @@ module ietf-tvr-topology {
             does not specifiy an availability, this value is used.";
         }
         leaf default-bandwidth {
-          type te-types:te-bandwidth;
+          type yang:gauge64;
+          units "bits/second";
           default "0";
           description
             "The default link capacity specified in a

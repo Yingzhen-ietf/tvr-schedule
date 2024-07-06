@@ -49,17 +49,12 @@ module ietf-tvr-node {
 
      This version of this YANG module is part of RFC XXXX
      (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.
-
-     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
-     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
-     'MAY', and 'OPTIONAL' in this document are to be interpreted as
-     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
-     they appear in all capitals, as shown here.";
+     for full legal notices.";
+     
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-06-26 {
+  revision 2024-07-05 {
     description
       "Initial Version";
     reference
@@ -124,18 +119,24 @@ module ietf-tvr-node {
              If used with the ietf-interfaces module, the xpath name
              is to identify the interface.";
         }
-        leaf state-default{
+        leaf default-available {
           type boolean;
           default false;
           description
             "By default, the link is not available.";        
         }
-
-        container up-down-schedule {
+        leaf default-bandwidth {
+          type yang:gauge64;
+          units "bits/second";
+          default "0";
           description
-            "Scheduled times that the interface is up. This is to
-             work with the leaf 'enabled' for the configured state
-             of the interface.";
+            "The default interface bandwidth in bits
+             per second";
+        }        
+
+        container attribute-schedule {
+          description
+            "Interface attributes with schedules.";
 
           uses tvr-schd:tvr-schedule {
             augment "schedules/attr-value" {
@@ -144,7 +145,15 @@ module ietf-tvr-node {
               leaf available {
                 type boolean;
                 description
-                  "Link availability.";
+                  "Scheduled interface power state. This is to
+                   work with the leaf 'enabled' for the configured
+                   state of the interface.";
+              }
+              leaf bandwidth {
+                type yang:gauge64;
+                units "bits/second";
+                description
+                  "The scheduled bandwidth in bits per second";
               }
             }
           }

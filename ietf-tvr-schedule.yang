@@ -45,17 +45,12 @@ module ietf-tvr-schedule {
 
      This version of this YANG module is part of RFC XXXX
      (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.
+     for full legal notices.";
 
-     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
-     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
-     'MAY', and 'OPTIONAL' in this document are to be interpreted as
-     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
-     they appear in all capitals, as shown here.";
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-06-26 {
+  revision 2024-07-05 {
     description
       "Initial Version";
     reference
@@ -95,7 +90,7 @@ module ietf-tvr-schedule {
         "list of schedules.";
     }
     description
-      "A common grouping defintion of schedules.";
+      "A common grouping definition of schedules.";
   }
 
 }
