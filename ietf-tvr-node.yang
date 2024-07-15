@@ -155,6 +155,12 @@ module ietf-tvr-node {
                 description
                   "The scheduled bandwidth in bits per second";
               }
+              leaf neighbor {
+                type yang:dotted-quad;
+                description
+                  "The node expected to be this interface's neighbor
+                  during this time.";
+              }
             }
           }
         }

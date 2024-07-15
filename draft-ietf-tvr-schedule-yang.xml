@@ -333,6 +333,7 @@ module: ietf-tvr-node
                  +--rw attr-value
                     +--rw available?   boolean
                     +--rw bandwidth?   yang:gauge64
+                    +--rw neighbor?    yang:dotted-quad
       </artwork>
     </section>
     <section title="TVR Topology YANG Tree">
@@ -375,9 +376,8 @@ module: ietf-tvr-topology
      |        +--rw attr-value
      |           +--rw node-available?   boolean
      +--rw links* [source-node source-link-id]
-        +--rw source-node         inet:uri
-        +--rw destination-node?   inet:uri
-        +--rw source-link-id      string
+        +--rw source-node       inet:uri
+        +--rw source-link-id    string
         +--rw available
            +--rw schedules* [schedule-id]
            |  +--rw schedule-id                     uint32
@@ -404,9 +404,10 @@ module: ietf-tvr-topology
            |  |     +--rw frequency                 identityref
            |  |     +--rw interval?                 uint32
            |  +--rw attr-value
-           |     +--rw link-available?   boolean
-           |     +--rw bandwidth?        yang:gauge64
-           |     +--rw delay?            uint32
+           |     +--rw link-available?     boolean
+           |     +--rw bandwidth?          yang:gauge64
+           |     +--rw delay?              uint32
+           |     +--rw destination-node?   inet:uri
            +--rw default-link-available?   boolean
            +--rw default-bandwidth?        yang:gauge64
            +--rw default-delay?            uint32

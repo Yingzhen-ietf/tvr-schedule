@@ -115,11 +115,6 @@ module ietf-tvr-topology {
         description
           "A name refers to the source node of the link.";
       }
-      leaf destination-node {
-        type inet:uri;
-        description
-          "A name refers to the destination node of the link.";
-      }
       leaf source-link-id {
         type string;
         description
@@ -155,6 +150,11 @@ module ietf-tvr-topology {
                 "The predicted one-way delay or latency in
                 microseconds. If the value measured by the system is
                 less than this value the predicted value SHOULD be used.";
+            }
+            leaf destination-node {
+              type inet:uri;
+              description
+                "A name refers to the destination node of the link.";
             }
           }
         }
