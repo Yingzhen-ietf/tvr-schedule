@@ -3,6 +3,12 @@ module ietf-tvr-node {
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
   prefix tvr-node;
 
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
+
   import ietf-yang-types {
     prefix "yang";
     reference
@@ -54,7 +60,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-07-05 {
+  revision 2024-10-20 {
     description
       "Initial Version";
     reference
@@ -67,9 +73,9 @@ module ietf-tvr-node {
        with schedules.";
 
     leaf node-id {
-      type yang:dotted-quad;
+      type inet:uri;
       description
-        "A 32-bit number used to identify a node.";
+        "Identifier for a node, uniquely identifies a node.";
     }
 
 
@@ -156,7 +162,7 @@ module ietf-tvr-node {
                   "The scheduled bandwidth in bits per second";
               }
               leaf neighbor {
-                type yang:dotted-quad;
+                type inet:uri;
                 description
                   "The node expected to be this interface's neighbor
                   during this time.";

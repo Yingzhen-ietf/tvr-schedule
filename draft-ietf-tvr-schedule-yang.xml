@@ -26,9 +26,10 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8342.xml'>
     <!ENTITY RFC8446 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
-    <!ENTITY I-D.ietf-tvr-use-cases PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tvr-use-cases-09.xml'>
+    <!ENTITY RFC9657 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
     <!ENTITY I-D.ietf-netmod-schedule-yang PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-02.xml'>
+     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-03.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -39,7 +40,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-01" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-03" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -148,12 +149,13 @@
         interfaces, such as CLI and programmatic APIs.
       </t>
 
-      <t>In some network scenarios, it's possible to predict the times
+      <t>There are use cases where changes to the routing topology are expected as
+      part of network operations. In some network scenarios, it's possible to predict the times
         at which one router will be able to establish a link with another router.
         Links can be predictably lost and re-established, and neighbors may
         change as a function of time. For examples of such networks and
         scenarios, please reference TVR (Time-Variant Routing) Use Cases
-       <xref target="I-D.ietf-tvr-use-cases"/>.</t>
+       <xref target="RFC9657"/>.</t>
 
       <t>
         The YANG model in this document can be used to manage network resources
@@ -212,8 +214,10 @@
           their scheduled value changes. The attributes A1 and A2 take on different
           values at different times. The attribute A1 will take on the value v1 from
           the time t0 until t1, the value v2 from t1 until t2, and v3 from t2 until t3.
-          The attribute A2 will take on the value vv1 from time t0 until t1 and vv2 from v1
-          until v3.
+          The schedule of A1 may contain a list of 3 time periods with differnt values.
+          The attribute A2 will take on the value vv1 from time t0 until t1, defalut value
+          va2 from t1 until t2, and vv2 from t1 until t3. The schedule of A2 may contain
+          a list of two time periods, and the default value is used between scheduled values.
         </t>
         <figure>
           <name>Time Varying Properties</name>
@@ -222,7 +226,7 @@ Attributes
           +-------------------+----------+------+
       A1  |       v1          |   v2     |  v3  |
           +-------------------+----------+------+
-      A2  |      vv1          |      vv2        |
+      A2  |      vv1          |  va2     |  vv2 |
           +-------------------+-----------------+
          t0                  t1        t2      t3
                          Time
@@ -235,8 +239,8 @@ Attributes
           manage a single node with scheduled attributes.</t>
         <t>Each node has scheduled power at the node level. At the interface
           level, a node has a list of interfaces, and each interface has its
-          own schedule for availability/power up and down, as well as scheduled
-          bandwidth.</t>
+          own schedule for availability/power up and down, scheduled
+          bandwidth, and scheduled neighbors.</t>
       </section>
       <section title="TVR Topology YANG Module">
         <t>
@@ -255,7 +259,8 @@ Attributes
           The "source-link-id" is a string and used to identify a link
           as viewed from the source-node. Bandwidth and delay are predicted
           link attributes. Delay is the link propagation time and does not
-          include any queuing delays.
+          include any queuing delays. "destination-node" of a link may follow
+          a schedule as well.
         </t>
       </section>
 
@@ -271,7 +276,7 @@ Attributes
       <artwork>
 module: ietf-tvr-node
   +--rw node-schedule
-     +--rw node-id?               yang:dotted-quad
+     +--rw node-id?               inet:uri
      +--rw node-power-schedule
      |  +--rw power-default?   boolean
      |  +--rw schedules* [schedule-id]
@@ -307,33 +312,33 @@ module: ietf-tvr-node
            +--rw default-bandwidth?    yang:gauge64
            +--rw attribute-schedule
               +--rw schedules* [schedule-id]
-                 +--rw schedule-id                     uint32
+                 +--rw schedule-id                   uint32
                  +--rw (schedule-type)?
                  |  +--:(period)
-                 |  |  +--rw period-description?       string
-                 |  |  +--rw period-start              yang:date-and-time
-                 |  |  +--rw time-zone-identifier?     sys:timezone-name
+                 |  |  +--rw period-description?     string
+                 |  |  +--rw period-start            yang:date-and-time
+                 |  |  +--rw time-zone-identifier?   sys:timezone-name
                  |  |  +--rw (period-type)?
                  |  |     +--:(explicit)
-                 |  |     |  +--rw period-end?         yang:date-and-time
+                 |  |     |  +--rw period-end?       yang:date-and-time
                  |  |     +--:(duration)
-                 |  |        +--rw duration?           duration
+                 |  |        +--rw duration?         duration
                  |  +--:(recurrence)
                  |     +--rw recurrence-first
                  |     |  +--rw utc-start-time?   yang:date-and-time
                  |     |  +--rw duration?         uint32
                  |     +--rw (recurrence-bound)?
                  |     |  +--:(until)
-                 |     |  |  +--rw utc-until?          yang:date-and-time
+                 |     |  |  +--rw utc-until?        yang:date-and-time
                  |     |  +--:(count)
-                 |     |     +--rw count?              uint32
-                 |     +--rw recurrence-description?   string
-                 |     +--rw frequency                 identityref
-                 |     +--rw interval?                 uint32
+                 |     |     +--rw count?            uint32
+                 |     +--rw recurrence-description? string
+                 |     +--rw frequency               identityref
+                 |     +--rw interval?               uint32
                  +--rw attr-value
                     +--rw available?   boolean
                     +--rw bandwidth?   yang:gauge64
-                    +--rw neighbor?    yang:dotted-quad
+                    +--rw neighbor?    inet:uri
       </artwork>
     </section>
     <section title="TVR Topology YANG Tree">
@@ -418,6 +423,11 @@ module: ietf-tvr-topology
 
 
   <section title="TVR Schedule YANG Modules">
+    <t>
+      The following RFCs are not referenced in the document text but are
+   referenced in the "ietf-tvr-schedule.yang" module and
+   "ietf-tvr-topology.yang" module: <xref target="RFC6991"/>.
+   </t>
     <section title="TVR Schedule YANG Module">
       <artwork><![CDATA[
 <CODE BEGINS> file "ietf-tvr-schedule@2024-07-05.yang"
@@ -522,11 +532,17 @@ module ietf-tvr-schedule {
     </section>
     <section title="TVR Schedule Node Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2024-07-05.yang"
+<CODE BEGINS> file "ietf-tvr-node@2024-10-20.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
   prefix tvr-node;
+
+  import ietf-inet-types {
+    prefix inet;
+    reference
+      "RFC 6991: Common YANG Data Types";
+  }
 
   import ietf-yang-types {
     prefix "yang";
@@ -575,11 +591,11 @@ module ietf-tvr-node {
      This version of this YANG module is part of RFC XXXX
      (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
      for full legal notices.";
-
+     
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-07-05 {
+  revision 2024-10-20 {
     description
       "Initial Version";
     reference
@@ -592,9 +608,9 @@ module ietf-tvr-node {
        with schedules.";
 
     leaf node-id {
-      type yang:dotted-quad;
+      type inet:uri;
       description
-        "A 32-bit number used to identify a node.";
+        "Identifier for a node, uniquely identifies a node.";
     }
 
 
@@ -680,6 +696,12 @@ module ietf-tvr-node {
                 description
                   "The scheduled bandwidth in bits per second";
               }
+              leaf neighbor {
+                type inet:uri;
+                description
+                  "The node expected to be this interface's neighbor
+                  during this time.";
+              }
             }
           }
         }
@@ -692,7 +714,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2024-07-05.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2024-10-20.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -755,7 +777,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2024-07-05 {
+  revision 2024-10-20 {
     description
       "Initial revision";
     reference
@@ -810,11 +832,6 @@ module ietf-tvr-topology {
         description
           "A name refers to the source node of the link.";
       }
-      leaf destination-node {
-        type inet:uri;
-        description
-          "A name refers to the destination node of the link.";
-      }
       leaf source-link-id {
         type string;
         description
@@ -850,6 +867,11 @@ module ietf-tvr-topology {
                 "The predicted one-way delay or latency in
                 microseconds. If the value measured by the system is
                 less than this value the predicted value SHOULD be used.";
+            }
+            leaf destination-node {
+              type inet:uri;
+              description
+                "A name refers to the destination node of the link.";
             }
           }
         }
@@ -1018,7 +1040,7 @@ module ietf-tvr-topology {
     <references title="Informative References">
       <!-- Here we use entities that we defined at the beginning. -->
       &RFC8340;
-      &I-D.ietf-tvr-use-cases;
+      &RFC9657;
     </references>
 
     <section>
