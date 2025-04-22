@@ -865,8 +865,9 @@ module ietf-tvr-topology {
               }
               description
                 "The predicted one-way delay or latency in
-                microseconds. If the value measured by the system is
-                less than this value the predicted value SHOULD be used.";
+                microseconds. If the value measured by the system
+                is less than this value the predicted value SHOULD
+                be used.";
             }
             leaf destination-node {
               type inet:uri;
@@ -879,8 +880,9 @@ module ietf-tvr-topology {
           type boolean;
           default "false";
           description
-            "The default link availibility.  During times when the schedule
-            does not specifiy an availability, this value is used.";
+            "The default link availibility.  During times when the
+            schedule does not specifiy an availability, this value
+            is used.";
         }
         leaf default-bandwidth {
           type yang:gauge64;
