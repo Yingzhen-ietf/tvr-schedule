@@ -29,7 +29,7 @@
     <!ENTITY RFC9657 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
     <!ENTITY I-D.ietf-netmod-schedule-yang PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-03.xml'>
+     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-05.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -293,9 +293,9 @@ module: ietf-tvr-node
      |     |  |        +--rw duration?           duration
      |     |  +--:(recurrence)
      |     |     +--rw recurrence-first
-     |     |     |  +--rw utc-start-time?   yang:date-and-time
+     |     |     |  +--rw start-time-utc?   yang:date-and-time
      |     |     |  +--rw duration?         uint32
-     |     |     +--rw (recurrence-bound)?
+     |     |     +--rw (recurrence-end)?
      |     |     |  +--:(until)
      |     |     |  |  +--rw utc-until?          yang:date-and-time
      |     |     |  +--:(count)
@@ -312,29 +312,33 @@ module: ietf-tvr-node
            +--rw default-bandwidth?    yang:gauge64
            +--rw attribute-schedule
               +--rw schedules* [schedule-id]
-                 +--rw schedule-id                   uint32
+                 +--rw schedule-id                     uint32
                  +--rw (schedule-type)?
                  |  +--:(period)
-                 |  |  +--rw period-description?     string
-                 |  |  +--rw period-start            yang:date-and-time
-                 |  |  +--rw time-zone-identifier?   sys:timezone-name
+                 |  |  +--rw period-description?       string
+                 |  |  +--rw period-start
+                 |  |  |       yang:date-and-time
+                 |  |  +--rw time-zone-identifier?
+                 |  |  |       sys:timezone-name
                  |  |  +--rw (period-type)?
                  |  |     +--:(explicit)
-                 |  |     |  +--rw period-end?       yang:date-and-time
+                 |  |     |  +--rw period-end?
+                 |  |     |          yang:date-and-time
                  |  |     +--:(duration)
-                 |  |        +--rw duration?         duration
+                 |  |        +--rw duration?           duration
                  |  +--:(recurrence)
                  |     +--rw recurrence-first
-                 |     |  +--rw utc-start-time?   yang:date-and-time
+                 |     |  +--rw start-time-utc?   yang:date-and-time
                  |     |  +--rw duration?         uint32
-                 |     +--rw (recurrence-bound)?
+                 |     +--rw (recurrence-end)?
                  |     |  +--:(until)
-                 |     |  |  +--rw utc-until?        yang:date-and-time
+                 |     |  |  +--rw utc-until?
+                 |     |  |          yang:date-and-time
                  |     |  +--:(count)
-                 |     |     +--rw count?            uint32
-                 |     +--rw recurrence-description? string
-                 |     +--rw frequency               identityref
-                 |     +--rw interval?               uint32
+                 |     |     +--rw count?              uint32
+                 |     +--rw recurrence-description?   string
+                 |     +--rw frequency                 identityref
+                 |     +--rw interval?                 uint32
                  +--rw attr-value
                     +--rw available?   boolean
                     +--rw bandwidth?   yang:gauge64
@@ -359,20 +363,23 @@ module: ietf-tvr-topology
      |        +--rw (schedule-type)?
      |        |  +--:(period)
      |        |  |  +--rw period-description?       string
-     |        |  |  +--rw period-start              yang:date-and-time
+     |        |  |  +--rw period-start
+     |        |  |  |       yang:date-and-time
      |        |  |  +--rw time-zone-identifier?     sys:timezone-name
      |        |  |  +--rw (period-type)?
      |        |  |     +--:(explicit)
-     |        |  |     |  +--rw period-end?         yang:date-and-time
+     |        |  |     |  +--rw period-end?
+     |        |  |     |          yang:date-and-time
      |        |  |     +--:(duration)
      |        |  |        +--rw duration?           duration
      |        |  +--:(recurrence)
      |        |     +--rw recurrence-first
-     |        |     |  +--rw utc-start-time?   yang:date-and-time
+     |        |     |  +--rw start-time-utc?   yang:date-and-time
      |        |     |  +--rw duration?         uint32
-     |        |     +--rw (recurrence-bound)?
+     |        |     +--rw (recurrence-end)?
      |        |     |  +--:(until)
-     |        |     |  |  +--rw utc-until?          yang:date-and-time
+     |        |     |  |  +--rw utc-until?
+     |        |     |  |          yang:date-and-time
      |        |     |  +--:(count)
      |        |     |     +--rw count?              uint32
      |        |     +--rw recurrence-description?   string
@@ -389,20 +396,23 @@ module: ietf-tvr-topology
            |  +--rw (schedule-type)?
            |  |  +--:(period)
            |  |  |  +--rw period-description?       string
-           |  |  |  +--rw period-start              yang:date-and-time
+           |  |  |  +--rw period-start
+           |  |  |  |       yang:date-and-time
            |  |  |  +--rw time-zone-identifier?     sys:timezone-name
            |  |  |  +--rw (period-type)?
            |  |  |     +--:(explicit)
-           |  |  |     |  +--rw period-end?         yang:date-and-time
+           |  |  |     |  +--rw period-end?
+           |  |  |     |          yang:date-and-time
            |  |  |     +--:(duration)
            |  |  |        +--rw duration?           duration
            |  |  +--:(recurrence)
            |  |     +--rw recurrence-first
-           |  |     |  +--rw utc-start-time?   yang:date-and-time
+           |  |     |  +--rw start-time-utc?   yang:date-and-time
            |  |     |  +--rw duration?         uint32
-           |  |     +--rw (recurrence-bound)?
+           |  |     +--rw (recurrence-end)?
            |  |     |  +--:(until)
-           |  |     |  |  +--rw utc-until?          yang:date-and-time
+           |  |     |  |  +--rw utc-until?
+           |  |     |  |          yang:date-and-time
            |  |     |  +--:(count)
            |  |     |     +--rw count?              uint32
            |  |     +--rw recurrence-description?   string
