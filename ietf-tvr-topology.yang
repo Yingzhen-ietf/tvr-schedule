@@ -90,10 +90,10 @@ module ietf-tvr-topology {
           default false;
           description
             "By default, the node is powered off.";
-        }       
-        
+        }
+
         uses tvr-schd:tvr-schedule {
-          augment "schedules/attr-value" {
+          augment "schedules" {
             description
               "Augment scheduled node availability.";
             leaf node-available {
@@ -103,7 +103,7 @@ module ietf-tvr-topology {
             }
           }
         }
-      }  
+      }
     }
 
     list links {
@@ -124,37 +124,40 @@ module ietf-tvr-topology {
         description
           "The time at which this link  becomes available.";
         uses tvr-schd:tvr-schedule {
-          augment "schedules/attr-value" {
+          augment "schedules" {
             description
               "Augment scheduled values.";
-            leaf link-available {
-              type boolean;
-              description
-                "The predicted link availability.";
-            }
-            leaf bandwidth {
-              type yang:gauge64;
-              units "bits/second";
-              description
-                "The predicted link capacity. If the value measured
-                 by the system is less than this value, the system
-                 value is used. If the value measured by the system
-                 is greater than this value the predicted value
-                 SHOULD be used.";
-            }
-            leaf delay {
-              type uint32 {
-                range "0..16777215";
+            container link-attributes {
+	      description "Augmentation container for links.";       
+              leaf link-available {
+                type boolean;
+                description
+                  "The predicted link availability.";
               }
-              description
-                "The predicted one-way delay or latency in
-                microseconds. If the value measured by the system is
-                less than this value the predicted value SHOULD be used.";
-            }
-            leaf destination-node {
-              type inet:uri;
-              description
-                "A name refers to the destination node of the link.";
+              leaf bandwidth {
+                type yang:gauge64;
+                units "bits/second";
+                description
+                  "The predicted link capacity. If the value measured
+                   by the system is less than this value, the system
+                   value is used. If the value measured by the system
+                   is greater than this value the predicted value
+                   SHOULD be used.";
+              }
+              leaf delay {
+                type uint32 {
+                  range "0..16777215";
+                }
+                description
+                  "The predicted one-way delay or latency in
+                  microseconds. If the value measured by the system is
+                  less than this value the predicted value SHOULD be used.";
+              }
+              leaf destination-node {
+                type inet:uri;
+                description
+                  "A name refers to the destination node of the link.";
+              }
             }
           }
         }

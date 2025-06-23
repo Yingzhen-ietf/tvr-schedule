@@ -56,11 +56,11 @@ module ietf-tvr-node {
      This version of this YANG module is part of RFC XXXX
      (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
      for full legal notices.";
-     
+
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-10-20 {
+  revision 2025-06-24 {
     description
       "Initial Version";
     reference
@@ -90,12 +90,12 @@ module ietf-tvr-node {
         type boolean;
         default false;
         description
-          "This indicates the default node power for the time 
+          "This indicates the default node power for the time
            periods when no specific power value is specified. If
            unspecified, the node is powered down by default.";
       }
       uses tvr-schd:tvr-schedule {
-        augment "schedules/attr-value" {
+        augment "schedules" {
           description
             "Augment the power state within each period.";
           leaf power-state {
@@ -129,7 +129,7 @@ module ietf-tvr-node {
           type boolean;
           default false;
           description
-            "By default, the link is not available.";        
+            "By default, the link is not available.";
         }
         leaf default-bandwidth {
           type yang:gauge64;
@@ -138,34 +138,37 @@ module ietf-tvr-node {
           description
             "The default interface bandwidth in bits
              per second";
-        }        
+        }
 
         container attribute-schedule {
           description
             "Interface attributes with schedules.";
 
           uses tvr-schd:tvr-schedule {
-            augment "schedules/attr-value" {
+            augment "schedules" {
               description
                 "Augment scheduled interface state.";
-              leaf available {
-                type boolean;
-                description
-                  "Scheduled interface power state. This is to
-                   work with the leaf 'enabled' for the configured
-                   state of the interface.";
-              }
-              leaf bandwidth {
-                type yang:gauge64;
-                units "bits/second";
-                description
-                  "The scheduled bandwidth in bits per second";
-              }
-              leaf neighbor {
-                type inet:uri;
-                description
-                  "The node expected to be this interface's neighbor
-                  during this time.";
+	      container scheduled-attributes {
+		description "Augmentation container for links.";       
+                leaf available {
+                  type boolean;
+                  description
+                    "Scheduled interface power state. This is to
+                     work with the leaf 'enabled' for the configured
+                     state of the interface.";
+                }
+                leaf bandwidth {
+                  type yang:gauge64;
+                  units "bits/second";
+                  description
+                    "The scheduled bandwidth in bits per second";
+                }
+                leaf neighbor {
+                  type inet:uri;
+                  description
+                    "The node expected to be this interface's neighbor
+                    during this time.";
+                }
               }
             }
           }

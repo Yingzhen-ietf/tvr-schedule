@@ -40,7 +40,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-04" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-05" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -70,7 +70,7 @@
       </address>
     </author>
     <author fullname="Acee Lindem" initials="A." surname="Lindem">
-      <organization>LabN Consulting, L.L.C.</organization>
+      <!--organization>LabN Consulting, L.L.C.</organization-->
       <address>
         <postal>
           <street>301 Midenhall Way</street>
@@ -201,12 +201,14 @@
           defined in <xref target="I-D.ietf-netmod-schedule-yang"/>.
         </t>
         <t>
-          The container "attr-value" is a place holder for a module that
-          uses the "tvr-schedule", where attribute values can be augmented.
+          Users can supply attributes or containers that augment the schedule.
+          The "tvr-node" has a container "scheduled-attributes" that  
+          uses the "tvr-schedule". 
         </t> 
         <t>
-          When an attribute's schedule ends, the "value-default" SHOULD
-          be used, if present.
+          When an attribute's schedule ends, the "value-default" MAY
+          be used, when present. Alternatively, values can remain as set until another
+          schedule alters values. 
         </t>
 
         <t>
@@ -214,8 +216,8 @@
           their scheduled value changes. The attributes A1 and A2 take on different
           values at different times. The attribute A1 will take on the value v1 from
           the time t0 until t1, the value v2 from t1 until t2, and v3 from t2 until t3.
-          The schedule of A1 may contain a list of 3 time periods with differnt values.
-          The attribute A2 will take on the value vv1 from time t0 until t1, defalut value
+          The schedule of A1 may contain a list of 3 time periods with different values.
+          The attribute A2 will take on the value vv1 from time t0 until t1, default value
           va2 from t1 until t2, and vv2 from t1 until t3. The schedule of A2 may contain
           a list of two time periods, and the default value is used between scheduled values.
         </t>
@@ -303,8 +305,7 @@ module: ietf-tvr-node
      |     |     +--rw recurrence-description?   string
      |     |     +--rw frequency                 identityref
      |     |     +--rw interval?                 uint32
-     |     +--rw attr-value
-     |        +--rw power-state?   boolean
+     |     +--rw power-state?                    boolean
      +--rw interface-schedule
         +--rw interfaces* [name]
            +--rw name                  union
@@ -339,7 +340,7 @@ module: ietf-tvr-node
                  |     +--rw recurrence-description?   string
                  |     +--rw frequency                 identityref
                  |     +--rw interval?                 uint32
-                 +--rw attr-value
+                 +--rw scheduled-attributes
                     +--rw available?   boolean
                     +--rw bandwidth?   yang:gauge64
                     +--rw neighbor?    inet:uri
@@ -385,8 +386,7 @@ module: ietf-tvr-topology
      |        |     +--rw recurrence-description?   string
      |        |     +--rw frequency                 identityref
      |        |     +--rw interval?                 uint32
-     |        +--rw attr-value
-     |           +--rw node-available?   boolean
+     |        +--rw node-available?                 boolean
      +--rw links* [source-node source-link-id]
         +--rw source-node       inet:uri
         +--rw source-link-id    string
@@ -418,7 +418,7 @@ module: ietf-tvr-topology
            |  |     +--rw recurrence-description?   string
            |  |     +--rw frequency                 identityref
            |  |     +--rw interval?                 uint32
-           |  +--rw attr-value
+           |  +--rw link-attributes
            |     +--rw link-available?     boolean
            |     +--rw bandwidth?          yang:gauge64
            |     +--rw delay?              uint32
@@ -440,7 +440,7 @@ module: ietf-tvr-topology
    </t>
     <section title="TVR Schedule YANG Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-schedule@2024-07-05.yang"
+<CODE BEGINS> file "ietf-tvr-schedule@2025-06-24.yang"
 module ietf-tvr-schedule {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
@@ -524,11 +524,6 @@ module ietf-tvr-schedule {
         }
       }
 
-      container attr-value {
-        description
-         "Attribute value(s). This container should be augmented
-          with attributes that apply to the current interval.";
-      }
       description
         "list of schedules.";
     }
@@ -542,7 +537,7 @@ module ietf-tvr-schedule {
     </section>
     <section title="TVR Schedule Node Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2024-10-20.yang"
+<CODE BEGINS> file "ietf-tvr-node@2025-06-24.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
@@ -635,12 +630,12 @@ module ietf-tvr-node {
         type boolean;
         default false;
         description
-          "This indicates the default node power for the time 
+          "This indicates the default node power for the time
            periods when no specific power value is specified. If
            unspecified, the node is powered down by default.";
       }
       uses tvr-schd:tvr-schedule {
-        augment "schedules/attr-value" {
+        augment "schedules" {
           description
             "Augment the power state within each period.";
           leaf power-state {
@@ -674,7 +669,7 @@ module ietf-tvr-node {
           type boolean;
           default false;
           description
-            "By default, the link is not available.";        
+            "By default, the link is not available.";
         }
         leaf default-bandwidth {
           type yang:gauge64;
@@ -683,34 +678,36 @@ module ietf-tvr-node {
           description
             "The default interface bandwidth in bits
              per second";
-        }        
+        }
 
         container attribute-schedule {
           description
             "Interface attributes with schedules.";
 
           uses tvr-schd:tvr-schedule {
-            augment "schedules/attr-value" {
+            augment "schedules" {
               description
                 "Augment scheduled interface state.";
-              leaf available {
-                type boolean;
-                description
-                  "Scheduled interface power state. This is to
-                   work with the leaf 'enabled' for the configured
-                   state of the interface.";
-              }
-              leaf bandwidth {
-                type yang:gauge64;
-                units "bits/second";
-                description
-                  "The scheduled bandwidth in bits per second";
-              }
-              leaf neighbor {
-                type inet:uri;
-                description
-                  "The node expected to be this interface's neighbor
-                  during this time.";
+	      container scheduled-attributes {
+		description "Augmentation container for links.";       
+                leaf available {
+                  type boolean;
+                  description
+                    "Scheduled interface power state. This is to
+                     work with the leaf 'enabled' for the configured
+                     state of the interface.";
+                }
+                leaf bandwidth {
+                  type yang:gauge64;
+                  units "bits/second";
+                  description
+                    "The scheduled bandwidth in bits per second";
+                }
+                leaf neighbor {
+                  type inet:uri;
+                  description
+                    "The node expected to be this interface's
+                    neighbor during this time.";
               }
             }
           }
@@ -724,7 +721,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2024-10-20.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2025-06-24.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -770,7 +767,6 @@ module ietf-tvr-topology {
 
     Copyright (c) 2024 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
-
     Redistribution and use in source and binary forms, with or
     without modification, is permitted pursuant to, and subject to
     the license terms contained in, the Revised BSD License set forth
@@ -817,10 +813,10 @@ module ietf-tvr-topology {
           default false;
           description
             "By default, the node is powered off.";
-        }       
-        
+        }
+
         uses tvr-schd:tvr-schedule {
-          augment "schedules/attr-value" {
+          augment "schedules" {
             description
               "Augment scheduled node availability.";
             leaf node-available {
@@ -830,7 +826,7 @@ module ietf-tvr-topology {
             }
           }
         }
-      }  
+      }
     }
 
     list links {
@@ -851,38 +847,42 @@ module ietf-tvr-topology {
         description
           "The time at which this link  becomes available.";
         uses tvr-schd:tvr-schedule {
-          augment "schedules/attr-value" {
+          augment "schedules" {
             description
               "Augment scheduled values.";
-            leaf link-available {
-              type boolean;
-              description
-                "The predicted link availability.";
-            }
-            leaf bandwidth {
-              type yang:gauge64;
-              units "bits/second";
-              description
-                "The predicted link capacity. If the value measured
-                 by the system is less than this value, the system
-                 value is used. If the value measured by the system
-                 is greater than this value the predicted value
-                 SHOULD be used.";
-            }
-            leaf delay {
-              type uint32 {
-                range "0..16777215";
+            container link-attributes {
+              description "Augmentation container for links.";       
+              leaf link-available {
+                type boolean;
+                description
+                  "The predicted link availability.";
               }
-              description
-                "The predicted one-way delay or latency in
-                microseconds. If the value measured by the system
-                is less than this value the predicted value SHOULD
-                be used.";
-            }
-            leaf destination-node {
-              type inet:uri;
-              description
-                "A name refers to the destination node of the link.";
+              leaf bandwidth {
+                type yang:gauge64;
+                units "bits/second";
+                description
+                  "The predicted link capacity. If the value measured
+                   by the system is less than this value, the system
+                   value is used. If the value measured by the system
+                   is greater than this value the predicted value
+                   SHOULD be used.";
+              }
+              leaf delay {
+                type uint32 {
+                  range "0..16777215";
+                }
+                description
+                  "The predicted one-way delay or latency in
+                  microseconds. If the value measured by the system
+                  is less than this value the predicted value SHOULD
+                  be use.";
+              }
+              leaf destination-node {
+                type inet:uri;
+                description
+                 "A name refers to the destination node of the
+                  link.";
+              }
             }
           }
         }
@@ -890,8 +890,8 @@ module ietf-tvr-topology {
           type boolean;
           default "false";
           description
-            "The default link availibility.  During times when the
-            schedule does not specifiy an availability, this value
+            "The default link availability.  During times when the
+            schedule does not specific an availability, this value
             is used.";
         }
         leaf default-bandwidth {
@@ -1093,7 +1093,7 @@ module ietf-tvr-ospf-schedule {
       description
         "Augment OSPF interface with a scheduled interface cost.";
       uses tvr-schd:tvr-schedule {
-        augment "schedules/attr-value" {
+        augment "schedules" {
           leaf cost {
             type uint32;
             description

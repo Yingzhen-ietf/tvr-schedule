@@ -50,7 +50,7 @@ module ietf-tvr-schedule {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2024-07-05 {
+  revision 2025-06-24 {
     description
       "Initial Version";
     reference
@@ -81,11 +81,6 @@ module ietf-tvr-schedule {
         }
       }
 
-      container attr-value {
-        description
-         "Attribute value(s). This container should be augmented
-          with attributes that apply to the current interval.";
-      }
       description
         "list of schedules.";
     }
