@@ -43,7 +43,7 @@ module ietf-tvr-node {
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
 
-     Copyright (c) 2024 IETF Trust and the persons identified as
+     Copyright (c) 2025 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
      Redistribution and use in source and binary forms, with or
@@ -60,7 +60,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2025-06-24 {
+  revision 2025-06-30 {
     description
       "Initial Version";
     reference
@@ -95,7 +95,7 @@ module ietf-tvr-node {
            unspecified, the node is powered down by default.";
       }
       uses tvr-schd:tvr-schedule {
-        augment "schedules" {
+        augment "schedule" {
           description
             "Augment the power state within each period.";
           leaf power-state {
@@ -111,7 +111,7 @@ module ietf-tvr-node {
       description
         "Container for TVR node interface attributes.";
 
-      list interfaces {
+      list interface {
         key "name";
         description
           "List of interface with schedules.";
@@ -145,11 +145,12 @@ module ietf-tvr-node {
             "Interface attributes with schedules.";
 
           uses tvr-schd:tvr-schedule {
-            augment "schedules" {
+            augment "schedule" {
               description
                 "Augment scheduled interface state.";
-	      container scheduled-attributes {
-		description "Augmentation container for links.";       
+              container scheduled-attributes {
+                description
+                  "Augmentation container for links.";
                 leaf available {
                   type boolean;
                   description
