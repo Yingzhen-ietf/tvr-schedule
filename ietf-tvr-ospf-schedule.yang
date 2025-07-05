@@ -26,7 +26,7 @@ module ietf-tvr-ospf-schedule {
       description
         "Augment OSPF interface with a scheduled interface cost.";
       uses tvr-schd:tvr-schedule {
-        augment "schedules/attr-value" {
+        augment "schedule" {
           leaf cost {
             type uint32;
             description
