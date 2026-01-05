@@ -39,7 +39,7 @@ module ietf-tvr-topology {
 
   description
     "This YANG module contains YANG definitions for describing
-    network topology with an time-variant availability schedule.
+    network topology with a time-variant availability schedule.
 
     Copyright (c) 2025 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
@@ -60,7 +60,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2025-06-30 {
+  revision 2026-01-04 {
     description
       "Initial revision";
     reference
@@ -77,7 +77,7 @@ module ietf-tvr-topology {
       leaf node-id {
         type inet:uri;
         description
-          "Identifier for a node, uniquely identifies a node. This
+          "Identifier for a node; uniquely identifies a node. This
            may be the same as the node-id defined in the ietf-network
            module defined in RFC 8345.";
       }
@@ -122,7 +122,7 @@ module ietf-tvr-topology {
       }
       container available {
         description
-          "The time at which this link  becomes available.";
+          "The time at which this link becomes available.";
         uses tvr-schd:tvr-schedule {
           augment "schedule" {
             description
@@ -166,8 +166,8 @@ module ietf-tvr-topology {
           type boolean;
           default "false";
           description
-            "The default link availibility.  During times when the
-             schedule does not specifiy an availability, this value
+            "The default link availability.  During times when the
+             schedule does not specify an availability, this value
              is used.";
         }
         leaf default-bandwidth {

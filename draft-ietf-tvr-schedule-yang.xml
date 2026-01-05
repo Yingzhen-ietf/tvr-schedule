@@ -31,7 +31,7 @@
     <!ENTITY RFC9657 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
     <!ENTITY I-D.ietf-netmod-schedule-yang PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-05.xml'>
+     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-06.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -42,7 +42,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-05" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-06" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -429,7 +429,7 @@ module: ietf-tvr-topology
 
   <section title="TVR Schedule YANG Modules">
     <t>
-      The following RFCs are not referenced in the document text but are
+      The following RFC is not referenced in the document text but is
    referenced in the "ietf-tvr-schedule.yang" module and
    "ietf-tvr-topology.yang" module: <xref target="RFC6991"/>.
    </t>
@@ -718,7 +718,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2025-06-30.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2026-01-04.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -760,9 +760,9 @@ module ietf-tvr-topology {
 
   description
     "This YANG module contains YANG definitions for describing
-    network topology with an time-variant availability schedule.
+    network topology with a time-variant availability schedule.
 
-    Copyright (c) 2025 IETF Trust and the persons identified as
+    Copyright (c) 2026 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
 
     Redistribution and use in source and binary forms, with or
@@ -781,7 +781,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2025-06-30 {
+  revision 2026-01-04 {
     description
       "Initial revision";
     reference
@@ -798,7 +798,7 @@ module ietf-tvr-topology {
       leaf node-id {
         type inet:uri;
         description
-          "Identifier for a node, uniquely identifies a node. This
+          "Identifier for a node; uniquely identifies a node. This
            may be the same as the node-id defined in the ietf-network
            module defined in RFC 8345.";
       }
@@ -843,7 +843,7 @@ module ietf-tvr-topology {
       }
       container available {
         description
-          "The time at which this link  becomes available.";
+          "The time at which this link becomes available.";
         uses tvr-schd:tvr-schedule {
           augment "schedule" {
             description
@@ -887,8 +887,8 @@ module ietf-tvr-topology {
           type boolean;
           default "false";
           description
-            "The default link availibility.  During times when the
-             schedule does not specifiy an availability, this value
+            "The default link availability.  During times when the
+             schedule does not specify an availability, this value
              is used.";
         }
         leaf default-bandwidth {
@@ -918,6 +918,29 @@ module ietf-tvr-topology {
 
 
     <!-- Possibly a 'Contributors' section ... -->
+    <section anchor="Operation" title="Operational Considerations">
+      <t>
+        The TVR Schedule YANG modules provide a structured mechanism to
+        represent time-variant attributes of network elements and topologies. The
+        following aspects should be considered by operators deploying the modules.</t>
+      <t>
+        Operators should be aware that these scheduled attributes represent planned
+        state changes, not instantaneous configuration changes or unplanned breakages.</t>
+      <t>
+        There should be synchronized clocks between controllers and devices. The time
+        sources (e.g., NTP, PTP) should be accurate to avoid unintended time/schedule
+        offsets. Inconsistent time bases can lead to network misbehavior, such as
+        routing loops or network instability.</t>
+      <t>
+        The modules are to support TVR use cases where topology and attributes vary
+        as a function of time. How control plane and data plane are impacted by the
+        schedules should be considered by the operators.</t>
+      <t>
+        The TVR schedule modules are meant to work together with other models that
+        manage node or interface attributes. Operators should consider the conflicting
+        configurations between the scheduled and non-scheduled settings and how to
+        handle the conflicts.</t>
+    </section>
 
     <section anchor="Security" title="Security Considerations">
       <t>
@@ -950,8 +973,8 @@ module ietf-tvr-topology {
         <li>/node-schedule/node-power-schedule</li>
         <li>/node-schedule/interface-schedule</li>
         <li>/topology-schedule/nodes/available</li>
-        <li>/topology-schedule/links/available
-        Modifications to these scheduled attributes may result in a
+        <li>/topology-schedule/links/available</li>
+        <li>Modifications to these scheduled attributes may result in a
         denial of service.</li>
       </ul>
 
@@ -1110,8 +1133,8 @@ module ietf-tvr-ospf-schedule {
       <t>The following is an XML example using the ietf-tvr-node YANG
         module.</t>
       <t>In this example, the node has a node-id of "node:1", and
-        it's scheduled to be powered off start from 2025-07-26T17:00:00Z
-        to 2025-07-26T18:00:00Z. Interface, "eth 1", has a recurrent 
+        it's scheduled to be powered off starting from 2025-07-26T17:00:00Z
+        to 2025-07-26T18:00:00Z. Interface "eth 1" has a recurrent 
         schedule to be "not available (off)" which starts from 2025-07-20T23:00:00Z, lasts for 7200
         seconds (2 hours) each time for 10 times every 2 days.</t>
       <t>
@@ -1183,11 +1206,7 @@ module ietf-tvr-ospf-schedule {
                         },
                         "count": "10",
                         "recurrence-description": "daily off",
-                        "frequency": {
-                            "-xmlns:schedule": "urn:ietf:params:xml:\
-                            ns:yang:ietf-schedule",
-                            "#text": "schedule:daily"
-                        },
+                        "frequency": "ietf-schedule:daily",
                         "interval": "2",
                         "scheduled-attributes": {
                             "available": "false"
@@ -1205,12 +1224,12 @@ module ietf-tvr-ospf-schedule {
       <name>Example: TVR Network Topology Configuration</name>
       <t>The following is an XML example using the ietf-tvr-topology YANG
         module.</t>
-      <t>In this example, the node with a node-id of "node:1", is
+      <t>In this example, the node with a node-id of "node:1" is
         scheduled to be powered off start from 2025-07-26T17:00:00Z,
         for 2 days and four and half hours.</t>
       <t>
-        Node, "node:2", is scheduled to be off starts from 2025-07-20T23:00:00Z, lasts for 7200
-        seconds (2 hours) each time until 2025-08-20T23:00:00Z every 2 days.</t>
+        Node "node:2" is scheduled to be off starting from 2025-07-20T23:00:00Z, lasting for 7200
+        seconds (2 hours) every two days until 2025-08-20T23:00:00Z.</t>
       <t>
         Note: '\' line wrapping per <xref target="RFC8792"/>.</t>
       <artwork><![CDATA[
@@ -1283,11 +1302,7 @@ module ietf-tvr-ospf-schedule {
                         },
                         "utc-until": "2025-08-20T23:00:00Z",
                         "recurrence-description": "daily off",
-                        "frequency": {
-                            "-xmlns:schedule": "urn:ietf:params:\
-                            xml:ns:yang:ietf-schedule",
-                            "#text": "schedule:daily"
-                        },
+                        "frequency": "ietf-schedule:daily",
                         "interval": "2",
                         "node-available": "false"
                     }
