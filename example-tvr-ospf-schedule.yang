@@ -22,6 +22,8 @@ module example-tvr-ospf-schedule {
   augment "/rt:routing/rt:control-plane-protocols/"
     + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
     + "ospf:interfaces/ospf:interface" {
+    description
+      "Augment OSPF interface configuration.";
     container scheduled-cost {
       description
         "Augment OSPF interface with a scheduled interface cost.";
@@ -32,6 +34,8 @@ module example-tvr-ospf-schedule {
             description
              "interface cost";
           }
+          description
+            "Augment schedule with an interface cost.";
         }
       }
     }

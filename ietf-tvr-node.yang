@@ -6,13 +6,13 @@ module ietf-tvr-node {
   import ietf-inet-types {
     prefix inet;
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-yang-types {
     prefix "yang";
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-tvr-schedule {
@@ -43,7 +43,7 @@ module ietf-tvr-node {
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
 
-     Copyright (c) 2025 IETF Trust and the persons identified as
+     Copyright (c) 2026 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
      Redistribution and use in source and binary forms, with or
@@ -60,7 +60,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2025-06-30 {
+  revision 2022-02-09 {
     description
       "Initial Version";
     reference

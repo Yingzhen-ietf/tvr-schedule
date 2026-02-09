@@ -6,13 +6,13 @@ module ietf-tvr-topology {
   import ietf-inet-types {
     prefix inet;
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-yang-types {
     prefix "yang";
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-tvr-schedule {
@@ -41,7 +41,7 @@ module ietf-tvr-topology {
     "This YANG module contains YANG definitions for describing
     network topology with a time-variant availability schedule.
 
-    Copyright (c) 2025 IETF Trust and the persons identified as
+    Copyright (c) 2026 IETF Trust and the persons identified as
     authors of the code.  All rights reserved.
 
     Redistribution and use in source and binary forms, with or
@@ -60,7 +60,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2026-01-04 {
+  revision 2026-02-09 {
     description
       "Initial revision";
     reference
@@ -183,8 +183,7 @@ module ietf-tvr-topology {
             range "0..16777215";
           }
           description
-            "The default link capacity specified in a
-             generic format.";
+            "The default one-way delay in microseconds.";
         }
       }
     }

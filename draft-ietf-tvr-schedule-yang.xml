@@ -10,8 +10,8 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml'>
     <!ENTITY RFC6242 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6242.xml'>
-    <!ENTITY RFC6991 PUBLIC ''
-      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6991.xml'>
+    <!ENTITY RFC9911 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9911.xml'>
     <!ENTITY RFC7950 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7950.xml'>
     <!ENTITY RFC8040 PUBLIC ''
@@ -31,7 +31,7 @@
     <!ENTITY RFC9657 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
     <!ENTITY I-D.ietf-netmod-schedule-yang PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-06.xml'>
+     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-10.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -42,7 +42,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-06" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-08" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -170,10 +170,11 @@
       </t>
 
       <section title="Requirements Language">
-        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-        document are to be interpreted as described in <xref target="RFC2119"/>
-        <xref target="RFC8174"/>.</t>
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+        NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+        "MAY", and "OPTIONAL" in this document are to be interpreted as
+        described in BCP 14 <xref target="RFC2119" format="default"/> <xref target="RFC8174" format="default"/>
+        when, and only when, they appear in all capitals, as shown here.</t>
       </section>
     </section>
 
@@ -431,7 +432,7 @@ module: ietf-tvr-topology
     <t>
       The following RFC is not referenced in the document text but is
    referenced in the "ietf-tvr-schedule.yang" module and
-   "ietf-tvr-topology.yang" module: <xref target="RFC6991"/>.
+   "ietf-tvr-topology.yang" module: <xref target="RFC9911"/>.
    </t>
     <section title="TVR Schedule YANG Module">
       <artwork><![CDATA[
@@ -532,7 +533,7 @@ module ietf-tvr-schedule {
     </section>
     <section title="TVR Schedule Node Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2025-06-30.yang"
+<CODE BEGINS> file "ietf-tvr-node@2026-02-09.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
@@ -541,13 +542,13 @@ module ietf-tvr-node {
   import ietf-inet-types {
     prefix inet;
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-yang-types {
     prefix "yang";
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-tvr-schedule {
@@ -578,7 +579,7 @@ module ietf-tvr-node {
      This YANG model conforms to the Network Management
      Datastore Architecture (NMDA) as described in RFC 8342.
 
-     Copyright (c) 2025 IETF Trust and the persons identified as
+     Copyright (c) 2026 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
      Redistribution and use in source and binary forms, with or
@@ -595,7 +596,7 @@ module ietf-tvr-node {
   reference
     "RFC XXXX: YANG Data Model for Scheduled Attributes";
 
-  revision 2025-06-30 {
+  revision 2022-02-09 {
     description
       "Initial Version";
     reference
@@ -718,7 +719,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2026-01-04.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2026-02-09.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -727,13 +728,13 @@ module ietf-tvr-topology {
   import ietf-inet-types {
     prefix inet;
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-yang-types {
     prefix "yang";
     reference
-      "RFC 6991: Common YANG Data Types";
+      "RFC 9911: Common YANG Data Types";
   }
 
   import ietf-tvr-schedule {
@@ -781,7 +782,7 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2026-01-04 {
+  revision 2026-02-09 {
     description
       "Initial revision";
     reference
@@ -904,8 +905,7 @@ module ietf-tvr-topology {
             range "0..16777215";
           }
           description
-            "The default link capacity specified in a
-             generic format.";
+            "The default one-way delay in microseconds.";
         }
       }
     }
@@ -926,6 +926,10 @@ module ietf-tvr-topology {
       <t>
         Operators should be aware that these scheduled attributes represent planned
         state changes, not instantaneous configuration changes or unplanned breakages.</t>
+      <t>
+        A schedule can be defined using a series of periods or intervals with
+        recurrence. The model defined in this document doesn't prevent a configuration
+        to mix both styles. However, it's not recommended.</t>
       <t>
         There should be synchronized clocks between controllers and devices. The time
         sources (e.g., NTP, PTP) should be accurate to avoid unintended time/schedule
@@ -1060,7 +1064,7 @@ module ietf-tvr-topology {
       &RFC6020;
       &RFC6241;
       &RFC6242;
-      &RFC6991;
+      &RFC9911;
       &RFC7950;
       &RFC8040;
       &RFC8174;
@@ -1086,9 +1090,9 @@ module ietf-tvr-topology {
       <t>This example demonstrates how an OSPF interface can be extended
         with a cost that changes with a schedule.</t>
       <artwork><![CDATA[
-module ietf-tvr-ospf-schedule {
+module example-tvr-ospf-schedule {
   yang-version 1.1;
-  namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-ospf-schedule";
+  namespace "urn:ietf:params:xml:ns:yang:example-tvr-ospf-schedule";
   prefix ospf-schedule;
 
   import ietf-routing {
@@ -1110,6 +1114,8 @@ module ietf-tvr-ospf-schedule {
   augment "/rt:routing/rt:control-plane-protocols/"
     + "rt:control-plane-protocol/ospf:ospf/ospf:areas/ospf:area/"
     + "ospf:interfaces/ospf:interface" {
+    description
+      "Augment OSPF interface configuration.";
     container scheduled-cost {
       description
         "Augment OSPF interface with a scheduled interface cost.";
@@ -1120,6 +1126,8 @@ module ietf-tvr-ospf-schedule {
             description
              "interface cost";
           }
+          description
+            "Augment schedule with an interface cost.";
         }
       }
     }
