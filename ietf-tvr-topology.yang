@@ -17,6 +17,8 @@ module ietf-tvr-topology {
 
   import ietf-tvr-schedule {
     prefix "tvr-schd";
+    reference
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
   organization
@@ -50,9 +52,12 @@ module ietf-tvr-topology {
     in Section 4.c of the IETF Trust's Legal Provisions Relating
     to IETF Documents (https://trustee.ietf.org/license-info).
 
-    This version of this YANG module is part of RFC XXXX
-    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-    for full legal notices.
+     All revisions of IETF and IANA published modules can be found
+     at the YANG Parameters registry group
+     (https://www.iana.org/assignments/yang-parameters).
+
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.
 
     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
@@ -60,11 +65,11 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2026-02-09 {
+  revision 2026-05-19 {
     description
       "Initial revision";
     reference
-      "RFC XXXX: YANG Data Model for Scheduled Attributes";
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
   container topology-schedule {
@@ -182,6 +187,7 @@ module ietf-tvr-topology {
           type uint32 {
             range "0..16777215";
           }
+          units "microsends";
           description
             "The default one-way delay in microseconds.";
         }

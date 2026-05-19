@@ -4,14 +4,14 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
     <!ENTITY RFC3688 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3688.xml'>
+    <!ENTITY RFC4252 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.4252.xml'>
     <!ENTITY RFC6020 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml'>
     <!ENTITY RFC6241 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml'>
     <!ENTITY RFC6242 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6242.xml'>
-    <!ENTITY RFC9911 PUBLIC ''
-      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9911.xml'>
     <!ENTITY RFC7950 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7950.xml'>
     <!ENTITY RFC8040 PUBLIC ''
@@ -28,10 +28,14 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
     <!ENTITY RFC8792 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8792.xml'>
+    <!ENTITY RFC9000 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9000.xml'>
     <!ENTITY RFC9657 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
-    <!ENTITY I-D.ietf-netmod-schedule-yang PUBLIC ''
-     'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-netmod-schedule-yang-10.xml'>
+    <!ENTITY RFC9911 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9911.xml'>
+    <!ENTITY RFC9922 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9922.xml'>
     ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc strict="no" ?>
@@ -42,7 +46,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-08" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-09" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -55,7 +59,7 @@
     <!-- The abbreviated title is used in the page header - it is only necessary if the
          full title is longer than 39 characters -->
 
-  <title abbrev="TVR Schedule YANG">YANG Data Model for Scheduled Attributes </title>
+  <title abbrev="TVR Schedule YANG">A YANG Data Model for Scheduled Attributes </title>
 
     <!-- add 'role="editor"' below for the editors if appropriate -->
 
@@ -123,7 +127,7 @@
 
     <abstract>
       <t>
-        The YANG model in this document includes three modules, and can be used
+        The YANG data model in this document includes three modules, and can be used
         to manage network resources and topologies with scheduled attributes, such
         as predictable link loss and link connectivity as a function of time. The intent
         is to have this information be utilized by Time-Variant Routing systems.
@@ -133,47 +137,34 @@
 
   <middle>
     <section title="Overview">
-      <t>
-        YANG <xref target="RFC7950"></xref> is a data definition language
-        used to define the contents of a conceptual data store
-        that allows networked devices to be managed using NETCONF
-        <xref target="RFC6241"/>.  YANG is proving relevant beyond its
-        initial confines, as bindings to other interfaces (e.g., ReST) and
-        encodings other than XML (e.g., JSON) are being defined.  Furthermore,
-        YANG data models can be used as the basis for implementation of other
-        interfaces, such as CLI and programmatic APIs.
-      </t>
 
       <t>There are use cases where changes to the routing topology are expected as
       part of network operations. In some network scenarios, it's possible to predict the times
         at which one router will be able to establish a link with another router.
         Links can be predictably lost and re-established, and neighbors may
         change as a function of time. For examples of such networks and
-        scenarios, please reference TVR (Time-Variant Routing) Use Cases
+        scenarios, please refer to TVR (Time-Variant Routing) Use Cases
        <xref target="RFC9657"/>.</t>
 
       <t>
-        The YANG model in this document can be used to manage network resources
+        The YANG <xref target="RFC7950"></xref> data model in this document can be used to manage network resources
         and topologies with scheduled attributes. There are three YANG modules
         in this document.
       </t>
 
-      <t>Module ietf-tvr-schedule.yang contains the schedule YANG definitions. Module
+      <t>Module ietf-tvr-schedule.yang contains the schedule YANG definitions. Module ietf-tvr-node.yang is to be used to manage scheduled
+        attributes of a single node. Module
         ietf-tvr-topology.yang defines a network topology with time-variant
-        availability. Module ietf-tvr-node.yang is to be used to manage scheduled
-        attributes of a single node.
+        availability. 
       </t>
 
-      <t>
-        The YANG modules in this document conform to the Network Management
-        Datastore Architecture (NMDA) <xref target="RFC8342"/>.
-      </t>
 
       <section title="Requirements Language">
-        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+        <t>
+          The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
         NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
         "MAY", and "OPTIONAL" in this document are to be interpreted as
-        described in BCP 14 <xref target="RFC2119" format="default"/> <xref target="RFC8174" format="default"/>
+        described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174" format="default"/>
         when, and only when, they appear in all capitals, as shown here.</t>
       </section>
     </section>
@@ -194,11 +185,11 @@
           The grouping "tvr-schedule" consists of a list of schedules, and each
           schedule is either a single time period or recurring time periods. For each schedule
           instance, it utilizes the groupings "period-of-time" and "recurrence-utc" as
-          defined in <xref target="I-D.ietf-netmod-schedule-yang"/>.
+          defined in <xref target="RFC9922"/>.
         </t>
         <t>
-          Users can supply attributes or containers that augment the schedule.
-          The "tvr-node" has a container "scheduled-attributes" that  
+          Users can supply attributes or containers that augment the schedule. For example,
+          the "tvr-node" has a container "scheduled-attributes" that  
           uses the "tvr-schedule". 
         </t> 
         <t>
@@ -265,6 +256,40 @@ Attributes
     </section>
 
   <section title="TVR YANG Trees">
+    <section title="TVR Schedule YANG Tree">
+    <t>
+      The following figure shows the tree diagram of the tvr-schedule grouping.
+    </t>
+    <artwork>
+module: ietf-tvr-schedule
+
+  grouping tvr-schedule:
+    +-- schedule* [schedule-id]
+       +-- schedule-id                     uint32
+       +-- (schedule-type)?
+          +--:(period)
+          |  +-- period-description?       string
+          |  +-- period-start?             yang:date-and-time
+          |  +-- time-zone-identifier?     sys:timezone-name
+          |  +-- (period-type)?
+          |     +--:(explicit)
+          |     |  +-- period-end?         yang:date-and-time
+          |     +--:(duration)
+          |        +-- duration?           duration
+          +--:(recurrence)
+             +-- recurrence-first
+             |  +-- start-time-utc?   yang:date-and-time
+             |  +-- duration?         uint32
+             +-- (recurrence-end)?
+             |  +--:(until)
+             |  |  +-- utc-until?          yang:date-and-time
+             |  +--:(count)
+             |     +-- count?              uint32
+             +-- recurrence-description?   string
+             +-- frequency?                identityref
+             +-- interval?                 uint32      
+    </artwork>  
+    </section>
     <section title="TVR Node YANG Tree">
     <t>
       The following figure shows the tree diagram of the TVR Node
@@ -384,8 +409,8 @@ module: ietf-tvr-topology
      |        |     +--rw interval?                 uint32
      |        +--rw node-available?                 boolean
      +--rw link* [source-node source-link-id]
-        +--rw source-node       inet:uri
-        +--rw source-link-id    string
+        +--rw source-node                           inet:uri
+        +--rw source-link-id                        string
         +--rw available
            +--rw schedule* [schedule-id]
            |  +--rw schedule-id                     uint32
@@ -429,14 +454,10 @@ module: ietf-tvr-topology
 
 
   <section title="TVR Schedule YANG Modules">
-    <t>
-      The following RFC is not referenced in the document text but is
-   referenced in the "ietf-tvr-schedule.yang" module and
-   "ietf-tvr-topology.yang" module: <xref target="RFC9911"/>.
-   </t>
+
     <section title="TVR Schedule YANG Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-schedule@2025-06-30.yang"
+<CODE BEGINS> file "ietf-tvr-schedule@2026-05-19.yang"
 module ietf-tvr-schedule {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-schedule";
@@ -445,7 +466,7 @@ module ietf-tvr-schedule {
   import ietf-schedule {
     prefix "schedule";
     reference
-      "RFC XXXX: A Common YANG Data Model for Scheduling";
+      "RFC 9922: A Common YANG Data Model for Scheduling";
   }
 
   organization
@@ -469,10 +490,7 @@ module ietf-tvr-schedule {
     "The YANG module contains common YANG definitions for
      time-variant schedule.
 
-     This YANG model conforms to the Network Management
-     Datastore Architecture (NMDA) as described in RFC 8342.
-
-     Copyright (c) 2025 IETF Trust and the persons identified as
+     Copyright (c) 2026 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
      Redistribution and use in source and binary forms, with or
@@ -482,18 +500,18 @@ module ietf-tvr-schedule {
      Relating to IETF Documents
      (https://trustee.ietf.org/license-info).
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+     All revisions of IETF and IANA published modules can be found
+     at the YANG Parameters registry group
+     (https://www.iana.org/assignments/yang-parameters).
 
-  reference
-    "RFC XXXX: YANG Data Model for Scheduled Attributes";
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.";
 
-  revision 2025-06-30 {
+  revision 2026-05-19 {
     description
       "Initial Version";
     reference
-      "RFC XXXX: YANG Data Model for Scheduled Attributes.";
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes.";
   }
 
   grouping tvr-schedule {
@@ -533,7 +551,7 @@ module ietf-tvr-schedule {
     </section>
     <section title="TVR Schedule Node Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2026-02-09.yang"
+<CODE BEGINS> file "ietf-tvr-node@2026-05-19.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
@@ -553,6 +571,8 @@ module ietf-tvr-node {
 
   import ietf-tvr-schedule {
     prefix "tvr-schd";
+    reference
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
   organization
@@ -576,9 +596,6 @@ module ietf-tvr-node {
     "The YANG module is to configure and manage node attributes
      with schedules.
 
-     This YANG model conforms to the Network Management
-     Datastore Architecture (NMDA) as described in RFC 8342.
-
      Copyright (c) 2026 IETF Trust and the persons identified as
      authors of the code.  All rights reserved.
 
@@ -589,18 +606,19 @@ module ietf-tvr-node {
      Relating to IETF Documents
      (https://trustee.ietf.org/license-info).
 
-     This version of this YANG module is part of RFC XXXX
-     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-     for full legal notices.";
+     All revisions of IETF and IANA published modules can be found
+     at the YANG Parameters registry group
+     (https://www.iana.org/assignments/yang-parameters).
 
-  reference
-    "RFC XXXX: YANG Data Model for Scheduled Attributes";
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.";
 
-  revision 2022-02-09 {
+
+  revision 2026-05-19 {
     description
       "Initial Version";
     reference
-      "RFC XXXX: YANG Data Model for Scheduled Attributes.";
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes.";
   }
 
   container node-schedule {
@@ -719,7 +737,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2026-02-09.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2026-05-19.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -739,6 +757,8 @@ module ietf-tvr-topology {
 
   import ietf-tvr-schedule {
     prefix "tvr-schd";
+    reference
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
   organization
@@ -772,9 +792,12 @@ module ietf-tvr-topology {
     in Section 4.c of the IETF Trust's Legal Provisions Relating
     to IETF Documents (https://trustee.ietf.org/license-info).
 
-    This version of this YANG module is part of RFC XXXX
-    (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
-    for full legal notices.
+     All revisions of IETF and IANA published modules can be found
+     at the YANG Parameters registry group
+     (https://www.iana.org/assignments/yang-parameters).
+
+     This version of this YANG module is part of RFC XXXX; see
+     the RFC itself for full legal notices.
 
     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
@@ -782,11 +805,11 @@ module ietf-tvr-topology {
     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
     they appear in all capitals, as shown here.";
 
-  revision 2026-02-09 {
+  revision 2026-05-19 {
     description
       "Initial revision";
     reference
-      "RFC XXXX: YANG Data Model for Scheduled Attributes";
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
   container topology-schedule {
@@ -904,6 +927,7 @@ module ietf-tvr-topology {
           type uint32 {
             range "0..16777215";
           }
+          units "microsends";
           description
             "The default one-way delay in microseconds.";
         }
@@ -929,7 +953,7 @@ module ietf-tvr-topology {
       <t>
         A schedule can be defined using a series of periods or intervals with
         recurrence. The model defined in this document doesn't prevent a configuration
-        to mix both styles. However, it's not recommended.</t>
+        to mix both styles. However, it's NOT RECOMMENDED for simplicity and easy readability.</t>
       <t>
         There should be synchronized clocks between controllers and devices. The time
         sources (e.g., NTP, PTP) should be accurate to avoid unintended time/schedule
@@ -941,37 +965,40 @@ module ietf-tvr-topology {
         schedules should be considered by the operators.</t>
       <t>
         The TVR schedule modules are meant to work together with other models that
-        manage node or interface attributes. Operators should consider the conflicting
+        manage node or interface attributes, and the name of these nodes and interfaces
+        SHOULD be configured consistently. Operators should consider the conflicting
         configurations between the scheduled and non-scheduled settings and how to
         handle the conflicts.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
       <t>
-        The YANG modules specified in this document define a schema for
-        data that is designed to be accessed via network
-        management protocols such as NETCONF <xref target="RFC6241"/> or
-        RESTCONF <xref target="RFC8040"/>. The lowest NETCONF layer is the secure transport
-        layer, and the mandatory-to-implement secure transport is Secure Shell (SSH)
-        <xref target="RFC6242"/>. The lowest RESTCONF layer is HTTPS, and the
-        mandatory-to-implement secure transport is TLS <xref target="RFC8446"/>.
+        The YANG modules sepcified in this document define a data model that is
+   designed to be accessed via YANG-based management protocols,
+   such as the Network Configuration Protocol (NETCONF)  <xref target="RFC6241"/>
+   and RESTCONF <xref target="RFC8040"/>.  These YANG-based management protocols
+   (1) have to use a secure transport layer (e.g., Secure Shell (SSH)
+   <xref target="RFC4252"/>, TLS <xref target="RFC8446"/>, and QUIC <xref target="RFC9000"/>) and (2) have to use
+   mutual authentication.
       </t>
 
       <t>
-        The NETCONF access control model <xref target="RFC8341"/> provides the
-        means to restrict access for particular NETCONF or RESTCONF users to a
-        pre-configured subset of all available NETCONF or RESTCONF protocol
-        operations and content.
+        The Network Configuration Access Control Model (NACM)  <xref target="RFC8341"/>
+        provides the means to restrict access for particular NETCONF or
+        RESTCONF users to a preconfigured subset of all available NETCONF or
+        RESTCONF protocol operations and content.
       </t>
 
       <t>
         There are a number of data nodes defined in ietf-tvr-node.yang module and
         ietf-tvr-topology.yang
         that are writable/creatable/deletable (i.e., config true, which is the default).
-        These data nodes may be considered sensitive or vulnerable in some network
-        environments. Write operations (e.g., edit-config) to these data nodes without
-        proper protection can have a negative effect on network operations. There are
-        the subtrees and data nodes and their sensitivity/vulnerability:
+        All writable data nodes are likely to be sensitive or
+        vulnerable in some network environments.  Write
+        operations (e.g., edit-config) and delete operations to these data
+        nodes without proper protection or authentication can have a negative
+        effect on network operations.  The following subtrees and data nodes
+        have particular sensitivities/vulnerabilities:
       </t>
       <ul spacing="compact" empty="true">
         <li>/node-schedule/node-power-schedule</li>
@@ -1036,7 +1063,7 @@ module ietf-tvr-topology {
    </artwork>
 </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The YANG model was developed using the suite of YANG tools written
+      <t>The YANG data model was developed using the suite of YANG tools written
       and maintained by numerous authors.</t>
     </section>
   </middle>
@@ -1062,21 +1089,23 @@ module ietf-tvr-topology {
       &RFC2119;
       &RFC3688;
       &RFC6020;
-      &RFC6241;
-      &RFC6242;
-      &RFC9911;
       &RFC7950;
-      &RFC8040;
       &RFC8174;
       &RFC8341;
       &RFC8342;
-      &RFC8446;
-      &I-D.ietf-netmod-schedule-yang;
+      &RFC9911;
+      &RFC9922;
     </references>
     <references title="Informative References">
       <!-- Here we use entities that we defined at the beginning. -->
+      &RFC4252;
+      &RFC6241;
+      &RFC6242;
+      &RFC8040;
       &RFC8340;
+      &RFC8446;
       &RFC8792;
+      &RFC9000;
       &RFC9657;
     </references>
 
