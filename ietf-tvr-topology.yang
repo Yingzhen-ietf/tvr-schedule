@@ -142,16 +142,6 @@ module ietf-tvr-topology {
           }
         }
       }
-    }
-  }
-
-  grouping link-default-attributes {
-    description
-      "Link default attributes - reusable grouping specifying
-       link default attributes.";
-    container default-attributes {
-      description
-        "Default link attribute relevant to scheduling.";
       leaf default-link-available {
         type boolean;
         default "false";
@@ -210,7 +200,6 @@ module ietf-tvr-topology {
           "A name refers to the link of the source node.";
       }
       uses link-availability-schedule;
-      uses link-default-attributes;
     }
   }
 }
