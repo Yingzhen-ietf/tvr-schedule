@@ -189,7 +189,7 @@ module ietf-tvr-topology {
     uses node-availability-schedule;
   }
 
-  augment "/nw:networks/nw:network/nt:link" {
+  augment "/nw:networks/nw:network/nw:node/nt:termination-point" {
     description
       "Augment network link with schedules.";
     uses link-availability-schedule;
