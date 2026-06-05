@@ -19,6 +19,19 @@ module ietf-tvr-topology {
       "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
+  import ietf-network {
+    prefix nw;
+    reference
+      "RFC 8345: A YANG Data Model for Network Topologies";
+  }
+
+
+  import ietf-network-topology {
+    prefix nt;
+    reference
+      "RFC 8345: A YANG Data Model for Network Topologies";
+  }  
+
   organization
     "IETF Time-Variant Routing Working Group";
   contact
@@ -169,37 +182,16 @@ module ietf-tvr-topology {
     }
   }
 
-  container topology-schedule {
+
+  augment "/nw:networks/nw:network/nw:node" {
     description
-      "Network topology schedules.";
-    list node {
-      key "node-id";
-      description
-        "List of nodes with schedules.";
-      leaf node-id {
-        type inet:uri;
-        description
-          "Identifier for a node; uniquely identifies a node. This
-           may be the same as the node-id defined in the ietf-network
-           module defined in RFC 8345.";
-      }
-      uses node-availability-schedule;
-    }
-    list link {
-      key "source-node source-link-id";
-      description
-        "List of links.";
-      leaf source-node {
-        type inet:uri;
-        description
-          "A name refers to the source node of the link.";
-      }
-      leaf source-link-id {
-        type string;
-        description
-          "A name refers to the link of the source node.";
-      }
-      uses link-availability-schedule;
-    }
+      "Augment network node with schedules.";
+    uses node-availability-schedule;
+  }
+
+  augment "/nw:networks/nw:network/nt:link" {
+    description
+      "Augment network link with schedules.";
+    uses link-availability-schedule;
   }
 }
