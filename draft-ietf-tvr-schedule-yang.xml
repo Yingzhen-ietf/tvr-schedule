@@ -10,8 +10,6 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6020.xml'>
     <!ENTITY RFC6241 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6241.xml'>
-    <!ENTITY RFC6242 PUBLIC ''
-      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6242.xml'>
     <!ENTITY RFC7950 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.7950.xml'>
     <!ENTITY RFC8040 PUBLIC ''
@@ -24,12 +22,16 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8341.xml'>
     <!ENTITY RFC8342 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8342.xml'>
+    <!ENTITY RFC8345 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8345.xml'>
     <!ENTITY RFC8446 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
     <!ENTITY RFC8792 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8792.xml'>
     <!ENTITY RFC9000 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9000.xml'>
+    <!ENTITY RFC9129 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9129.xml'>
     <!ENTITY RFC9657 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
     <!ENTITY RFC9911 PUBLIC ''
@@ -155,7 +157,8 @@
       <t>Module ietf-tvr-schedule.yang contains the schedule YANG definitions. Module ietf-tvr-node.yang is to be used to manage scheduled
         attributes of a single node. Module
         ietf-tvr-topology.yang defines a network topology with time-variant
-        availability. 
+        availability, and it augments the ietf-network.yang and ietf-network-topology.yang
+        modules defined in <xref target="RFC8345"/>.
       </t>
 
 
@@ -233,20 +236,14 @@ Attributes
       </section>
       <section title="TVR Topology YANG Module">
         <t>
-          Module ietf-tvr-topology.yang describes a network topology with
-          a time-variant availability schedule.
+          Defined in <xref target="RFC8345"/>, the ietf-network.yang module provides a generic model for representing network instances and their nodes, and the ietf-network-topology.yang module extends that module with links and termination points to describe the connectivity and topology of those networks.
         </t>
         <t>
-          The module has a list of nodes, identified by a unique "node-id".
-          Each node has a list of links. Links are modeled as unidirectional.
-          Link availability is described from the viewpoint of a particular
-          source node (the transmitting node) and beginning at a particular
-          time. Each link in the list contains the range of times during
-          which it is available.
+          Module ietf-tvr-topology.yang augments the ietf-network.yang and ietf-network-topology.yang modules to support the specification of time-varying availability schedules for network nodes and links.
         </t>
         <t>
-          The "source-link-id" is a string and used to identify a link
-          as viewed from the source-node. Bandwidth and delay are predicted
+          The "termination-point" is to be mapped to an interface, and is augmented with the range of times during
+          which it is available. Bandwidth and delay are predicted
           link attributes. Delay is the link propagation time and does not
           include any queuing delays. "destination-node" of a link may follow
           a schedule as well.
@@ -375,78 +372,68 @@ module: ietf-tvr-node
 
       <artwork>
 module: ietf-tvr-topology
-  +--rw topology-schedule
-     +--rw node* [node-id]
-     |  +--rw node-id      inet:uri
-     |  +--rw available
-     |     +--rw default-node-available?   boolean
-     |     +--rw schedule* [schedule-id]
-     |        +--rw schedule-id                     uint32
-     |        +--rw (schedule-type)?
-     |        |  +--:(period)
-     |        |  |  +--rw period-description?       string
-     |        |  |  +--rw period-start?
-     |        |  |  |       yang:date-and-time
-     |        |  |  +--rw time-zone-identifier?     sys:timezone-name
-     |        |  |  +--rw (period-type)?
-     |        |  |     +--:(explicit)
-     |        |  |     |  +--rw period-end?
-     |        |  |     |          yang:date-and-time
-     |        |  |     +--:(duration)
-     |        |  |        +--rw duration?           duration
-     |        |  +--:(recurrence)
-     |        |     +--rw recurrence-first
-     |        |     |  +--rw start-time-utc?   yang:date-and-time
-     |        |     |  +--rw duration?         uint32
-     |        |     +--rw (recurrence-end)?
-     |        |     |  +--:(until)
-     |        |     |  |  +--rw utc-until?
-     |        |     |  |          yang:date-and-time
-     |        |     |  +--:(count)
-     |        |     |     +--rw count?              uint32
-     |        |     +--rw recurrence-description?   string
-     |        |     +--rw frequency?                identityref
-     |        |     +--rw interval?                 uint32
-     |        +--rw node-available?                 boolean
-     +--rw link* [source-node source-link-id]
-        +--rw source-node                           inet:uri
-        +--rw source-link-id                        string
-        +--rw available
-           +--rw schedule* [schedule-id]
-           |  +--rw schedule-id                     uint32
-           |  +--rw (schedule-type)?
-           |  |  +--:(period)
-           |  |  |  +--rw period-description?       string
-           |  |  |  +--rw period-start?
-           |  |  |  |       yang:date-and-time
-           |  |  |  +--rw time-zone-identifier?     sys:timezone-name
-           |  |  |  +--rw (period-type)?
-           |  |  |     +--:(explicit)
-           |  |  |     |  +--rw period-end?
-           |  |  |     |          yang:date-and-time
-           |  |  |     +--:(duration)
-           |  |  |        +--rw duration?           duration
-           |  |  +--:(recurrence)
-           |  |     +--rw recurrence-first
-           |  |     |  +--rw start-time-utc?   yang:date-and-time
-           |  |     |  +--rw duration?         uint32
-           |  |     +--rw (recurrence-end)?
-           |  |     |  +--:(until)
-           |  |     |  |  +--rw utc-until?
-           |  |     |  |          yang:date-and-time
-           |  |     |  +--:(count)
-           |  |     |     +--rw count?              uint32
-           |  |     +--rw recurrence-description?   string
-           |  |     +--rw frequency?                identityref
-           |  |     +--rw interval?                 uint32
-           |  +--rw link-attributes
-           |     +--rw link-available?     boolean
-           |     +--rw bandwidth?          yang:gauge64
-           |     +--rw delay?              uint32
-           |     +--rw destination-node?   inet:uri
-           +--rw default-link-available?   boolean
-           +--rw default-bandwidth?        yang:gauge64
-           +--rw default-delay?            uint32
+  augment /nw:networks/nw:network/nw:node:
+    +--rw available
+       +--rw default-node-available?   boolean
+       +--rw schedule* [schedule-id]
+          +--rw schedule-id                     uint32
+          +--rw (schedule-type)?
+          |  +--:(period)
+          |  |  +--rw period-description?       string
+          |  |  +--rw period-start?             yang:date-and-time
+          |  |  +--rw time-zone-identifier?     sys:timezone-name
+          |  |  +--rw (period-type)?
+          |  |     +--:(explicit)
+          |  |     |  +--rw period-end?         yang:date-and-time
+          |  |     +--:(duration)
+          |  |        +--rw duration?           duration
+          |  +--:(recurrence)
+          |     +--rw recurrence-first
+          |     |  +--rw start-time-utc?   yang:date-and-time
+          |     |  +--rw duration?         uint32
+          |     +--rw (recurrence-end)?
+          |     |  +--:(until)
+          |     |  |  +--rw utc-until?          yang:date-and-time
+          |     |  +--:(count)
+          |     |     +--rw count?              uint32
+          |     +--rw recurrence-description?   string
+          |     +--rw frequency?                identityref
+          |     +--rw interval?                 uint32
+          +--rw node-available?                 boolean
+  augment /nw:networks/nw:network/nw:node/nt:termination-point:
+    +--rw available
+       +--rw schedule* [schedule-id]
+       |  +--rw schedule-id                     uint32
+       |  +--rw (schedule-type)?
+       |  |  +--:(period)
+       |  |  |  +--rw period-description?       string
+       |  |  |  +--rw period-start?             yang:date-and-time
+       |  |  |  +--rw time-zone-identifier?     sys:timezone-name
+       |  |  |  +--rw (period-type)?
+       |  |  |     +--:(explicit)
+       |  |  |     |  +--rw period-end?         yang:date-and-time
+       |  |  |     +--:(duration)
+       |  |  |        +--rw duration?           duration
+       |  |  +--:(recurrence)
+       |  |     +--rw recurrence-first
+       |  |     |  +--rw start-time-utc?   yang:date-and-time
+       |  |     |  +--rw duration?         uint32
+       |  |     +--rw (recurrence-end)?
+       |  |     |  +--:(until)
+       |  |     |  |  +--rw utc-until?          yang:date-and-time
+       |  |     |  +--:(count)
+       |  |     |     +--rw count?              uint32
+       |  |     +--rw recurrence-description?   string
+       |  |     +--rw frequency?                identityref
+       |  |     +--rw interval?                 uint32
+       |  +--rw link-attributes
+       |     +--rw link-available?     boolean
+       |     +--rw bandwidth?          yang:gauge64
+       |     +--rw delay?              uint64
+       |     +--rw destination-node?   inet:uri
+       +--rw default-link-available?   boolean
+       +--rw default-bandwidth?        yang:gauge64
+       +--rw default-delay?            uint64
       </artwork>
     </section>
 
@@ -737,7 +724,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2026-05-19.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2026-06-05.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -748,22 +735,32 @@ module ietf-tvr-topology {
     reference
       "RFC 9911: Common YANG Data Types";
   }
-
   import ietf-yang-types {
-    prefix "yang";
+    prefix yang;
     reference
       "RFC 9911: Common YANG Data Types";
   }
-
   import ietf-tvr-schedule {
-    prefix "tvr-schd";
+    prefix tvr-schd;
     reference
       "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
+  import ietf-network {
+    prefix nw;
+    reference
+      "RFC 8345: A YANG Data Model for Network Topologies";
+  }
+
+
+  import ietf-network-topology {
+    prefix nt;
+    reference
+      "RFC 8345: A YANG Data Model for Network Topologies";
+  }  
+
   organization
     "IETF Time-Variant Routing Working Group";
-
   contact
     "WG Web:   <https://datatracker.ietf.org/wg/tvr/>
      WG List:  <mailto:tvr@ietf.org>
@@ -778,19 +775,18 @@ module ietf-tvr-topology {
                <mailto:acee.ietf@gmail.com>
      Author:   Marc Blanchet
                <mailto:marc.blanchet@viagenie.ca>";
-
   description
     "This YANG module contains YANG definitions for describing
-    network topology with a time-variant availability schedule.
+     network topology with a time-variant availability schedule.
 
-    Copyright (c) 2026 IETF Trust and the persons identified as
-    authors of the code.  All rights reserved.
+     Copyright (c) 2026 IETF Trust and the persons identified as
+     authors of the code.  All rights reserved.
 
-    Redistribution and use in source and binary forms, with or
-    without modification, is permitted pursuant to, and subject to
-    the license terms contained in, the Revised BSD License set forth
-    in Section 4.c of the IETF Trust's Legal Provisions Relating
-    to IETF Documents (https://trustee.ietf.org/license-info).
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Revised BSD License set forth
+     in Section 4.c of the IETF Trust's Legal Provisions Relating
+     to IETF Documents (https://trustee.ietf.org/license-info).
 
      All revisions of IETF and IANA published modules can be found
      at the YANG Parameters registry group
@@ -799,140 +795,128 @@ module ietf-tvr-topology {
      This version of this YANG module is part of RFC XXXX; see
      the RFC itself for full legal notices.
 
-    The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
-    NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
-    'MAY', and 'OPTIONAL' in this document are to be interpreted as
-    described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
-    they appear in all capitals, as shown here.";
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
 
-  revision 2026-05-19 {
+  revision 2026-06-05 {
     description
       "Initial revision";
     reference
       "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
-  container topology-schedule {
+  grouping node-availability-schedule {
     description
-      "Network topology schedules.";
-    list node {
-      key "node-id";
+      "Node availability scheduling - reusable grouping specifying
+       node availability scheduling.";
+    container available {
       description
-        "List of nodes with schedules.";
-      leaf node-id {
-        type inet:uri;
+        "The time at which this node becomes available.";
+      leaf default-node-available {
+        type boolean;
+        default "false";
         description
-          "Identifier for a node; uniquely identifies a node. This
-           may be the same as the node-id defined in the ietf-network
-           module defined in RFC 8345.";
+          "By default, the node is powered off.";
       }
-      container available {
-        description
-          "The time at which this node becomes available.";
-
-        leaf default-node-available {
-          type boolean;
-          default false;
+      uses tvr-schd:tvr-schedule {
+        augment "schedule" {
           description
-            "By default, the node is powered off.";
-        }
-
-        uses tvr-schd:tvr-schedule {
-          augment "schedule" {
+            "Augment scheduled node availability.";
+          leaf node-available {
+            type boolean;
             description
-              "Augment scheduled node availability.";
-            leaf node-available {
+              "Node availability.";
+          }
+        }
+      }
+    }
+  }
+
+  grouping link-availability-schedule {
+    description
+      "Link availability scheduling - reusable grouping specifying
+       link availability scheduling.";
+    container available {
+      description
+        "The time at which this link becomes available.";
+      uses tvr-schd:tvr-schedule {
+        augment "schedule" {
+          description
+            "Augment scheduled values.";
+          container link-attributes {
+            description
+              "Augmentation container for links.";
+            leaf link-available {
               type boolean;
               description
-                "Node availability.";
+                "The predicted link availability.";
+            }
+            leaf bandwidth {
+              type yang:gauge64;
+              units "bits/second";
+              description
+                "The predicted link capacity. If the value measured
+                 by the system is less than this value, the system
+                 value is used. If the value measured by the system
+                 is greater than this value the predicted value
+                 SHOULD be used.";
+            }
+            leaf delay {
+              type uint64;
+              units "microseconds";
+              description
+                "The predicted one-way delay or latency in
+                 microseconds. If the value measured by the system is
+                 less than this value the predicted value SHOULD be
+                 used.";
+            }
+            leaf destination-node {
+              type inet:uri;
+              description
+                "A name refers to the destination node of the link.";
             }
           }
         }
       }
+      leaf default-link-available {
+        type boolean;
+        default "false";
+        description
+          "The default link availability.  During times when the
+           schedule does not specify an availability, this value
+           is used.";
+      }
+      leaf default-bandwidth {
+        type yang:gauge64;
+        units "bits/second";
+        default "0";
+        description
+          "The default link capacity specified in a
+           generic format.";
+      }
+      leaf default-delay {
+        type uint64;
+        units "microseconds";
+        description
+          "The default one-way delay in microseconds.";
+      }
     }
+  }
 
-    list link {
-      key "source-node source-link-id";
-      description
-        "List of links.";
-      leaf source-node {
-        type inet:uri;
-        description
-          "A name refers to the source node of the link.";
-      }
-      leaf source-link-id {
-        type string;
-        description
-          "A name refers to the link of the source node.";
-      }
-      container available {
-        description
-          "The time at which this link becomes available.";
-        uses tvr-schd:tvr-schedule {
-          augment "schedule" {
-            description
-              "Augment scheduled values.";
-            container link-attributes {
-              description "Augmentation container for links.";
-              leaf link-available {
-                type boolean;
-                description
-                  "The predicted link availability.";
-              }
-              leaf bandwidth {
-                type yang:gauge64;
-                units "bits/second";
-                description
-                  "The predicted link capacity. If the value measured
-                   by the system is less than this value, the system
-                   value is used. If the value measured by the system
-                   is greater than this value the predicted value
-                   SHOULD be used.";
-              }
-              leaf delay {
-                type uint32 {
-                  range "0..16777215";
-                }
-                description
-                  "The predicted one-way delay or latency in
-                  microseconds. If the value measured by the system is
-                  less than this value the predicted value SHOULD be
-                  used.";
-              }
-              leaf destination-node {
-                type inet:uri;
-                description
-                  "A name refers to the destination node of the link.";
-              }
-            }
-          }
-        }
-        leaf default-link-available {
-          type boolean;
-          default "false";
-          description
-            "The default link availability.  During times when the
-             schedule does not specify an availability, this value
-             is used.";
-        }
-        leaf default-bandwidth {
-          type yang:gauge64;
-          units "bits/second";
-          default "0";
-          description
-            "The default link capacity specified in a
-             generic format.";
-        }
-        leaf default-delay {
-          type uint32 {
-            range "0..16777215";
-          }
-          units "microsends";
-          description
-            "The default one-way delay in microseconds.";
-        }
-      }
-    }
+
+  augment "/nw:networks/nw:network/nw:node" {
+    description
+      "Augment network node with schedules.";
+    uses node-availability-schedule;
+  }
+
+  augment "/nw:networks/nw:network/nw:node/nt:termination-point" {
+    description
+      "Augment network link with schedules.";
+    uses link-availability-schedule;
   }
 }
 <CODE ENDS>
@@ -1093,6 +1077,7 @@ module ietf-tvr-topology {
       &RFC8174;
       &RFC8341;
       &RFC8342;
+      &RFC8345;
       &RFC9911;
       &RFC9922;
     </references>
@@ -1100,12 +1085,12 @@ module ietf-tvr-topology {
       <!-- Here we use entities that we defined at the beginning. -->
       &RFC4252;
       &RFC6241;
-      &RFC6242;
       &RFC8040;
       &RFC8340;
       &RFC8446;
       &RFC8792;
       &RFC9000;
+      &RFC9129;
       &RFC9657;
     </references>
 
@@ -1217,43 +1202,49 @@ module example-tvr-ospf-schedule {
     <t>The following is the same example using JSON format.</t>
     <artwork><![CDATA[
 {
-    "node-schedule": {
-        "-xmlns": "urn:ietf:params:xml:ns:yang:ietf-tvr-node",
-        "node-id": "node:1",
-        "node-power-schedule": {
-            "power-default": "true",
-            "schedule": {
-                "schedule-id": "1",
-                "period-description": "pwr off",
-                "period-start": "2025-07-26T17:00:00Z",
-                "time-zone-identifier": "UTC",
-                "period-end": "2025-07-26T18:00:00Z",
-                "power-state": "false"
-            }
-        },
-        "interface-schedule": {
-            "interface": {
-                "name": "eth 1",
-                "attribute-schedule": {
-                    "schedule": {
-                        "schedule-id": "100",
-                        "recurrence-first": {
-                            "start-time-utc": "2025-07-20T23:00:00Z",
-                            "duration": "7200"
-                        },
-                        "count": "10",
-                        "recurrence-description": "daily off",
-                        "frequency": "ietf-schedule:daily",
-                        "interval": "2",
-                        "scheduled-attributes": {
-                            "available": "false"
-                        }
-                    }
-                }
-            }
+  "ietf-tvr-node:node-schedule": {
+    "node-id": "node:1",
+    "node-power-schedule": {
+      "power-default": true,
+      "schedule": [
+        {
+          "schedule-id": 1,
+          "period-description": "pwr off",
+          "period-start": "2025-07-26T17:00:00Z",
+          "time-zone-identifier": "UTC",
+          "period-end": "2025-07-26T18:00:00Z",
+          "power-state": false
         }
+      ]
+    },
+    "interface-schedule": {
+      "interface": [
+        {
+          "name": "eth 1",
+          "attribute-schedule": {
+            "schedule": [
+              {
+                "schedule-id": 100,
+                "recurrence-first": {
+                  "start-time-utc": "2025-07-20T23:00:00Z",
+                  "duration": 7200
+                },
+                "count": 10,
+                "recurrence-description": "daily off",
+                "frequency": "ietf-schedule:daily",
+                "interval": 2,
+                "scheduled-attributes": {
+                  "available": false
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
+  }
 }
+
      ]]></artwork> 
     </section>
 
@@ -1270,83 +1261,93 @@ module example-tvr-ospf-schedule {
       <t>
         Note: '\' line wrapping per <xref target="RFC8792"/>.</t>
       <artwork><![CDATA[
-<topology-schedule xmlns="urn:ietf:params:xml:ns:yang\
-  :ietf-tvr-topology">
-  <node>
-    <node-id>node:1</node-id>
-    <available>
-      <default-node-available>true</default-node-available>
-      <schedule>
-        <schedule-id>101</schedule-id>
-        <period-description>node1 schedule</period-description>
-        <period-start>2025-07-26T17:00:00Z</period-start>
-        <time-zone-identifier>UTC</time-zone-identifier>
-        <duration>P2DT04:30:00</duration>
-        <node-available>false</node-available>
-      </schedule>
-    </available>
-  </node>
-  <node>
-    <node-id>node:2</node-id>
-    <available>
-      <default-node-available>true</default-node-available>
-      <schedule>
-        <schedule-id>201</schedule-id>
-        <recurrence-first>
-          <start-time-utc>2025-07-20T23:00:00Z</start-time-utc>
-          <duration>7200</duration>
-        </recurrence-first>
-        <utc-until>2025-08-20T23:00:00Z</utc-until>
-        <recurrence-description>daily off</recurrence-description>
-        <frequency xmlns:schedule="urn:ietf:params:xml:ns:yang:\
-          ietf-schedule">schedule:daily</frequency>
-        <interval>2</interval>
-        <node-available>false</node-available>
-      </schedule>
-    </available>     
-  </node>
-</topology-schedule>
+<networks xmlns="urn:ietf:params:xml:ns:yang:ietf-network">
+  <network>
+    <network-id>network:1</network-id>
+    <node>
+      <node-id>node:1</node-id>
+      <available xmlns="urn:ietf:params:xml:ns:yang:ietf-tvr-topology">
+        <default-node-available>true</default-node-available>
+        <schedule>
+          <schedule-id>101</schedule-id>
+          <period-description>node1 schedule</period-description>
+          <period-start>2025-07-26T17:00:00Z</period-start>
+          <time-zone-identifier>UTC</time-zone-identifier>
+          <duration>P2DT04:30:00</duration>
+          <node-available>false</node-available>
+        </schedule>
+      </available>
+    </node>
+    <node>
+      <node-id>node:2</node-id>
+      <available xmlns="urn:ietf:params:xml:ns:yang:ietf-tvr-topology">
+        <default-node-available>true</default-node-available>
+        <schedule>
+          <schedule-id>201</schedule-id>
+          <recurrence-first>
+            <start-time-utc>2025-07-20T23:00:00Z</start-time-utc>
+            <duration>7200</duration>
+          </recurrence-first>
+          <utc-until>2025-08-20T23:00:00Z</utc-until>
+          <recurrence-description>daily off</recurrence-description>
+          <frequency xmlns:schedule="urn:ietf:params:xml:ns:yang:\
+            ietf-schedule">schedule:daily</frequency>
+          <interval>2</interval>
+          <node-available>false</node-available>
+        </schedule>
+      </available>     
+    </node>
+  </network>
+</networks>
      ]]></artwork> 
     <t>The following is the same example using JSON format.</t>
     <artwork><![CDATA[
 {
-    "topology-schedule": {
-        "-xmlns": "urn:ietf:params:xml:ns:yang:ietf-tvr-topology",
+  "ietf-network:networks": {
+    "network": [
+      {
+        "network-id": "network:1",
         "node": [
-            {
-                "node-id": "node:1",
-                "available": {
-                    "default-node-available": "true",
-                    "schedule": {
-                        "schedule-id": "101",
-                        "period-description": "node1 schedule",
-                        "period-start": "2025-07-26T17:00:00Z",
-                        "time-zone-identifier": "UTC",
-                        "duration": "P2DT04:30:00",
-                        "node-available": "false"
-                    }
+          {
+            "node-id": "node:1",
+            "ietf-tvr-topology:available": {
+              "default-node-available": true,
+              "schedule": [
+                {
+                  "schedule-id": 101,
+                  "period-description": "node1 schedule",
+                  "period-start": "2025-07-26T17:00:00Z",
+                  "time-zone-identifier": "UTC",
+                  "duration": "P2DT04:30:00",
+                  "node-available": false
                 }
-            },
-            {
-                "node-id": "node:2",
-                "available": {
-                    "default-node-available": "true",
-                    "schedule": {
-                        "schedule-id": "201",
-                        "recurrence-first": {
-                            "start-time-utc": "2025-07-20T23:00:00Z",
-                            "duration": "7200"
-                        },
-                        "utc-until": "2025-08-20T23:00:00Z",
-                        "recurrence-description": "daily off",
-                        "frequency": "ietf-schedule:daily",
-                        "interval": "2",
-                        "node-available": "false"
-                    }
-                }
+              ]
             }
+          },
+          {
+            "node-id": "node:2",
+            "ietf-tvr-topology:available": {
+              "default-node-available": true,
+              "schedule": [
+                {
+                  "schedule-id": 201,
+                  "recurrence-first": {
+                    "start-time-utc": "2025-07-20T23:00:00Z",
+                    "duration": 7200
+                  },
+                  "utc-until": "2025-08-20T23:00:00Z",
+                  "recurrence-description": "daily off",
+                  "frequency": "ietf-schedule:daily",
+                  "interval": 2,
+                  "node-available": false
+                }
+              ]
+            }
+          }
         ]
-    }
+      }
+    ]
+  }
 }
     ]]></artwork> 
     </section>

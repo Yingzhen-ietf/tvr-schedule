@@ -74,7 +74,7 @@ module ietf-tvr-topology {
      described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
      they appear in all capitals, as shown here.";
 
-  revision 2026-05-19 {
+  revision 2026-06-05 {
     description
       "Initial revision";
     reference
@@ -138,9 +138,8 @@ module ietf-tvr-topology {
                  SHOULD be used.";
             }
             leaf delay {
-              type uint32 {
-                range "0..16777215";
-              }
+              type uint64;
+              units "microseconds";
               description
                 "The predicted one-way delay or latency in
                  microseconds. If the value measured by the system is
@@ -172,10 +171,8 @@ module ietf-tvr-topology {
            generic format.";
       }
       leaf default-delay {
-        type uint32 {
-          range "0..16777215";
-        }
-        units "microsends";
+        type uint64;
+        units "microseconds";
         description
           "The default one-way delay in microseconds.";
       }
