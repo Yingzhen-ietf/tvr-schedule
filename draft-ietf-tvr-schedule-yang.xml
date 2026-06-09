@@ -20,12 +20,9 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8340.xml'>
     <!ENTITY RFC8341 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8341.xml'>
-    <!ENTITY RFC8342 PUBLIC ''
-      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8342.xml'>
     <!ENTITY RFC8345 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8345.xml'>
-    <!ENTITY RFC8446 PUBLIC ''
-      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml'>
+    <!ENTITY I-D.ietf-tls-rfc8446bis PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml-ids/reference.I-D.draft-ietf-tls-rfc8446bis-14.xml'>  
     <!ENTITY RFC8792 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.8792.xml'>
     <!ENTITY RFC9000 PUBLIC ''
@@ -48,7 +45,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-09" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-10" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -129,9 +126,9 @@
 
     <abstract>
       <t>
-        The YANG data model in this document includes three modules, and can be used
+        The YANG data model in this document includes three modules and can be used
         to manage network resources and topologies with scheduled attributes, such
-        as predictable link loss and link connectivity as a function of time. The intent
+        as predictable link loss and link connectivity, as a function of time. The intent
         is to have this information be utilized by Time-Variant Routing systems.
       </t>
     </abstract>
@@ -191,9 +188,9 @@
           defined in <xref target="RFC9922"/>.
         </t>
         <t>
-          Users can supply attributes or containers that augment the schedule. For example,
+          The schedule in the grouping can be augmented with attributes or containers. For example,
           the "tvr-node" has a container "scheduled-attributes" that  
-          uses the "tvr-schedule". 
+          uses the "tvr-schedule" grouping. 
         </t> 
         <t>
           When an attribute's schedule ends, the "value-default" MAY
@@ -538,7 +535,7 @@ module ietf-tvr-schedule {
     </section>
     <section title="TVR Schedule Node Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-node@2026-05-19.yang"
+<CODE BEGINS> file "ietf-tvr-node@2026-06-05.yang"
 module ietf-tvr-node {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-node";
@@ -601,7 +598,7 @@ module ietf-tvr-node {
      the RFC itself for full legal notices.";
 
 
-  revision 2026-05-19 {
+  revision 2026-06-05 {
     description
       "Initial Version";
     reference
@@ -677,8 +674,7 @@ module ietf-tvr-node {
           units "bits/second";
           default "0";
           description
-            "The default interface bandwidth in bits
-             per second";
+            "The interface bandwidth in bits per second";
         }
 
         container attribute-schedule {
@@ -950,19 +946,25 @@ module ietf-tvr-topology {
       <t>
         The TVR schedule modules are meant to work together with other models that
         manage node or interface attributes, and the name of these nodes and interfaces
-        SHOULD be configured consistently. Operators should consider the conflicting
+        SHOULD be configured consistently. For example, the "node-id" in the
+        ietf-tvr-node.yang module. Operators should consider the conflicting
         configurations between the scheduled and non-scheduled settings and how to
         handle the conflicts.</t>
+      <t>
+        For simplicity, the modules are designed for terrestrial networking scenarios,
+        including systems operating in near earth space, such as Low Earth Orbit (LEO)
+        satellite networks. Implementations for deep-space or interplanetary cases can
+        be achieved through augmentations.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
       <t>
-        The YANG modules sepcified in this document define a data model that is
+        The YANG modules specified in this document define a data model that is
    designed to be accessed via YANG-based management protocols,
    such as the Network Configuration Protocol (NETCONF)  <xref target="RFC6241"/>
    and RESTCONF <xref target="RFC8040"/>.  These YANG-based management protocols
    (1) have to use a secure transport layer (e.g., Secure Shell (SSH)
-   <xref target="RFC4252"/>, TLS <xref target="RFC8446"/>, and QUIC <xref target="RFC9000"/>) and (2) have to use
+   <xref target="RFC4252"/>, TLS <xref target="I-D.ietf-tls-rfc8446bis"/>, and QUIC <xref target="RFC9000"/>) and (2) have to use
    mutual authentication.
       </t>
 
@@ -987,14 +989,15 @@ module ietf-tvr-topology {
       <ul spacing="compact" empty="true">
         <li>/node-schedule/node-power-schedule</li>
         <li>/node-schedule/interface-schedule</li>
-        <li>/topology-schedule/nodes/available</li>
-        <li>/topology-schedule/links/available</li>
-        <li>Modifications to these scheduled attributes may result in a
-        denial of service.</li>
+        <li>/nw:networks/nw:network/nw:node/available</li>
+        <li>/nw:networks/nw:network/nw:node/nt:termination-point/available</li>
       </ul>
+      
+      <t>Modifications to these scheduled attributes may result in a
+        denial of service.</t>
 
       <t>
-        Some of the readable data nodes in the ietf-tvr-node.yang module and ietf-tvr-topolgy.yang module
+        Some of the readable data nodes in the ietf-tvr-node.yang module and ietf-tvr-topology.yang module
         may be considered sensitive or vulnerable in some network environments. It is thus
         important to control read access (e.g., via get, get-config, or notification)
         to these data nodes.
@@ -1003,9 +1006,9 @@ module ietf-tvr-topology {
    </section>
 <section title="IANA Considerations">
   <t>
-    This document registers a URI in the IETF XML registry
+    This document registers three URIs in the IETF XML registry
     <xref target="RFC3688"/>.  Following the format in <xref target="RFC3688"/>,
-    the following registration is requested to be made:
+    the following registrations are requested to be made:
   </t>
 
    <artwork>
@@ -1024,7 +1027,7 @@ module ietf-tvr-topology {
    XML: N/A, the requested URI is an XML namespace.
    </artwork>
    <t>
-     This document registers a YANG module in the YANG Module Names
+     This document registers three YANG modules in the YANG Module Names
      registry <xref target="RFC6020"/>.
    </t>
    <artwork>
@@ -1076,7 +1079,6 @@ module ietf-tvr-topology {
       &RFC7950;
       &RFC8174;
       &RFC8341;
-      &RFC8342;
       &RFC8345;
       &RFC9911;
       &RFC9922;
@@ -1087,7 +1089,7 @@ module ietf-tvr-topology {
       &RFC6241;
       &RFC8040;
       &RFC8340;
-      &RFC8446;
+      &I-D.ietf-tls-rfc8446bis;
       &RFC8792;
       &RFC9000;
       &RFC9129;
@@ -1101,8 +1103,9 @@ module ietf-tvr-topology {
         particular link or interface. By default, the OSPF interface
         cost is calculated based on the bandwidth of the interface,
         and it is also configurable.</t>
-      <t>This example demonstrates how an OSPF interface can be extended
-        with a cost that changes with a schedule.</t>
+      <t>This example demonstrates how an OSPF interface <xref target="RFC9129"/> can be extended
+        with a cost that changes with a schedule using the grouping
+        defined in ietf-tvr-schedule.yang.</t>
       <artwork><![CDATA[
 module example-tvr-ospf-schedule {
   yang-version 1.1;
@@ -1123,6 +1126,8 @@ module example-tvr-ospf-schedule {
 
   import ietf-tvr-schedule {
     prefix "tvr-schd";
+    reference
+      "RFC XXXX: A YANG Data Model for Scheduled Attributes";
   }
 
   augment "/rt:routing/rt:control-plane-protocols/"

@@ -60,7 +60,7 @@ module ietf-tvr-node {
      the RFC itself for full legal notices.";
 
 
-  revision 2026-05-19 {
+  revision 2026-06-05 {
     description
       "Initial Version";
     reference
@@ -136,8 +136,7 @@ module ietf-tvr-node {
           units "bits/second";
           default "0";
           description
-            "The default interface bandwidth in bits
-             per second";
+            "The interface bandwidth in bits per second";
         }
 
         container attribute-schedule {
