@@ -31,6 +31,8 @@
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9129.xml'>
     <!ENTITY RFC9657 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9657.xml'>
+    <!ENTITY RFC9907 PUBLIC ''
+      'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9907.xml'>
     <!ENTITY RFC9911 PUBLIC ''
       'http://xml.resource.org/public/rfc/bibxml/reference.RFC.9911.xml'>
     <!ENTITY RFC9922 PUBLIC ''
@@ -215,7 +217,7 @@ Attributes
           +-------------------+----------+------+
       A1  |       v1          |   v2     |  v3  |
           +-------------------+----------+------+
-      A2  |      vv1          |  va2     |  vv2 |
+      A2  |      vv1          |...va2....|  vv2 |
           +-------------------+-----------------+
          t0                  t1        t2      t3
                          Time
@@ -253,6 +255,7 @@ Attributes
     <section title="TVR Schedule YANG Tree">
     <t>
       The following figure shows the tree diagram of the tvr-schedule grouping.
+      "ietf-tvr-schedule" is a reusable module that can be used for non-TVR contexts.
     </t>
     <artwork>
 module: ietf-tvr-schedule
@@ -427,7 +430,8 @@ module: ietf-tvr-topology
        |     +--rw link-available?     boolean
        |     +--rw bandwidth?          yang:gauge64
        |     +--rw delay?              uint64
-       |     +--rw destination-node?   inet:uri
+       |     +--rw destination-nodes*             inet:uri
+       |     +--rw strict-destination-checking?   boolean
        +--rw default-link-available?   boolean
        +--rw default-bandwidth?        yang:gauge64
        +--rw default-delay?            uint64
@@ -720,7 +724,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2026-06-05.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2026-06-10.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -797,7 +801,7 @@ module ietf-tvr-topology {
      described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
      they appear in all capitals, as shown here.";
 
-  revision 2026-06-05 {
+  revision 2026-06-10 {
     description
       "Initial revision";
     reference
@@ -869,11 +873,25 @@ module ietf-tvr-topology {
                  less than this value the predicted value SHOULD be
                  used.";
             }
-            leaf destination-node {
+            leaf-list destination-nodes {
               type inet:uri;
               description
-                "A name refers to the destination node of the link.";
+                "A list of one or more destination nodes that are
+                 associated with the link schedule.";
             }
+            leaf strict-destination-checking {
+              when "../destination-nodes" {
+                description
+                  "This is only relevant when destination node(s)
+                   are specified.";
+              }
+              type boolean;
+              default 'false';
+              description
+               "Indicates whether or not the specified destination
+                node(s) are the only destinations allowed when the
+                link schedule is active";
+           }
           }
         }
       }
@@ -959,6 +977,10 @@ module ietf-tvr-topology {
 
     <section anchor="Security" title="Security Considerations">
       <t>
+        This section is modeled after the template described in Section 3.7.1
+        of <xref target="RFC9907"/>.
+      </t>
+      <t>
         The YANG modules specified in this document define a data model that is
    designed to be accessed via YANG-based management protocols,
    such as the Network Configuration Protocol (NETCONF)  <xref target="RFC6241"/>
@@ -996,13 +1018,6 @@ module ietf-tvr-topology {
       <t>Modifications to these scheduled attributes may result in a
         denial of service.</t>
 
-      <t>
-        Some of the readable data nodes in the ietf-tvr-node.yang module and ietf-tvr-topology.yang module
-        may be considered sensitive or vulnerable in some network environments. It is thus
-        important to control read access (e.g., via get, get-config, or notification)
-        to these data nodes.
-      </t>
-
    </section>
 <section title="IANA Considerations">
   <t>
@@ -1031,27 +1046,36 @@ module ietf-tvr-topology {
      registry <xref target="RFC6020"/>.
    </t>
    <artwork>
-   name: ietf-tvr-schedule
-   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-schedule
-   prefix: tvr-schd
-   reference: RFC XXXX
+   Name: ietf-tvr-schedule
+   Maintained by IANA?  Y/N
+   Namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-schedule
+   Prefix: tvr-schd
+   Reference: RFC XXXX
    </artwork>
     <artwork>
-   name: ietf-tvr-node
-   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-node
-   prefix: tvr-node
-   reference: RFC XXXX
+   Name: ietf-tvr-node
+   Maintained by IANA?  Y/N
+   Namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-node
+   Prefix: tvr-node
+   Reference: RFC XXXX
    </artwork>
    <artwork>
-   name: ietf-tvr-topology
-   namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-topology
-   prefix: tvr-topo
-   reference: RFC XXXX
+   Name: ietf-tvr-topology
+   Maintained by IANA?  Y/N
+   Namespace: urn:ietf:params:xml:ns:yang:ietf-tvr-topology
+   Prefix: tvr-topo
+   Reference: RFC XXXX
    </artwork>
 </section>
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>The YANG data model was developed using the suite of YANG tools written
       and maintained by numerous authors.</t>
+      <t>
+        Thanks to Peter Yee for the genart and secdir review, Sue Hares for the rtgdir reveiw, Chongfeng Xie for the opsdir review, Xufeng Liu for the yangdoctor review.
+      </t>
+      <t>
+        Thanks Mohamed Boucadair, Christopher Inacio, Eric Vyncke, Mahesh Jethanandani, Charles Echkel, Roman Danyliw, Ketan Talaulikar, Deb Cooley, Gunter Van de Velde, and Gorry Fairhurst for the IESG review.</t>
+
     </section>
   </middle>
 
@@ -1094,6 +1118,7 @@ module ietf-tvr-topology {
       &RFC9000;
       &RFC9129;
       &RFC9657;
+      &RFC9907;
     </references>
 
     <section>
