@@ -47,7 +47,7 @@
 <?rfc rfcedstyle="yes" ?>
 <?rfc subcompact="no" ?>
 
-<rfc category="std" docName="draft-ietf-tvr-schedule-yang-11" ipr="trust200902"
+<rfc category="std" docName="draft-ietf-tvr-schedule-yang-12" ipr="trust200902"
      consensus="true" submissionType="IETF" version="3">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
@@ -372,6 +372,8 @@ module: ietf-tvr-node
 
       <artwork>
 module: ietf-tvr-topology
+  augment /nw:networks/nw:network/nw:network-types:
+    +--rw tvr-topology!
   augment /nw:networks/nw:network/nw:node:
     +--rw available
        +--rw default-node-available?   boolean
@@ -427,9 +429,9 @@ module: ietf-tvr-topology
        |  |     +--rw frequency?                identityref
        |  |     +--rw interval?                 uint32
        |  +--rw link-attributes
-       |     +--rw link-available?     boolean
-       |     +--rw bandwidth?          yang:gauge64
-       |     +--rw delay?              uint64
+       |     +--rw link-available?                boolean
+       |     +--rw bandwidth?                     yang:gauge64
+       |     +--rw delay?                         uint64
        |     +--rw destination-nodes*             inet:uri
        |     +--rw strict-destination-checking?   boolean
        +--rw default-link-available?   boolean
@@ -724,7 +726,7 @@ module ietf-tvr-node {
     </section>
     <section title="TVR Network Topology Module">
       <artwork><![CDATA[
-<CODE BEGINS> file "ietf-tvr-topology@2026-06-10.yang"
+<CODE BEGINS> file "ietf-tvr-topology@2026-06-11.yang"
 module ietf-tvr-topology {
   yang-version 1.1;
   namespace "urn:ietf:params:xml:ns:yang:ietf-tvr-topology";
@@ -801,7 +803,7 @@ module ietf-tvr-topology {
      described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
      they appear in all capitals, as shown here.";
 
-  revision 2026-06-10 {
+  revision 2026-06-11 {
     description
       "Initial revision";
     reference
@@ -920,14 +922,29 @@ module ietf-tvr-topology {
     }
   }
 
+  augment "/nw:networks/nw:network/nw:network-types" {
+    description
+      "Introduces a new network type for TVR topology.";
+    container tvr-topology {
+      presence
+        "Indicates this is a TVR topology, with TVR
+         attributes.";
+      description
+        "Container for the TVR network type.
+         When present, it signals that the network contains
+         TVR augmentations.";
+    }
+  }
 
   augment "/nw:networks/nw:network/nw:node" {
+    when "../nw:network-types/tvr-topo:tvr-topology";
     description
       "Augment network node with schedules.";
     uses node-availability-schedule;
   }
 
   augment "/nw:networks/nw:network/nw:node/nt:termination-point" {
+    when "../../nw:network-types/tvr-topo:tvr-topology";
     description
       "Augment network link with schedules.";
     uses link-availability-schedule;
